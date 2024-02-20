@@ -8,6 +8,7 @@ function App() {
 
   return (
     <>
+      <p>test {import.meta.env.VITE_SOME_KEY}</p>    
       <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
