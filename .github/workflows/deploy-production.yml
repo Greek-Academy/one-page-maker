@@ -13,13 +13,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+      - uses: oven-sh/setup-bun@v1
       - name: lint and test
         run: |
           cd one-page-maker
-          npm install
-          npm run lint
-          npm run test
-      - run: npm run build
+          bun install
+          bun run lint
+          bun run test
+      - run: bun run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
