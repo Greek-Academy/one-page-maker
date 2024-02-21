@@ -23,9 +23,9 @@ jobs:
       - run: |
           cd one-page-maker
           bun run build
-      # - uses: FirebaseExtended/action-hosting-deploy@v0
-      #   with:
-      #     repoToken: "${{ secrets.GITHUB_TOKEN }}"
-      #     firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SAMPLE_APP_12BF5 }}"
-      #     channelId: live
-      #     projectId: one-pager-maker
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SAMPLE_APP_12BF5 }}"
+          channelId: live
+          projectId: one-pager-maker
