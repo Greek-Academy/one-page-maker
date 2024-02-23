@@ -1,0 +1,14 @@
+"hosting" : {
+    "public": "one-pager-maker/public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "one-pager-maker/**",
+        "destination": "/index.html"
+      }
+    ]
+}
