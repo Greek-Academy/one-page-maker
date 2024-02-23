@@ -16,12 +16,12 @@ jobs:
       - uses: oven-sh/setup-bun@v1
       - name: lint and test
         run: |
-          cd one-page-maker
+          cd one-pager-maker
           bun install
           bun run lint
           bun run test
       - run: |
-          cd one-page-maker
+          cd one-pager-maker
           bun run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
