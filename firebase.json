@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist",
+    "public": "one-pager-maker/dist",
     "ignore": [
       "firebase.json",
       "**/.*",
