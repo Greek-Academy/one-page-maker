@@ -5,6 +5,11 @@ import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+  const [markdonwText, setMarkdonwText] = useState("a")
+　
+  const toMarkdownText = (rawText: string) => {
+    setMarkdonwText(rawText + "aaa");
+  }
 
   return (
     <>
@@ -16,7 +21,9 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + React + One Pager Maker</h1>
+      <h1>Vite + React + One Pager Maker3</h1>
+      <textarea onChange={(e) => toMarkdownText(e.target.value)}>書き込むところ</textarea>
+      <textarea value={markdonwText}></textarea>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
