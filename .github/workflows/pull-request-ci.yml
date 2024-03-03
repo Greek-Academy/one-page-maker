@@ -24,7 +24,6 @@ jobs:
       - name: lint and test
         run: |
           cd one-pager-maker
-          bun install
           bun run lint
           bun run test
       - run: |

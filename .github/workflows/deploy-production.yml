@@ -20,15 +20,6 @@ jobs:
           cd one-pager-maker
           bun install
           bun install -g firebase-tools
-      - name: lint and test
-        run: |
-          cd one-pager-maker
-          bun install
-          bun run lint
-          bun run test
-      - run: |
-          cd one-pager-maker
-          bun run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           working-directory: one-pager-maker
