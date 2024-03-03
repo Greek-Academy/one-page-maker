@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Markdown from 'react-markdown'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -8,7 +9,7 @@ function App() {
   const [markdonwText, setMarkdonwText] = useState("a")
 　
   const toMarkdownText = (rawText: string) => {
-    setMarkdonwText(rawText + "aaa");
+    setMarkdonwText(rawText);
   }
 
   return (
@@ -23,7 +24,8 @@ function App() {
       </div>
       <h1>Vite + React + One Pager Maker3</h1>
       <textarea onChange={(e) => toMarkdownText(e.target.value)}>書き込むところ</textarea>
-      <textarea value={markdonwText}></textarea>
+      <Markdown>{markdonwText}</Markdown>
+      {/* <textarea value={markdonwText}></textarea> */}
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
