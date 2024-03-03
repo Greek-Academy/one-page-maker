@@ -1,2 +1,2 @@
-# one-page-maker
-1ページャメーカー
+# one-pager-maker
+one-pager-maker
