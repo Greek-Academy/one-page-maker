@@ -1,4 +1,4 @@
-name: PullRequestCI
+name: PullRequest lint test build
 
 on:
   pull_request:
