@@ -1,4 +1,4 @@
-name: Deploy to Firebase Hosting on merge
+name: ci
 
 on:
   push:
@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: 20
       - uses: oven-sh/setup-bun@v1
+      # TODO:cached
       - name: install
         run: |
           cd one-pager-maker

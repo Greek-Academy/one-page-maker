@@ -1,4 +1,4 @@
-name: PullRequest check
+name: Pull Request check
 
 on:
   pull_request:
@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 20
@@ -16,15 +15,20 @@ jobs:
         with:
           node-version: 20
       - uses: oven-sh/setup-bun@v1
+      # TODO:cached
       - name: install
         run: |
           cd one-pager-maker
           bun install
-      - name: lint and test
+      - name: lint
         run: |
           cd one-pager-maker
           bun run lint
+      - name: test
+        run: |
+          cd one-pager-maker
           bun run test
-      - run: |
+      - name: test
+        run: |
           cd one-pager-maker
           bun run build
