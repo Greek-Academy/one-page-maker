@@ -6,8 +6,11 @@ on:
       - main
 
 jobs:
-  build:
+  pull_request_check:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: one-pager-maker
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 20
@@ -18,17 +21,7 @@ jobs:
       # TODO:cached
       - name: install
         run: |
-          cd one-pager-maker
           bun install
-      - name: lint
-        run: |
-          cd one-pager-maker
           bun run lint
-      - name: test
-        run: |
-          cd one-pager-maker
           bun run test
-      - name: test
-        run: |
-          cd one-pager-maker
           bun run build
