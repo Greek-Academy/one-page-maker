@@ -22,6 +22,12 @@ jobs:
       - name: install
         run: |
           bun install
+      - name: lint
+        run: |
           bun run lint
+      - name: test
+        run: |
           bun run test
+      - name: build
+        run: |
           bun run build
