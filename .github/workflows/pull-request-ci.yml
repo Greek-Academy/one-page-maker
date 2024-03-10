@@ -1,0 +1,33 @@
+name: Pull Request check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  pull_request_check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: one-pager-maker
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: oven-sh/setup-bun@v1
+      # TODO:cached
+      - name: install
+        run: |
+          bun install
+      - name: lint
+        run: |
+          bun run lint
+      - name: test
+        run: |
+          bun run test
+      - name: build
+        run: |
+          bun run build
