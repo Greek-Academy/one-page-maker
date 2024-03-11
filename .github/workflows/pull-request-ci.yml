@@ -1,4 +1,4 @@
-name: Pull Request check
+name: ci
 
 on:
   pull_request:
@@ -13,21 +13,27 @@ jobs:
         working-directory: one-pager-maker
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
       - uses: oven-sh/setup-bun@v1
-      # TODO:cached
-      - name: install
-        run: |
-          bun install
+      - name: Cache bun
+        id: cache-bun
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-bun-modules
+        with:
+          path: ~/.bun
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-bun.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: bun install
       - name: lint
-        run: |
-          bun run lint
+        run: bun run lint
       - name: test
-        run: |
-          bun run test
+        run: bun run test
       - name: build
-        run: |
-          bun run build
+        run: bun run build
