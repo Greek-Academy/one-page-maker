@@ -1,4 +1,4 @@
-name: Pull Request check
+name: ci
 
 on:
   pull_request:
@@ -13,21 +13,19 @@ jobs:
         working-directory: one-pager-maker
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
       - uses: oven-sh/setup-bun@v1
-      # TODO:cached
       - name: install
-        run: |
-          bun install
+        run: bun install
       - name: lint
-        run: |
-          bun run lint
+        run: bun run lint
       - name: test
-        run: |
-          bun run test
+        run: bun run test
       - name: build
-        run: |
-          bun run build
+        run: bun run build
+      - name: Test Failure
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure() || cancelled()
+        with:
+          severity: error
+          details: Failed! [URL](${{ github.event.pull_request.html_url }})
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
