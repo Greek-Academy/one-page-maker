@@ -27,5 +27,5 @@ jobs:
         if: failure() || cancelled()
         with:
           severity: error
-          details: Test Failed!
+          details: Failed! [URL](${{ github.event.pull_request.html_url }})
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}

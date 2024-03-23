@@ -1,4 +1,4 @@
-name: cd
+name: deploy
 
 on:
   push:
@@ -6,21 +6,24 @@ on:
       - main
 
 jobs:
-  build_and_deploy:
+  deployment:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: one-pager-maker
+    concurrency: production
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          cd one-pager-maker
-          npm install
+          npm ci
           npm install -g firebase-tools
           npm run build
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          working-directory: one-pager-maker
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_ONE_PAGER_MAKER }}"
           channelId: live
@@ -29,7 +32,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: bun run e2e:all
+        run: npm run e2e:all
       - uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -40,6 +43,5 @@ jobs:
         uses: rjstone/discord-webhook-notify@v1
         if: failure() || cancelled()
         with:
-          severity: error
           details: Test Failed!
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
