@@ -6,10 +6,10 @@ on:
     - cron: "* 13 * * 5"
 
 jobs:
-  deployment:
+  send_reminder:
     runs-on: ubuntu-latest
     steps:
-      - name: Test Failure
+      - name: discord reminder
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: info
