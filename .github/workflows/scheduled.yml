@@ -1,0 +1,18 @@
+name: schedule_reminder
+
+on:
+  schedule:
+    # Thursday 22:00 JST
+    - cron: "* 13 * * 5"
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Failure
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: Auto Reminder
+          text: Regular meeting tomorrow at 10pm.
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
