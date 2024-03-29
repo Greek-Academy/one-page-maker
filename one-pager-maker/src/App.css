@@ -1,4 +1,4 @@
-#root {
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -39,4 +39,34 @@
 
 .read-the-docs {
   color: #888;
+} */
+
+.editor-container {
+  display: flex;
+  height: 80vh;
+  width: 100%;
+}
+
+.markdown-input,
+.markdown-preview {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.markdown-input textarea {
+  width: 100%;
+  height: 100%;
+  font-size: 1rem;
+  border: none;
+  outline: none;
+  resize: none;
+  background-color: #f4f4f4;
+  padding: 1rem;
+}
+
+.markdown-preview {
+  background-color: #fff;
+  border-left: 1px solid #ddd;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
