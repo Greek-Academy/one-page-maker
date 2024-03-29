@@ -4,7 +4,7 @@ import './App.css'
 
 function App() {
   const [markdown, setMarkdown] = useState('');
-  const toMarkdownText = (e:any) => {
+  const toMarkdownText = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
     setMarkdown(e.target.value);
   };
   return (
