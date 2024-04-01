@@ -4,7 +4,7 @@ test('has title', async ({ page }) => {
   await page.goto('https://one-pager-maker.web.app/');
 
   // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle('Vite + React + TS 2');
+  await expect(page).toHaveTitle('Vite + React + TS');
 });
 
 // test('get started link', async ({ page }) => {
