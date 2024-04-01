@@ -14,5 +14,5 @@ jobs:
         with:
           severity: info
           username: Github Actions Reminder
-          text: @takashitanaka_kccs @binnmti @harineko0  It starts in an hour.
+          text: It starts in an hour! @takashitanaka_kccs @binnmti @harineko0
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
