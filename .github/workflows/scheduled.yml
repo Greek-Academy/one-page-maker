@@ -2,8 +2,8 @@ name: schedule_reminder
 
 on:
   schedule:
-    # Thursday 22:00 JST
-    - cron: "* 13 * * 5"
+    # Friday 21:00 JST
+    - cron: "0 12 * * 5"
 
 jobs:
   send_reminder:
@@ -13,6 +13,6 @@ jobs:
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: info
-          details: Auto Reminder
-          text: Regular meeting tomorrow at 10pm.
+          username: Github Actions Reminder
+          text: It starts in an hour! @takashitanaka_kccs @binnmti @harineko0
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
