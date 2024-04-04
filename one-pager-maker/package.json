@@ -15,9 +15,12 @@
     "e2e:chromium": "playwright test --project=chromium"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.2.3",
     "firebase": "^10.8.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-redux": "^9.1.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",
