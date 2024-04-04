@@ -5,7 +5,7 @@ import {z, ZodType} from "zod";
  * @param schema z.object() などの Schema
  * @param value アサーションしたい値orオブジェクト
  */
-export function assertZodSchema<T extends ZodType<any, any, any>>(
+export function assertZodSchema<T extends ZodType>(
     schema: T,
     value: unknown
 ): asserts value is z.infer<T> {
