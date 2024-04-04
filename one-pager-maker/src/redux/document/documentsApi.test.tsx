@@ -4,7 +4,7 @@ import {Provider} from "react-redux";
 import {beforeAll, beforeEach, describe, expect, test} from "vitest";
 import {act, renderHook} from "@testing-library/react";
 import {useCreateDocumentMutation, useFetchDocumentsQuery} from "./documentsApi.ts";
-import {collection, connectFirestoreEmulator, doc, setDoc} from "firebase/firestore";
+import {connectFirestoreEmulator} from "firebase/firestore";
 import {db} from "../../firebase.ts";
 import {DocumentForCreate} from "./documentType.ts";
 
@@ -29,10 +29,10 @@ describe("documentsApi Unit Test", () => {
     beforeAll(async () => {
         // エミュレータに接続
         connectFirestoreEmulator(db, '127.0.0.1', 4001);
-        // 事前に一度呼び出さないと，test() で失敗する. 理由は分からない.
-        await setDoc(doc(collection(db, `test`)), {
-            test: "test"
-        });
+        // 事前に一度呼び出さないと，test() で失敗する. 理由は分からない. ←失敗しないかも
+        // await setDoc(doc(collection(db, `test`)), {
+        //     test: "test"
+        // });
     })
 
     beforeEach(async () => {
