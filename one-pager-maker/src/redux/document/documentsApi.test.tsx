@@ -35,9 +35,13 @@ describe("documentsApi Unit Test", () => {
         });
     })
 
-    beforeEach(() => {
-        // テストごとにDBのデータを削除
-        fetch('http://localhost:4001/emulator/v1/projects/one-pager-maker/databases/(default)/documents', {method: 'DELETE'})
+    beforeEach(async () => {
+        try {
+            // テストごとにDBのデータを削除
+            await fetch('http://localhost:4001/emulator/v1/projects/one-pager-maker/databases/(default)/documents', {method: 'DELETE'})
+        } catch (e) {
+            console.error(e);
+        }
     })
 
     test("createDocument should create data correctly", async () => {
