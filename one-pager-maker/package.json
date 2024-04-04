@@ -11,8 +11,8 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test": "bun test src/tests/unit",
-    "vitest": "firebase emulators:exec 'bun test'",
+    "test": "vitest",
+    "testEmu": "firebase emulators:exec --ui 'npm run test'",
     "e2e:all": "playwright test src/tests/e2e",
     "e2e:chromium": "playwright test --project=chromium"
   },
