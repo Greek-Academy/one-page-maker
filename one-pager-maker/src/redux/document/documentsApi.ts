@@ -4,6 +4,11 @@ import {db} from "../../firebase.ts";
 import {Document, documentConverter, DocumentForCreate, DocumentForDelete, DocumentForUpdate} from "./documentType.ts";
 import {WithTimestamp} from "../../utils/typeUtils.ts";
 
+const colRef = (uid: string) => collection(db, `users/${uid}/documents`)
+    .withConverter(documentConverter);
+const docRef = (uid: string, docId: string) => doc(db, `users/${uid}/documents/${docId}`)
+    .withConverter(documentConverter)
+
 // TODO: providesTags or invalidatesTag を追加する必要があるかもしれない
 export const documentsApi = createApi({
     reducerPath: "documents",
@@ -13,9 +18,7 @@ export const documentsApi = createApi({
         fetchDocuments: builder.query({
             async queryFn(args: { uid: string }) {
                 try {
-                    const colRef = collection(db, `users/${args.uid}/documents`)
-                        .withConverter(documentConverter);
-                    const snapshot = await getDocs(colRef);
+                    const snapshot = await getDocs(colRef(args.uid));
                     return {data: snapshot.docs.map(doc => doc.data())};
                 } catch (error) {
                     return {error}
@@ -32,8 +35,7 @@ export const documentsApi = createApi({
         createDocument: builder.mutation({
             async queryFn(args: { uid: string, documentData: DocumentForCreate }) {
                 try {
-                    const docRef = doc(collection(db, `users/${args.uid}/documents`))
-                        .withConverter(documentConverter);
+                    const docRef = doc(colRef(args.uid));
                     const data: WithTimestamp<Document> = {
                         ...args.documentData,
                         id: docRef.id,
@@ -59,18 +61,15 @@ export const documentsApi = createApi({
         updateDocument: builder.mutation({
             async queryFn(args: { uid: string, documentData: DocumentForUpdate }) {
                 try {
-                    const docRef = doc(db, `users/${args.uid}/documents/${args.documentData.id}`)
-                        .withConverter(documentConverter);
-                    const data: WithTimestamp<Document> = {
+                    await updateDoc(docRef(args.uid, args.documentData.id), {
                         ...args.documentData,
                         updated_at: serverTimestamp(),
-                    }
-                    await updateDoc(docRef, data);
-                    const resultData: Document = {
+                    });
+                    const data: Document = {
                         ...args.documentData,
                         updated_at: Timestamp.now(),
                     }
-                    return {data: resultData};
+                    return {data};
                 } catch (error) {
                     return {error};
                 }
@@ -79,18 +78,15 @@ export const documentsApi = createApi({
         deleteDocument: builder.mutation({
             async queryFn(args: { uid: string, documentData: DocumentForDelete }) {
                 try {
-                    const docRef = doc(db, `users/${args.uid}/documents/${args.documentData.id}`)
-                        .withConverter(documentConverter);
-                    const data: WithTimestamp<Document> = {
+                    await updateDoc(docRef(args.uid, args.documentData.id), {
                         ...args.documentData,
                         deleted_at: serverTimestamp(),
-                    }
-                    await updateDoc(docRef, data);
-                    const resultData: Document = {
+                    });
+                    const data: Document = {
                         ...args.documentData,
                         deleted_at: Timestamp.now(),
                     }
-                    return {data: resultData};
+                    return {data};
                 } catch (error) {
                     return {error};
                 }
