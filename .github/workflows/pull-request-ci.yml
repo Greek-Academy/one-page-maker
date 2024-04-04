@@ -21,7 +21,7 @@ jobs:
       - name: lint
         run: bun run lint
       - name: Create .env file
-      - shell: bash
+        shell: bash
         run: |
           touch .env
           echo "VITE_API_KEY=${{ secrets.VITE_API_KEY }}" >> .env
