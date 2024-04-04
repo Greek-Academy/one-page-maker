@@ -10,7 +10,7 @@ const documentSchema = z.object({
     title: z.string(),
     contents: z.string(),
     status: z.enum(['draft', 'reviewed', 'final', 'obsolete']),
-    ownerId: z.string(),
+    owner_id: z.string(),
     contributors: z.array(z.string()),
     reviewers: z.array(z.string()),
     url_privilege: z.enum(['private', 'can_view', 'can_edit']),

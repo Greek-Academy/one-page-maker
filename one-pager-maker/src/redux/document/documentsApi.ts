@@ -25,7 +25,7 @@ export const documentsApi = createApi({
         createDocument: builder.mutation({
             async queryFn(args: { uid: string, documentData: DocumentForCreate }) {
                 try {
-                    const docRef = doc(db, `users/${args.uid}/documents`)
+                    const docRef = doc(collection(db, `users/${args.uid}/documents`))
                         .withConverter(documentConverter);
                     const data: WithTimestamp<Document> = {
                         ...args.documentData,
@@ -44,6 +44,7 @@ export const documentsApi = createApi({
 
                     return {data: resultData}
                 } catch (error) {
+                    console.error(error);
                     return {error}
                 }
             },
