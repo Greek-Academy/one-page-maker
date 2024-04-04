@@ -2,13 +2,12 @@ import {initializeApp} from "firebase/app";
 import {getFirestore} from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyC_DQXpUZNpgYhHzLhB_CUT3Vd4einr0tU",
-    authDomain: "one-pager-maker.firebaseapp.com",
-    projectId: "one-pager-maker",
-    storageBucket: "one-pager-maker.appspot.com",
-    messagingSenderId: "583942717761",
-    appId: "1:583942717761:web:3ab98e673855670f6b21c0",
-    measurementId: "G-9KG03HNXD2"
+   apiKey: import.meta.env.VITE_API_KEY,
+   authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+   projectId: import.meta.env.VITE_PROJECT_ID,
+   storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+   messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+   appId: import.meta.env.VITE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
