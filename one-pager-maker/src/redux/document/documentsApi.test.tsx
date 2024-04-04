@@ -28,7 +28,7 @@ describe("documentsApi Unit Test", () => {
 
     beforeAll(async () => {
         // エミュレータに接続
-        connectFirestoreEmulator(db, 'localhost', 4001);
+        connectFirestoreEmulator(db, '127.0.0.1', 4001);
         // 事前に一度呼び出さないと，test() で失敗する. 理由は分からない.
         await setDoc(doc(collection(db, `test`)), {
             test: "test"
@@ -38,7 +38,7 @@ describe("documentsApi Unit Test", () => {
     beforeEach(async () => {
         try {
             // テストごとにDBのデータを削除
-            await fetch('http://localhost:4001/emulator/v1/projects/one-pager-maker/databases/(default)/documents', {method: 'DELETE'})
+            await fetch('http://127.0.0.1:4001/emulator/v1/projects/one-pager-maker/databases/(default)/documents', {method: 'DELETE'})
         } catch (e) {
             console.error(e);
         }
