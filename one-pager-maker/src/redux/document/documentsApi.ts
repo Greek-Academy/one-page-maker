@@ -21,6 +21,13 @@ export const documentsApi = createApi({
                     return {error}
                 }
             },
+            providesTags: (results) => {
+                if (results === undefined) {
+                    return [];
+                } else {
+                    return results.map(result => ({type: 'Documents', id: result.id}))
+                }
+            }
         }),
         createDocument: builder.mutation({
             async queryFn(args: { uid: string, documentData: DocumentForCreate }) {
