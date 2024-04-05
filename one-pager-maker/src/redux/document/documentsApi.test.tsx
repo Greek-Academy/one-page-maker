@@ -2,7 +2,7 @@ import {ReactNode} from "react";
 import {store} from "../store.ts";
 import {Provider} from "react-redux";
 import {beforeAll, beforeEach, describe, expect, test} from "vitest";
-import {act, renderHook} from "@testing-library/react";
+import {act, renderHook, waitFor} from "@testing-library/react";
 import {useCreateDocumentMutation, useFetchDocumentsQuery} from "./documentsApi.ts";
 import {connectFirestoreEmulator} from "firebase/firestore";
 import {db} from "../../firebase.ts";
@@ -11,8 +11,6 @@ import {DocumentForCreate} from "./documentType.ts";
 function Wrapper(props: { children: ReactNode }) {
     return <Provider store={store}>{props.children}</Provider>;
 }
-
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 describe("documentsApi Unit Test", () => {
     const testUserId = 'testUid';
@@ -25,26 +23,24 @@ describe("documentsApi Unit Test", () => {
         reviewers: [],
         url_privilege: 'private',
     }
+    const host = '127.0.0.1';
+    const port = 4001;
 
     beforeAll(async () => {
         // エミュレータに接続
-        connectFirestoreEmulator(db, '127.0.0.1', 4001);
-        // 事前に一度呼び出さないと，test() で失敗する. 理由は分からない. ←失敗しないかも
-        // await setDoc(doc(collection(db, `test`)), {
-        //     test: "test"
-        // });
+        connectFirestoreEmulator(db, host, port);
     })
 
     beforeEach(async () => {
         try {
             // テストごとにDBのデータを削除
-            await fetch('http://127.0.0.1:4001/emulator/v1/projects/one-pager-maker/databases/(default)/documents', {method: 'DELETE'})
+            await fetch(`http://${host}:${port}/emulator/v1/projects/one-pager-maker/databases/(default)/documents`, {method: 'DELETE'})
         } catch (e) {
             console.error(e);
         }
     })
 
-    test("createDocument should create data correctly", async () => {
+    test("createDocument works correctly", async () => {
         const {result} = renderHook(() => useCreateDocumentMutation(), {
             wrapper: Wrapper
         });
@@ -57,12 +53,10 @@ describe("documentsApi Unit Test", () => {
             });
         })
 
-        // 1秒間更新を待つ. TODO: 一定時間待つ以外に方法はないか？
-        await act(async () => {
-            await delay(400);
+        waitFor(() => {
+            expect(result.current[1].isSuccess).toBe(true);
         })
 
-        expect(result.current[1].isSuccess).toBe(true);
     })
 
     test("Firestore emulators' data should be deleted before each test", async () => {
@@ -70,43 +64,70 @@ describe("documentsApi Unit Test", () => {
             wrapper: Wrapper
         });
 
-        await act(async () => {
-            await delay(400);
+        waitFor(() => {
+            expect(fetchDocHook.result.current.data?.length).toBe(0)
         })
-
-        expect(fetchDocHook.result.current.data?.length).toBe(0)
     })
 
-    // test("createDocument should add data to cache", async () => {
-    //     // 先に fetch
-    //     const fetchDocHook = renderHook(() => useFetchDocumentsQuery({uid: testUserId}), {
-    //         wrapper: Wrapper
-    //     });
-    //
-    //     const createDocHook = renderHook(() => useCreateDocumentMutation(), {
-    //         wrapper: Wrapper
-    //     });
-    //
-    //     act(() => {
-    //         const [createDocument] = createDocHook.result.current;
-    //         createDocument({
-    //             uid: testUserId,
-    //             documentData: testDocument
-    //         });
-    //         createDocument({
-    //             uid: testUserId,
-    //             documentData: testDocument
-    //         });
-    //         createDocument({
-    //             uid: testUserId,
-    //             documentData: testDocument
-    //         });
-    //     });
-    //
-    //     await act(async () => {
-    //         await delay(500);
-    //     })
-    //
-    //     expect(fetchDocHook.result.current.data?.length).toBe(3)
-    // })
+    test("createDocument should add data to cache", async () => {
+        // 先に fetch
+        const fetchDocHook = renderHook(() => useFetchDocumentsQuery({uid: testUserId}), {
+            wrapper: Wrapper
+        });
+
+        const createDocHook = renderHook(() => useCreateDocumentMutation(), {
+            wrapper: Wrapper
+        });
+
+        act(() => {
+            const [createDocument] = createDocHook.result.current;
+            createDocument({
+                uid: testUserId,
+                documentData: testDocument
+            });
+            createDocument({
+                uid: testUserId,
+                documentData: testDocument
+            });
+            createDocument({
+                uid: testUserId,
+                documentData: testDocument
+            });
+        });
+
+        waitFor(() => {
+            expect(fetchDocHook.result.current.data?.length).toBe(3)
+        })
+    })
+
+    test("fetchDocuments shouldn't cache duplicated data", () => {
+        const createDocHook = renderHook(() => useCreateDocumentMutation(), {
+            wrapper: Wrapper
+        });
+
+        act(() => {
+            const [createDocument] = createDocHook.result.current;
+            createDocument({
+                uid: testUserId,
+                documentData: testDocument
+            });
+            createDocument({
+                uid: testUserId,
+                documentData: testDocument
+            });
+            createDocument({
+                uid: testUserId,
+                documentData: testDocument
+            });
+        });
+
+        // 後から fetch
+        const fetchDocHook = renderHook(() => useFetchDocumentsQuery({uid: testUserId}), {
+            wrapper: Wrapper
+        });
+
+        waitFor(() => {
+            expect(fetchDocHook.result.current.data?.length).toBe(3)
+        })
+    })
 })
