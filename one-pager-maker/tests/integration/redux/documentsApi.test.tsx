@@ -1,12 +1,12 @@
 import {ReactNode} from "react";
-import {store} from "../store.ts";
 import {Provider} from "react-redux";
 import {beforeAll, beforeEach, describe, expect, test} from "vitest";
 import {act, renderHook, waitFor} from "@testing-library/react";
-import {useCreateDocumentMutation, useFetchDocumentsQuery} from "./documentsApi.ts";
 import {connectFirestoreEmulator} from "firebase/firestore";
-import {db} from "../../firebase.ts";
-import {DocumentForCreate} from "./documentType.ts";
+import {store} from "../../../src/redux/store";
+import {DocumentForCreate} from "../../../src/redux/document/documentType";
+import {db} from "../../../src/firebase";
+import {useCreateDocumentMutation, useFetchDocumentsQuery} from "../../../src/redux/document/documentsApi";
 
 function Wrapper(props: { children: ReactNode }) {
     return <Provider store={store}>{props.children}</Provider>;
@@ -56,7 +56,6 @@ describe("documentsApi Unit Test", () => {
         waitFor(() => {
             expect(result.current[1].isSuccess).toBe(true);
         })
-
     })
 
     test("Firestore emulators' data should be deleted before each test", async () => {
