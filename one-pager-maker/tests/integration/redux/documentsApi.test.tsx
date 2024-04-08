@@ -80,18 +80,12 @@ describe("documentsApi Unit Test", () => {
 
         act(() => {
             const [createDocument] = createDocHook.result.current;
-            createDocument({
-                uid: testUserId,
-                documentData: testDocument
-            });
-            createDocument({
-                uid: testUserId,
-                documentData: testDocument
-            });
-            createDocument({
-                uid: testUserId,
-                documentData: testDocument
-            });
+            for (let i = 0; i < 3; i++) {
+                createDocument({
+                    uid: testUserId,
+                    documentData: testDocument
+                });
+            }
         });
 
         waitFor(() => {
@@ -106,18 +100,12 @@ describe("documentsApi Unit Test", () => {
 
         act(() => {
             const [createDocument] = createDocHook.result.current;
-            createDocument({
-                uid: testUserId,
-                documentData: testDocument
-            });
-            createDocument({
-                uid: testUserId,
-                documentData: testDocument
-            });
-            createDocument({
-                uid: testUserId,
-                documentData: testDocument
-            });
+            for (let i = 0; i < 3; i++) {
+                createDocument({
+                    uid: testUserId,
+                    documentData: testDocument
+                });
+            }
         });
 
         // 後から fetch
