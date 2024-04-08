@@ -35,7 +35,7 @@ jobs:
           echo "VITE_APP_ID=${{ secrets.VITE_APP_ID }}" >> .env
           echo "VITE_MEASUREMENT_ID=${{ secrets.VITE_MEASUREMENT_ID }}" >> .env
       - name: test
-        run: bun run test-in
+        run: bun run test-integration
       - name: Test Failure
         uses: rjstone/discord-webhook-notify@v1
         if: failure() || cancelled()
