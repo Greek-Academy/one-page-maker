@@ -1,7 +1,7 @@
 import {createApi, fakeBaseQuery} from "@reduxjs/toolkit/query/react";
-import {collection, doc, getDocs, serverTimestamp, setDoc, updateDoc, Timestamp} from "firebase/firestore";
+import {collection, doc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc} from "firebase/firestore";
 import {db} from "../../firebase.ts";
-import {Document, documentConverter, DocumentForCreate, DocumentForDelete, DocumentForUpdate} from "./documentType.ts";
+import {Document, documentConverter, DocumentForCreate, DocumentForUpdate} from "./documentType.ts";
 import {WithTimestamp} from "../../utils/typeUtils.ts";
 
 const colRef = (uid: string) => collection(db, `users/${uid}/documents`)
@@ -65,33 +65,59 @@ export const documentsApi = createApi({
                         ...args.documentData,
                         updated_at: serverTimestamp(),
                     });
-                    const data: Document = {
-                        ...args.documentData,
+                    const data = {
                         updated_at: Timestamp.now(),
                     }
                     return {data};
                 } catch (error) {
                     return {error};
                 }
-            }
+            },
+            async onQueryStarted({uid, documentData}, { dispatch, queryFulfilled, getCacheEntry }) {
+                const patchResult = dispatch(
+                    documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
+                        if (draft === undefined) return;
+                        const docIndex = draft.findIndex(d => d.id === documentData.id);
+                        const updatedDoc = getCacheEntry();
+                        draft[docIndex] = {...draft[docIndex], ...updatedDoc.data}
+                    })
+                )
+                try {
+                    await queryFulfilled
+                } catch {
+                    patchResult.undo()
+                }
+            },
         }),
         deleteDocument: builder.mutation({
-            async queryFn(args: { uid: string, documentData: DocumentForDelete }) {
+            async queryFn(args: { uid: string, documentId: string }) {
                 try {
-                    await updateDoc(docRef(args.uid, args.documentData.id), {
-                        ...args.documentData,
+                    await updateDoc(docRef(args.uid, args.documentId), {
                         deleted_at: serverTimestamp(),
                     });
-                    const data: Document = {
-                        ...args.documentData,
+                    const data = {
                         deleted_at: Timestamp.now(),
                     }
                     return {data};
                 } catch (error) {
                     return {error};
                 }
-
-            }
+            },
+            async onQueryStarted({uid, documentId}, { dispatch, queryFulfilled, getCacheEntry }) {
+                const patchResult = dispatch(
+                    documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
+                        if (draft === undefined) return;
+                        const docIndex = draft.findIndex(d => d.id === documentId);
+                        const updatedDoc = getCacheEntry();
+                        draft[docIndex] = {...draft[docIndex], ...updatedDoc.data}
+                    })
+                )
+                try {
+                    await queryFulfilled
+                } catch {
+                    patchResult.undo()
+                }
+            },
         })
     })
 })

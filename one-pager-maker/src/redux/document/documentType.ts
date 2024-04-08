@@ -21,8 +21,9 @@ const documentSchema = z.object({
 
 export type Document = z.infer<typeof documentSchema>
 export type DocumentForCreate = Omit<Document, "id" | "deleted_at" | "updated_at" | "created_at">
-export type DocumentForUpdate = Omit<Document, "updated_at">
-export type DocumentForDelete = Omit<Document, "deleted_at">
+export type DocumentForUpdate = Partial<Omit<Document, "updated_at">> & {
+    id: string
+}
 
 export const documentConverter: FirestoreDataConverter<Document> = {
     fromFirestore(snapshot): Document {
