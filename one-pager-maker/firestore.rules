@@ -15,12 +15,12 @@ service cloud.firestore {
       allow read, write: if isUser(userId) || isAdmin();
 
       match /documents/${documentId} {
-        allow read: if isUser(userId) || isAdmin() || resource.data.url_privilege != 'private';
+        allow read: if isUser(userId) || isAdmin() || resource.data.url_privilege == 'can_view' || resource.data.url_privilege == 'can_edit';
         allow write: if isUser(userId) || isAdmin() || resource.data.url_privilege == 'can_edit';
       }
 
       match /templates/${templateId} {
-        allow read: if isUser(userId) || isAdmin() || resource.data.visibility != 'public';
+        allow read: if isUser(userId) || isAdmin() || resource.data.visibility == 'public';
         allow write: if isUser(userId) || isAdmin();
       }
     }
