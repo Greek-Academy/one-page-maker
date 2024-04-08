@@ -1,0 +1,42 @@
+name: integration-test
+
+on:
+  schedule:
+    # everyday 00:00 JST
+    - cron: '0 15 * * *'
+
+jobs:
+  run-integration-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: one-pager-maker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - name: install firebase-tools
+        run: npm install -g firebase-tools
+      - name: bun install
+        run: bun install
+      - name: install vitest global # これをしないと vitest コマンドが firebase exec から実行できない
+        run: bun i -g vitest
+      - name: Create .env file
+        shell: bash
+        run: |
+          touch .env
+          echo "VITE_API_KEY=${{ secrets.VITE_API_KEY }}" >> .env
+          echo "VITE_AUTH_DOMAIN=${{ secrets.VITE_AUTH_DOMAIN }}" >> .env
+          echo "VITE_PROJECT_ID=${{ secrets.VITE_PROJECT_ID }}" >> .env
+          echo "VITE_STORAGE_BUCKET=${{ secrets.VITE_STORAGE_BUCKET }}" >> .env
+          echo "VITE_MESSAGING_SENDER_ID=${{ secrets.VITE_MESSAGING_SENDER_ID }}" >> .env
+          echo "VITE_APP_ID=${{ secrets.VITE_APP_ID }}" >> .env
+          echo "VITE_MEASUREMENT_ID=${{ secrets.VITE_MEASUREMENT_ID }}" >> .env
+      - name: test
+        run: bun run test-in
+      - name: Test Failure
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure() || cancelled()
+        with:
+          severity: error
+          details: Failed! [URL](${{ github.event.pull_request.html_url }})
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
