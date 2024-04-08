@@ -1,9 +1,12 @@
 name: integration-test
 
 on:
-  schedule:
-    # everyday 00:00 JST
-    - cron: '0 15 * * *'
+  push:
+    branches:
+      - main
+#  schedule:
+#    # everyday 00:00 JST
+#    - cron: '0 15 * * *'
 
 jobs:
   run-integration-test:
