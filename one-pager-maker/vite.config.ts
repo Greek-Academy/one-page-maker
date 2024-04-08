@@ -1,8 +1,26 @@
-
-import { defineConfig } from 'vite'
+/// <reference types="vitest" />
+/// <reference types="vite/client" />
+// ↑ これがないと test: {...} がエラーになる. 参考: https://stackoverflow.com/questions/77153736/troubleshooting-vitest-setup-in-vite-config-js-with-react-ts-template
+import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+    plugins: [react()],
+    define: {
+        'import.meta.vitest': false,
+    },
+    test: {
+        globals: true,
+        environment: 'happy-dom',
+        exclude: [
+            '**/node_modules/**',
+            '**/dist/**',
+            '**/cypress/**',
+            '**/.{idea,git,cache,output,temp}/**',
+            '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
+            // ↑ここまでデフォルト値
+            'tests/e2e/**'
+        ]
+    },
 })

@@ -1,0 +1,3 @@
+exclude_patterns:
+  - "one-pager-maker/src/redux/document/documentsApi.ts"
+  - "one-pager-maker/tests/integration/redux/documentsApi.test.tsx"
