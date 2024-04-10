@@ -10,7 +10,11 @@ function App() {
   return (
     <>
     <div>
-      <h1>Markdown Editor</h1>
+      <div className="editor-title">
+        <input className="title-text" type="text"></input>
+      </div>
+      <div className="editor-parameter">
+      </div>
       <div className="editor-container">
         <textarea
           className="markdown-input"
