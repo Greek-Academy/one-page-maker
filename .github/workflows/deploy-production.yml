@@ -24,9 +24,9 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/bun.lockb') }}
+          key: ${{ runner.os }}-build-cache-bun-${{ hashFiles('**/bun.lockb') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-cache-bun-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - name: bun install
