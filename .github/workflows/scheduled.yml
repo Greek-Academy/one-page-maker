@@ -14,5 +14,5 @@ jobs:
         with:
           severity: info
           username: Github Actions Reminder
-          text: It starts in an hour! @1029901876533133423 @482924039191396353 @257981616004136961
+          text: It starts in an hour! <@!1029901876533133423> <@!482924039191396353> <@!257981616004136961>
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
