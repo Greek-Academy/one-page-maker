@@ -1,14 +1,9 @@
 name: schedule_reminder
 
 on:
-  pull_request:
-    branches:
-      - main
-
-# on:
-#   schedule:
-#     # Friday 20:00 + α JST
-#     - cron: "0 11 * * 5"
+  schedule:
+    # Friday 20:00 + α JST
+    - cron: "0 11 * * 5"
 
 jobs:
   send_reminder:
