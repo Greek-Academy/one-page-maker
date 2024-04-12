@@ -14,6 +14,23 @@ function App() {
         <input className="title-text" type="text"></input>
       </div>
       <div className="editor-parameter">
+        <span>
+          <select name="pets" id="pet-select">
+            <option value="">--Please choose an option--</option>
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+            <option value="hamster">Hamster</option>
+            <option value="parrot">Parrot</option>
+            <option value="spider">Spider</option>
+            <option value="goldfish">Goldfish</option>
+          </select>
+        </span>
+        <span>
+          <input className="" type="text"></input>
+        </span>
+        <span>
+          <input className="" type="text"></input>
+        </span>
       </div>
       <div className="editor-container">
         <textarea
