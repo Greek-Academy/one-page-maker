@@ -12,6 +12,8 @@
   display: flex;
   height: 2vh;
   width: 100%;
+  display: flex;
+  justify-content: space-between;  
 }
 
 .editor-container {
@@ -44,4 +46,13 @@
   background-color: #fff;
   border-left: 1px solid #ddd;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.editor-parameter-left {
+  text-align: left;
+  float: left; 
+}
+
+.editor-parameter-right {
+  text-align: right;
 }

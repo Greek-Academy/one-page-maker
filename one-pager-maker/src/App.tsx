@@ -12,24 +12,30 @@ function App() {
     <div>
       <div className="editor-title">
         <input className="title-text" type="text"></input>
+        <button type="button">Save</button>
       </div>
       <div className="editor-parameter">
-        <span>
-          <select name="pets" id="pet-select">
-            <option value="">--Please choose an option--</option>
-            <option value="dog">Dog</option>
-            <option value="cat">Cat</option>
-            <option value="hamster">Hamster</option>
-            <option value="parrot">Parrot</option>
-            <option value="spider">Spider</option>
-            <option value="goldfish">Goldfish</option>
-          </select>
+        <span className='editor-parameter-left'>
+            <select name="pets" id="pet-select">
+              <option value="draft" selected>draft</option>
+              <option value="reviewed">reviewed</option>
+              <option value="final">final</option>
+              <option value="obsolete">obsolete</option>
+            </select>
+            <span>
+              <input className="" type="text"></input>
+            </span>
+            <span>
+              <input className="" type="text"></input>
+            </span>
         </span>
-        <span>
-          <input className="" type="text"></input>
-        </span>
-        <span>
-          <input className="" type="text"></input>
+        <span className="editor-parameter-right">
+            <span>
+              Create Date 2024/01/01
+            </span>
+            <span>
+              Update Date 2024/01/01
+            </span>
         </span>
       </div>
       <div className="editor-container">
