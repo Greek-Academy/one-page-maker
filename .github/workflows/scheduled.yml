@@ -2,8 +2,8 @@ name: schedule_reminder
 
 on:
   schedule:
-    # Friday 21:00 JST
-    - cron: "0 12 * * 5"
+    # Friday 20:00 + α JST
+    - cron: "0 11 * * 5"
 
 jobs:
   send_reminder:
@@ -14,5 +14,5 @@ jobs:
         with:
           severity: info
           username: Github Actions Reminder
-          text: It starts in an hour! @takashitanaka_kccs @binnmti @harineko0
+          text: It starts in an hour! <@!1029901876533133423> <@!482924039191396353> <@!257981616004136961>
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
