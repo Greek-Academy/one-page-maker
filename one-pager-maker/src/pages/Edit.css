@@ -1,0 +1,40 @@
+.document-title-div {
+  display: flex;
+  width: 100%;
+  border: solid 1px;
+}
+
+.document-title {
+  width: 100%;
+}
+
+.document-parameter-div {
+  display: flex;
+  justify-content: space-between;  
+  border: solid 1px;
+}
+
+.document-parameter-left {
+  text-align: left;
+  float: left; 
+}
+
+.document-parameter-right {
+  text-align: right;
+}
+
+.document-contents-div {
+  display: flex;
+  height: 80vh;
+  width: 100%;
+}
+
+.document-contents {
+  width: 50%;
+}
+
+.document-markdown {
+  width: 50%;
+  border: solid 1px;
+}
+
