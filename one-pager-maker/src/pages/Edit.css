@@ -14,15 +14,6 @@
   border: solid 1px;
 }
 
-.document-parameter-left {
-  text-align: left;
-  float: left; 
-}
-
-.document-parameter-right {
-  text-align: right;
-}
-
 .document-contents-div {
   display: flex;
   height: 80vh;

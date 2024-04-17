@@ -15,7 +15,7 @@ function Edit() {
         <button type="button">Save</button>
       </div>
       <div className="document-parameter-div">
-        <span className='document-parameter-left'>
+        <span>
             <select name="status">
               <option value="draft">draft</option>
               <option value="reviewed">reviewed</option>
@@ -29,7 +29,7 @@ function Edit() {
               <input className="reviewers" type="text"></input>
             </span>
         </span>
-        <span className="document-parameter-right">
+        <span>
             <span className="updated">
               Updated 2024/01/01
             </span>
