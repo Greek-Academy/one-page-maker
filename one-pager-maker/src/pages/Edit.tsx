@@ -17,7 +17,7 @@ function Edit() {
       <div className="document-parameter-div">
         <span className='document-parameter-left'>
             <select name="status">
-              <option value="draft" selected>draft</option>
+              <option value="draft">draft</option>
               <option value="reviewed">reviewed</option>
               <option value="final">final</option>
               <option value="obsolete">obsolete</option>
