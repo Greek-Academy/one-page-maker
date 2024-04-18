@@ -41,12 +41,6 @@ jobs:
         run: bun i -g firebase-tools
       - name: bun run build
         run: bun run build
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_ONE_PAGER_MAKER }}"
-          channelId: live
-          projectId: one-pager-maker
       - name: Create .env file
         shell: bash
         run: |
@@ -60,6 +54,12 @@ jobs:
           echo "VITE_MEASUREMENT_ID=${{ secrets.VITE_MEASUREMENT_ID }}" >> .env
       - name: test-integration
         run: bun run test-integration
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_ONE_PAGER_MAKER }}"
+          channelId: live
+          projectId: one-pager-maker
       - name: Install Playwright Browsers
         run: bun playwright install --with-deps
       - name: Run Playwright tests
