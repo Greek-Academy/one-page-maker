@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// import { useState } from 'react';
+import './App.css';
+import Login from './components/Login/Login';
+import { useAppSelector, useAppDispatch } from './redux/hooks.ts';
+import { useEffect } from 'react';
+import { auth } from './firebase.ts';
+import { login, logout } from './redux/user/userSlice';
 
 function App() {
-  const [count, setCount] = useState(0)
+    const user = useAppSelector((state) => state.user.user);
+    const dispatch = useAppDispatch();
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noopener noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React + One Pager Maker</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    useEffect(() => {
+        auth.onAuthStateChanged((authUser) => {
+            if (authUser) {
+                console.log(authUser);
+                dispatch(
+                    login({
+                        uid: authUser.uid,
+                        email: authUser.email,
+                        displayName: authUser.displayName,
+                    })
+                );
+            } else {
+                dispatch(logout());
+            }
+        });
+    }, [dispatch]);
+
+    return (
+        <div className="App">
+            {user ? (
+                <>
+                    {/* Edit */}
+                    <p>Edit Page</p>
+                </>
+            ) : (
+                <Login />
+            )}
+        </div>
+    );
 }
 
-export default App
+export default App;
