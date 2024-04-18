@@ -12,6 +12,8 @@ import {
 } from '@mui/material';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, githubProvider, googleProvider } from '../firebase';
+import googleLogo from '../assets/web_light_rd_na.svg';
+import githubLogo from '../assets/github-mark-white.svg';
 
 const Login = () => {
     const mailSignin = (event: React.FormEvent<HTMLFormElement>) => {
@@ -61,7 +63,7 @@ const Login = () => {
                         padding: '10px',
                     }}
                 >
-                    <Typography component="h1" variant="h5">
+                    <Typography component="h1" variant="h3">
                         Sign In
                     </Typography>
                     <Box component="form" onSubmit={mailSignin} sx={{ mt: 1 }}>
@@ -90,7 +92,12 @@ const Login = () => {
                             type="submit"
                             variant="contained"
                             fullWidth
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{
+                                mt: 3,
+                                mb: 2,
+                                height: '50px',
+                                textTransform: 'none',
+                            }}
                         >
                             Sign in
                         </Button>
@@ -111,18 +118,46 @@ const Login = () => {
                                 <Button
                                     variant="contained"
                                     fullWidth
+                                    startIcon={<img src={googleLogo}></img>}
                                     onClick={googleSignin}
-                                    sx={{ mt: 3 }}
+                                    sx={{
+                                        mt: 3,
+                                        height: '50px',
+                                        backgroundColor: '#FFFFFF',
+                                        color: '#1F1F1F',
+                                        textTransform: 'none',
+                                        '&:hover': {
+                                            backgroundColor: '#F2F2F2',
+                                        },
+                                    }}
                                 >
-                                    Sign in with google
+                                    Sign in with Google
                                 </Button>
                             </Grid>
                             <Grid item xs>
                                 <Button
                                     variant="contained"
                                     fullWidth
+                                    startIcon={
+                                        <img
+                                            src={githubLogo}
+                                            style={{
+                                                width: '40px',
+                                                marginRight: '5px',
+                                            }}
+                                        ></img>
+                                    }
                                     onClick={githubSignin}
-                                    sx={{ mt: 3 }}
+                                    sx={{
+                                        mt: 3,
+                                        height: '50px',
+                                        backgroundColor: '#444',
+                                        color: '#FAFAFA',
+                                        textTransform: 'none',
+                                        '&:hover': {
+                                            backgroundColor: '#030303',
+                                        },
+                                    }}
                                 >
                                     Sign in with Github
                                 </Button>
