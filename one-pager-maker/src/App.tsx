@@ -1,9 +1,12 @@
 import './App.css';
-import Login from './components/Login/Login';
 import { useAppSelector, useAppDispatch } from './redux/hooks';
 import { useEffect } from 'react';
 import { auth } from './firebase.ts';
 import { login, logout } from './redux/user/userSlice';
+import { BrowserRouter, Link } from 'react-router-dom';
+import { Router } from './Router';
+
+import Login from './pages/Login.tsx';
 
 function App() {
     const user = useAppSelector((state) => state.user.user);
@@ -27,7 +30,31 @@ function App() {
 
     return (
         <div className="App">
-            {user ? <div> {/* List Page */}</div> : <Login />}
+            {user ? (
+                <>
+                    <BrowserRouter>
+                        <nav>
+                            <ul id="nav">
+                                <li>
+                                    <Link to="/">ホーム</Link>
+                                </li>
+                                <li>
+                                    <Link to="/edit">編集</Link>
+                                </li>
+                                <li>
+                                    <Link to="/list">一覧</Link>
+                                </li>
+                                <li>
+                                    <Link to="/login">ログイン</Link>
+                                </li>
+                            </ul>
+                        </nav>
+                        <Router />
+                    </BrowserRouter>
+                </>
+            ) : (
+                <Login />
+            )}
         </div>
     );
 }

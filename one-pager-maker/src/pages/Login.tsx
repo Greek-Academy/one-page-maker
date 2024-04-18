@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import './Login.css';
 import {
     Box,
@@ -11,7 +11,7 @@ import {
     Typography,
 } from '@mui/material';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { auth, githubProvider, googleProvider } from '../../firebase';
+import { auth, githubProvider, googleProvider } from '../firebase';
 
 const Login = () => {
     const mailSignin = (event: React.FormEvent<HTMLFormElement>) => {
