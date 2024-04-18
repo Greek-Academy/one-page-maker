@@ -19,10 +19,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-
-    "types": [
-      "vitest/importMeta"
-    ]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
