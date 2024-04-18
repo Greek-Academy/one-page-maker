@@ -1,7 +1,6 @@
-// import { useState } from 'react';
 import './App.css';
 import Login from './components/Login/Login';
-import { useAppSelector, useAppDispatch } from './redux/hooks.ts';
+import { useAppSelector, useAppDispatch } from './redux/hooks';
 import { useEffect } from 'react';
 import { auth } from './firebase.ts';
 import { login, logout } from './redux/user/userSlice';
@@ -9,7 +8,6 @@ import { login, logout } from './redux/user/userSlice';
 function App() {
     const user = useAppSelector((state) => state.user.user);
     const dispatch = useAppDispatch();
-
     useEffect(() => {
         auth.onAuthStateChanged((authUser) => {
             if (authUser) {
@@ -29,14 +27,7 @@ function App() {
 
     return (
         <div className="App">
-            {user ? (
-                <>
-                    {/* Edit */}
-                    <p>Edit Page</p>
-                </>
-            ) : (
-                <Login />
-            )}
+            {user ? <div> {/* List Page */}</div> : <Login />}
         </div>
     );
 }
