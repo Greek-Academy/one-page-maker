@@ -26,3 +26,14 @@ export const DocumentItem = ({document, onClick}: {
         </div>
     )
 }
+
+export const AddDocumentButton = ({onClick}: {
+    onClick: () => void,
+}) => {
+    return (
+        <button onClick={onClick} className={'rounded-full bg-slate-200 px-4 py-2 ' +
+            'transition hover:bg-slate-300'}>
+            新規ドキュメントを作成
+        </button>
+    )
+}

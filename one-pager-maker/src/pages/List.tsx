@@ -1,6 +1,6 @@
 import './List.css'
 import {useCreateDocumentMutation, useFetchDocumentsQuery} from "../redux/document/documentsApi.ts";
-import {DocumentItem} from "../stories/DocumentItem.tsx";
+import {AddDocumentButton, DocumentItem} from "../stories/DocumentItem.tsx";
 import {useNavigate} from "react-router-dom";
 
 function List() {
@@ -9,19 +9,24 @@ function List() {
     const [createDocument] = useCreateDocumentMutation();
     const navigate = useNavigate();
 
-    const handleCreate = () => {
-        createDocument({
-            uid: uid,
-            documentData: {
-                title: "Title",
-                contents: "#Title\nabcde",
-                status: 'draft',
-                owner_id: uid,
-                contributors: [],
-                reviewers: [],
-                url_privilege: 'private',
-            }
-        })
+    const handleCreate = async () => {
+        try {
+            const result = await createDocument({
+                uid: uid,
+                documentData: {
+                    title: "新規ドキュメント",
+                    contents: "",
+                    status: 'draft',
+                    owner_id: uid,
+                    contributors: [],
+                    reviewers: [],
+                    url_privilege: 'private',
+                }
+            });
+            navigate(`/edit/${result.data.id}`);
+        } catch (e) {
+            alert(`エラー: ${e?.toString()}`)
+        }
     }
 
     const handleClickDocument = (id: string) => {
@@ -30,8 +35,10 @@ function List() {
 
     return (
         <main className={"bg-slate-100 h-screen"}>
-            <button onClick={handleCreate}>new</button>
-            <div className={"max-w-screen-lg mx-auto"}>
+            <div className={"max-w-screen-lg mx-auto py-8 flex flex-col gap-6"}>
+                <div>
+                    <AddDocumentButton onClick={() => handleCreate()}/>
+                </div>
                 {!isError && (
                     isLoading ?
                         <p>Loading...</p>
