@@ -6,3 +6,28 @@
     width: 100%;
     height: 100vh;
 }
+
+.login .mainBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.login .mainBox .MuiButtonBase-root{
+    text-transform: none;
+}
+.login .mainBox .googleButton {
+    background-color: #ffffff;
+    color: #1f1f1f;
+}
+.login .mainBox .googleButton:hover {
+    background-color: #f2f2f2;
+}
+
+.login .mainBox .githubButton {
+    background-color: #444;
+    color: #FAFAFA;
+}
+.login .mainBox .githubButton:hover {
+    background-color: #030303;
+}

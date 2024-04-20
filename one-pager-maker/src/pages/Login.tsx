@@ -23,28 +23,20 @@ const Login = () => {
             auth,
             String(data.get('email')),
             String(data.get('password'))
-        )
-            .then((userCredential) => {
-                // Sign in with password
-                const user = userCredential.user;
-                console.log(user);
-            })
-            .catch((error) => {
-                alert(error.message);
-            });
+        ).catch((err) => {
+            alert(`エラー: ${err?.toString()}`);
+        });
     };
 
     const googleSignin = () => {
         signInWithPopup(auth, googleProvider).catch((err) => {
-            // TODO: Link multiple auth providor
-            // https://firebase.google.com/docs/auth/web/account-linking?hl=en
-            alert(err.message);
+            alert(`エラー: ${err?.toString()}`);
         });
     };
 
     const githubSignin = () => {
         signInWithPopup(auth, githubProvider).catch((err) => {
-            alert(err.message);
+            alert(`エラー: ${err?.toString()}`);
         });
     };
 
@@ -52,19 +44,9 @@ const Login = () => {
         <div className="login">
             <Container className="page" component="main" maxWidth="lg">
                 <CssBaseline />
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '20px',
-                        padding: '10px',
-                    }}
-                >
+                <Box className="mainBox" sx={{ gap: '20px', padding: '10px' }}>
                     <Typography component="h1" variant="h3">
-                        Sign In
+                        {'Sign In'}
                     </Typography>
                     <Box component="form" onSubmit={mailSignin} sx={{ mt: 1 }}>
                         <TextField
@@ -92,19 +74,14 @@ const Login = () => {
                             type="submit"
                             variant="contained"
                             fullWidth
-                            sx={{
-                                mt: 3,
-                                mb: 2,
-                                height: '50px',
-                                textTransform: 'none',
-                            }}
+                            sx={{ mt: 3, mb: 2, height: '50px' }}
                         >
-                            Sign in
+                            {'Sign in'}
                         </Button>
                         <Grid container>
                             <Grid item xs>
                                 <Link href="#" variant="body2">
-                                    Forgot password?
+                                    {'Forgot password?'}
                                 </Link>
                             </Grid>
                             <Grid item>
@@ -116,26 +93,19 @@ const Login = () => {
                         <Grid>
                             <Grid item xs>
                                 <Button
+                                    className="googleButton"
                                     variant="contained"
                                     fullWidth
                                     startIcon={<img src={googleLogo}></img>}
                                     onClick={googleSignin}
-                                    sx={{
-                                        mt: 3,
-                                        height: '50px',
-                                        backgroundColor: '#FFFFFF',
-                                        color: '#1F1F1F',
-                                        textTransform: 'none',
-                                        '&:hover': {
-                                            backgroundColor: '#F2F2F2',
-                                        },
-                                    }}
+                                    sx={{ mt: 3, height: '50px' }}
                                 >
-                                    Sign in with Google
+                                    {'Continue with Google'}
                                 </Button>
                             </Grid>
                             <Grid item xs>
                                 <Button
+                                    className="githubButton"
                                     variant="contained"
                                     fullWidth
                                     startIcon={
@@ -148,18 +118,9 @@ const Login = () => {
                                         ></img>
                                     }
                                     onClick={githubSignin}
-                                    sx={{
-                                        mt: 3,
-                                        height: '50px',
-                                        backgroundColor: '#444',
-                                        color: '#FAFAFA',
-                                        textTransform: 'none',
-                                        '&:hover': {
-                                            backgroundColor: '#030303',
-                                        },
-                                    }}
+                                    sx={{ mt: 3, height: '50px' }}
                                 >
-                                    Sign in with Github
+                                    {'Continue with Github'}
                                 </Button>
                             </Grid>
                         </Grid>

@@ -17,6 +17,6 @@ export const store = configureStore({
         }).concat(documentsApi.middleware),
 })
 
-export type AppDispatch = typeof store.dispatch;
-export type RootState = ReturnType<typeof store.getState>; //getState...現在のstateを取得できる
-export const useSelector: TypedUseSelectorHook<RootState> = rawUseSelector;
+export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>
+export const useSelector: TypedUseSelectorHook<RootState> = rawUseSelector
