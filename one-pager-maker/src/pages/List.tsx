@@ -23,7 +23,9 @@ function List() {
                     url_privilege: 'private',
                 }
             });
-            navigate(`/edit/${result.data.id}`);
+            if ('data' in result) {
+                navigate(`/edit/${result.data?.id}`);
+            }
         } catch (e) {
             alert(`エラー: ${e?.toString()}`)
         }
