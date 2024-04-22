@@ -1,39 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import './Edit.css'
-import {useUpdateDocumentMutation} from "../redux/document/documentsApi.ts";
-import {useNavigate} from "react-router-dom";
-
+import { useUpdateDocumentMutation, useFetchDocumentQuery } from "../redux/document/documentsApi.ts";
+import { useParams } from "react-router-dom";
+import { Document } from "../redux/document/documentType.ts";
 
 function Edit() {
   const [markdown, setMarkdown] = useState('');
+  const [document, setDocument] = useState<Document | undefined>(undefined);
   const toMarkdownText = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
     setMarkdown(e.target.value);
   };
-  const navigate = useNavigate();
-  const [updateDocument] = useUpdateDocumentMutation();
 
-  const handleCreate = async () => {
-    try {
-        const result = await updateDocument({
-            uid: uid,
-            documentData: {
-                title: "新規ドキュメント",
-                contents: "",
-                status: 'draft',
-                owner_id: uid,
-                contributors: [],
-                reviewers: [],
-                url_privilege: 'private',
-            }
-        });
-        if ('data' in result){
-            navigate(`/edit/${result.data?.id}`);
-        }
-    } catch (e) {
-        alert(`エラー: ${e?.toString()}`)
+  const urlParams = useParams<{ id: string }>()
+  const [updateDocument] = useUpdateDocumentMutation();
+  const {data, error, isError, isLoading} = useFetchDocumentQuery({uid: 'testUser', docId: urlParams.id})
+  useEffect(() => {
+    if (data !== undefined) {
+      setDocument(data);
     }
-  }
+  }, [data]);
 
   return (
     <>

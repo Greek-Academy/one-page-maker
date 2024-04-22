@@ -145,6 +145,7 @@ export const documentsApi = createApi({
  */
 export const {
     useFetchDocumentsQuery,
+    useFetchDocumentQuery,
     useCreateDocumentMutation,
     useUpdateDocumentMutation,
     useDeleteDocumentMutation
