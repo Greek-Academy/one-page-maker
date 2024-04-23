@@ -24,8 +24,8 @@ const Login = () => {
         });
     };
 
-    const signinWithProvidor = (providor: AuthProvider) => {
-        signInWithPopup(auth, providor).catch((err) => {
+    const signinWithProvider = (provider: AuthProvider) => {
+        signInWithPopup(auth, provider).catch((err) => {
             alert(`エラー: ${err?.toString()}`);
         });
     };
@@ -74,16 +74,16 @@ const Login = () => {
                     <Button
                         className="googleButton"
                         variant="contained"
-                        startIcon={<img src={googleLogo}></img>}
-                        onClick={() => signinWithProvidor(googleProvider)}
+                        startIcon={<img src={googleLogo} alt="Google logo"></img>}
+                        onClick={() => signinWithProvider(googleProvider)}
                     >
                         {'Continue with Google'}
                     </Button>
                     <Button
                         className="githubButton"
                         variant="contained"
-                        startIcon={<img className="w-10 mr-1" src={githubLogo}></img>}
-                        onClick={() => { signinWithProvidor(githubProvider) }}
+                        startIcon={<img className="w-10 mr-1" src={githubLogo} alt="Github logo"></img>}
+                        onClick={() => { signinWithProvider(githubProvider) }}
                     >
                         {'Continue with Github'}
                     </Button>
