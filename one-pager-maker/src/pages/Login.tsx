@@ -3,12 +3,8 @@ import './Login.css';
 import {
     Box,
     Button,
-    Container,
-    CssBaseline,
-    Grid,
     Link,
     TextField,
-    Typography,
 } from '@mui/material';
 import { signInWithEmailAndPassword, signInWithPopup, AuthProvider } from 'firebase/auth';
 import { auth, githubProvider, googleProvider } from '../firebase';
@@ -35,91 +31,64 @@ const Login = () => {
     };
 
     return (
-        <div className="login">
-            <Container className="page" component="main" maxWidth="lg">
-                <CssBaseline />
-                <Box className="mainBox" sx={{ gap: '20px', padding: '10px' }}>
-                    <Typography component="h1" variant="h3">
-                        {'Sign In'}
-                    </Typography>
-                    <Box component="form" onSubmit={mailSignin} sx={{ mt: 1 }}>
+        <div className={"login bg-slate-100 h-screen"}>
+            <div className={"max-w-screen-lg flex flex-col items-center gap-4"}>
+                <div className={"text-6xl pb-4"}>
+                    <p>{'Sign In'}</p>
+                </div>
+                <Box component="form" onSubmit={mailSignin} >
+                    <div className={"flex flex-col w-96 gap-5 pb-3"}>
                         <TextField
                             required
                             id="email"
                             label="email address"
                             name="email"
-                            fullWidth
                             autoComplete="email"
                             autoFocus
-                            sx={{ mt: 2 }}
                         />
                         <TextField
                             required
                             id="password"
                             label="password"
                             name="password"
-                            fullWidth
                             type="password"
                             autoComplete="current-password"
-                            sx={{ mt: 2 }}
                         />
                         <Button
                             type="submit"
                             variant="contained"
-                            fullWidth
-                            sx={{ mt: 3, mb: 2, height: '50px' }}
                         >
                             {'Sign in'}
                         </Button>
-                        <Grid container>
-                            <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    {'Forgot password?'}
-                                </Link>
-                            </Grid>
-                            <Grid item>
-                                <Link href="#" variant="body2">
-                                    {"Don't have an account? Sign Up"}
-                                </Link>
-                            </Grid>
-                        </Grid>
-                        <Grid>
-                            <Grid item xs>
-                                <Button
-                                    className="googleButton"
-                                    variant="contained"
-                                    fullWidth
-                                    startIcon={<img src={googleLogo}></img>}
-                                    onClick={() => signinWithProvidor(googleProvider)}
-                                    sx={{ mt: 3, height: '50px' }}
-                                >
-                                    {'Continue with Google'}
-                                </Button>
-                            </Grid>
-                            <Grid item xs>
-                                <Button
-                                    className="githubButton"
-                                    variant="contained"
-                                    fullWidth
-                                    startIcon={
-                                        <img
-                                            src={githubLogo}
-                                            style={{
-                                                width: '40px',
-                                                marginRight: '5px',
-                                            }}
-                                        ></img>
-                                    }
-                                    onClick={() => { signinWithProvidor(githubProvider) }}
-                                    sx={{ mt: 3, height: '50px' }}
-                                >
-                                    {'Continue with Github'}
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Box>
+                    </div>
                 </Box>
-            </Container>
+                <div className={"flex flex-col items-center gap-3 pb-4"}>
+                    <Link href="#" variant="h6">
+                        {"Sign up here"}
+                    </Link>
+                    <Link href="#" variant="h6">
+                        {"Reset password"}
+                    </Link>
+                </div>
+                <div className={"flex flex-col justify-center w-full gap-5"}>
+                    <Button
+                        className="googleButton"
+                        variant="contained"
+                        startIcon={<img src={googleLogo}></img>}
+                        onClick={() => signinWithProvidor(googleProvider)}
+                    >
+                        {'Continue with Google'}
+                    </Button>
+                    <Button
+                        className="githubButton"
+                        variant="contained"
+                        startIcon={<img className="w-10 mr-1" src={githubLogo}></img>}
+                        onClick={() => { signinWithProvidor(githubProvider) }}
+                    >
+                        {'Continue with Github'}
+                    </Button>
+                </div>
+            </div>
         </div>
     );
 };
