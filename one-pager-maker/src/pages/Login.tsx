@@ -10,7 +10,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, AuthProvider } from 'firebase/auth';
 import { auth, githubProvider, googleProvider } from '../firebase';
 import googleLogo from '../assets/web_light_rd_na.svg';
 import githubLogo from '../assets/github-mark-white.svg';
@@ -28,14 +28,8 @@ const Login = () => {
         });
     };
 
-    const googleSignin = () => {
-        signInWithPopup(auth, googleProvider).catch((err) => {
-            alert(`エラー: ${err?.toString()}`);
-        });
-    };
-
-    const githubSignin = () => {
-        signInWithPopup(auth, githubProvider).catch((err) => {
+    const signinWithProvidor = (providor: AuthProvider) => {
+        signInWithPopup(auth, providor).catch((err) => {
             alert(`エラー: ${err?.toString()}`);
         });
     };
@@ -69,7 +63,6 @@ const Login = () => {
                             autoComplete="current-password"
                             sx={{ mt: 2 }}
                         />
-
                         <Button
                             type="submit"
                             variant="contained"
@@ -97,7 +90,7 @@ const Login = () => {
                                     variant="contained"
                                     fullWidth
                                     startIcon={<img src={googleLogo}></img>}
-                                    onClick={googleSignin}
+                                    onClick={() => signinWithProvidor(googleProvider)}
                                     sx={{ mt: 3, height: '50px' }}
                                 >
                                     {'Continue with Google'}
@@ -117,7 +110,7 @@ const Login = () => {
                                             }}
                                         ></img>
                                     }
-                                    onClick={githubSignin}
+                                    onClick={() => { signinWithProvidor(githubProvider) }}
                                     sx={{ mt: 3, height: '50px' }}
                                 >
                                     {'Continue with Github'}
