@@ -31,7 +31,7 @@ const Login = () => {
     };
 
     return (
-        <div className={"login bg-slate-100 h-screen"}>
+        <div className={"login flex flex-col justify-center items-center bg-slate-100 h-screen"}>
             <div className={"max-w-screen-lg flex flex-col items-center gap-4"}>
                 <div className={"text-6xl pb-4"}>
                     <p>{'Sign In'}</p>
@@ -55,6 +55,7 @@ const Login = () => {
                             autoComplete="current-password"
                         />
                         <Button
+                            className={"normal-case h-12"}
                             type="submit"
                             variant="contained"
                         >
@@ -72,7 +73,7 @@ const Login = () => {
                 </div>
                 <div className={"flex flex-col justify-center w-full gap-5"}>
                     <Button
-                        className="googleButton"
+                        className="bg-google-white hover:bg-google-nature text-google-black normal-case"
                         variant="contained"
                         startIcon={<img src={googleLogo} alt="Google logo"></img>}
                         onClick={() => signinWithProvider(googleProvider)}
@@ -80,7 +81,7 @@ const Login = () => {
                         {'Continue with Google'}
                     </Button>
                     <Button
-                        className="githubButton"
+                        className="bg-github-glay hover:bg-github-black normal-case"
                         variant="contained"
                         startIcon={<img className="w-10 mr-1" src={githubLogo} alt="Github logo"></img>}
                         onClick={() => { signinWithProvider(githubProvider) }}
