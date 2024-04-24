@@ -48,7 +48,7 @@ function Edit() {
                 url_privilege: 'private',
             }
         });
-        navigate(`/list`);
+        navigate(`/`);
       } catch (e) {
         alert(`エラー: ${e?.toString()}`)
     }
