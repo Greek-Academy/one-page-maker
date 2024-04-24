@@ -1,6 +1,6 @@
+import './Edit.css'
 import { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
-import './Edit.css'
 import { useUpdateDocumentMutation, useFetchDocumentQuery } from "../redux/document/documentsApi.ts";
 import { useNavigate, useParams } from "react-router-dom";
 import { Document } from "../redux/document/documentType.ts";
@@ -8,6 +8,9 @@ import { Document } from "../redux/document/documentType.ts";
 function Edit() {
   const [title, setTitle] = useState('');
   const [contents, setContents] = useState('');
+  const [status, setStatus] = useState('');
+  const [contributors, setContributors] = useState('');
+  const [reviewers, setReviewers] = useState('');
   const [document, setDocument] = useState<Document | undefined>(undefined);
 
   const urlParams = useParams<{ id: string }>()
@@ -16,39 +19,37 @@ function Edit() {
   const [updateDocument] = useUpdateDocumentMutation();
   
   useEffect(() => {
-    if (data !== undefined) {
-      setDocument(data);
-      setTitle(data.title);
-      setContents(data.contents);
-    }
+    if (data === undefined) return;
+    setDocument(data);
+    setTitle(data.title);
+    setContents(data.contents);
+    setStatus(data.status);
+    setContributors(data.contributors.join(','));
+    setReviewers(data.reviewers.join(','));
   }, [data]);
 
-  const onChangeTitle = (e:React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-  };
-  const onChangeContents = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContents(e.target.value);
-  };
-
-  const handleCreate = async () => {
+  const onChangeTitle = (e:React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
+  const onChangeContents = (e:React.ChangeEvent<HTMLTextAreaElement>) => setContents(e.target.value);
+  const onChangeStatus = (e:React.ChangeEvent<HTMLSelectElement>) => setStatus(e.target.value);
+  const onChangeContributors =  (e:React.ChangeEvent<HTMLInputElement>) => setContributors(e.target.value);
+  const onChangeReviewers =  (e:React.ChangeEvent<HTMLInputElement>) => setReviewers(e.target.value);
+  const onClickSave = async () => {
     try {
-        const result = await updateDocument({
+        await updateDocument({
             uid: 'testUser',
             documentData: {
                 id:urlParams?.id ?? "",
                 title: title,
                 contents: contents,
-                status: 'draft',
+                // status: status,
                 owner_id: 'testUser',
-                contributors: [],
-                reviewers: [],
+                contributors: contributors.split(','),
+                reviewers: reviewers.split(','),
                 url_privilege: 'private',
             }
         });
-        if ('data' in result){
-            navigate(`/list`);
-        }
-    } catch (e) {
+        navigate(`/list`);
+      } catch (e) {
         alert(`エラー: ${e?.toString()}`)
     }
   }
@@ -58,21 +59,21 @@ function Edit() {
     <div>
       <div className="document-title-div">
         <input className="document-title" type="text" value={title} onChange={onChangeTitle} ></input>
-        <button type="button" onClick={() => handleCreate()}>Save</button>
+        <button type="button" onClick={() => onClickSave()}>Save</button>
       </div>
       <div className="document-parameter-div">
         <span>
-            <select name="status" value={document?.status}>
+            <select name="status" value={status} onChange={onChangeStatus}>
               <option value="draft">draft</option>
               <option value="reviewed">reviewed</option>
               <option value="final">final</option>
               <option value="obsolete">obsolete</option>
             </select>
             <span>
-              <input className="authors" type="text" value={document?.contributors.join(",")}></input>
+              <input className="authors" type="text" value={contributors} onChange={onChangeContributors}></input>
             </span>
             <span>
-              <input className="reviewers" type="text" value={document?.reviewers.join(",")}></input>
+              <input className="reviewers" type="text" value={reviewers} onChange={onChangeReviewers}></input>
             </span>
         </span>
         <span>
@@ -97,4 +98,4 @@ function Edit() {
   )
 }
 
-export default Edit
+export default Edit;
