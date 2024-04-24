@@ -36,13 +36,10 @@ function App() {
                         <nav>
                             <ul id="nav">
                                 <li>
-                                    <Link to="/">ホーム</Link>
+                                    <Link to="/">一覧</Link>
                                 </li>
                                 <li>
                                     <Link to="/edit">編集</Link>
-                                </li>
-                                <li>
-                                    <Link to="/list">一覧</Link>
                                 </li>
                                 <li>
                                     <Link to="/login">ログイン</Link>
