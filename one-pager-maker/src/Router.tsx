@@ -6,8 +6,8 @@ import Login from "./pages/Login";
 export const Router = () => {
     return (
         <Routes>
-            <Route path="/edit/:id" element={<Edit/>}/>
-            <Route path="/list" element={<List/>}/>
+            <Route path="/" element={<List/>}/>
+            <Route path="/edit" element={<Edit/>}/>
             <Route path="/login" element={<Login/>}/>
         </Routes>
     );
