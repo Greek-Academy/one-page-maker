@@ -29,6 +29,7 @@ export type DocumentForUpdate = Partial<Omit<Document, "updated_at">> & {
 export type Status = z.infer<typeof statusSchema>;
 export const statusValues = Object.values(statusSchema.enum);
 export type UrlPrivilege = z.infer<typeof privilegeSchema>;
+export const urlPrivilegeValues = Object.values(privilegeSchema.enum);
 
 export const documentConverter: FirestoreDataConverter<Document> = {
     fromFirestore(snapshot): Document {
