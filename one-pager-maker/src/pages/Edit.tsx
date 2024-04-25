@@ -4,8 +4,11 @@ import Markdown from 'react-markdown'
 import { useUpdateDocumentMutation, useFetchDocumentQuery } from "../redux/document/documentsApi.ts";
 import { useNavigate, useParams } from "react-router-dom";
 import { Document, Status } from "../redux/document/documentType.ts";
+import { auth } from '../firebase';
 
 function Edit() {
+  const uid = auth.currentUser?.uid ?? "";
+
   const [title, setTitle] = useState('');
   const [contents, setContents] = useState('');
   const [status, setStatus] = useState<Status>('draft');
@@ -14,7 +17,7 @@ function Edit() {
   const [document, setDocument] = useState<Document | undefined>(undefined);
   const urlParams = useParams<{ id: string }>()
   const navigate = useNavigate();
-  const {data} = useFetchDocumentQuery({uid: 'testUser', docId: urlParams.id ?? ""});
+  const {data} = useFetchDocumentQuery({uid: uid, docId: urlParams.id ?? ""});
   const [updateDocument] = useUpdateDocumentMutation();
   
   useEffect(() => {
@@ -36,13 +39,13 @@ function Edit() {
   const onClickSave = async () => {
     try {
       await updateDocument({
-          uid: 'testUser',
+          uid: uid,
           documentData: {
               id:urlParams?.id ?? "",
               title: title,
               contents: contents,
               status: status,
-              owner_id: 'testUser',
+              owner_id: uid,
               contributors: contributors.split(','),
               reviewers: reviewers.split(','),
               url_privilege: 'private',
@@ -69,10 +72,8 @@ function Edit() {
               <option value="final">final</option>
               <option value="obsolete">obsolete</option>
             </select>
-            <span>
-              <input className="authors" type="text" value={contributors} onChange={onChangeContributors}></input>
-              <input className="reviewers" type="text" value={reviewers} onChange={onChangeReviewers}></input>
-            </span>
+            <input className="authors" type="text" value={contributors} onChange={onChangeContributors}></input>
+            <input className="reviewers" type="text" value={reviewers} onChange={onChangeReviewers}></input>
         </span>
         <span>
             <span className="updated">
