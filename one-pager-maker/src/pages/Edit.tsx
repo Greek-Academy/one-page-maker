@@ -71,8 +71,6 @@ function Edit() {
             </select>
             <span>
               <input className="authors" type="text" value={contributors} onChange={onChangeContributors}></input>
-            </span>
-            <span>
               <input className="reviewers" type="text" value={reviewers} onChange={onChangeReviewers}></input>
             </span>
         </span>
