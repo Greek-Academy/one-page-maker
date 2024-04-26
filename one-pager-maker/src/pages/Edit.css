@@ -10,7 +10,7 @@
 
 .document-parameter-div {
   display: flex;
-  justify-content: space-between;  
+  justify-content: space-between;
   border: solid 1px;
 }
 
@@ -29,4 +29,3 @@
   width: 50%;
   border: solid 1px;
 }
-
