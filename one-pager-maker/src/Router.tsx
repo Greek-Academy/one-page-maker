@@ -7,7 +7,7 @@ export const Router = () => {
     return (
         <Routes>
             <Route path="/" element={<List/>}/>
-            <Route path="/edit" element={<Edit/>}/>
+            <Route path="/edit/:id" element={<Edit/>}/>
             <Route path="/login" element={<Login/>}/>
         </Routes>
     );

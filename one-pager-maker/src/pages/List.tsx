@@ -2,6 +2,7 @@ import './List.css'
 import { useCreateDocumentMutation, useFetchDocumentsQuery } from "../redux/document/documentsApi.ts";
 import { AddDocumentButton, DocumentItem } from "../stories/DocumentItem.tsx";
 import { useNavigate } from "react-router-dom";
+import { auth } from '../firebase';
 
 const getStatus = (isError: boolean, isLoading: boolean) => {
     if (isError) return 'error'
@@ -10,7 +11,7 @@ const getStatus = (isError: boolean, isLoading: boolean) => {
 }
 
 function List() {
-    const uid = 'testUser'
+    const uid = auth.currentUser?.uid ?? "";
     const { data, error, isError, isLoading } = useFetchDocumentsQuery({ uid: uid });
     const [createDocument] = useCreateDocumentMutation();
     const navigate = useNavigate();

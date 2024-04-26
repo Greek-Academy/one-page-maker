@@ -3,22 +3,25 @@ import { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import { useUpdateDocumentMutation, useFetchDocumentQuery } from "../redux/document/documentsApi.ts";
 import { useNavigate, useParams } from "react-router-dom";
-import { Document } from "../redux/document/documentType.ts";
+import { Document, Status } from "../redux/document/documentType.ts";
+import { auth } from '../firebase';
 
 function Edit() {
+  const uid = auth.currentUser?.uid ?? "";
+
   const [title, setTitle] = useState('');
   const [contents, setContents] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState<Status>('draft');
   const [contributors, setContributors] = useState('');
   const [reviewers, setReviewers] = useState('');
   const [document, setDocument] = useState<Document | undefined>(undefined);
-
   const urlParams = useParams<{ id: string }>()
   const navigate = useNavigate();
-  const {data} = useFetchDocumentQuery({uid: 'testUser', docId: urlParams.id ?? ""});
+  const {data} = useFetchDocumentQuery({uid: uid, docId: urlParams.id ?? ""});
   const [updateDocument] = useUpdateDocumentMutation();
   
   useEffect(() => {
+    console.log(data);
     if (data === undefined) return;
     setDocument(data);
     setTitle(data.title);
@@ -30,26 +33,26 @@ function Edit() {
 
   const onChangeTitle = (e:React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
   const onChangeContents = (e:React.ChangeEvent<HTMLTextAreaElement>) => setContents(e.target.value);
-  const onChangeStatus = (e:React.ChangeEvent<HTMLSelectElement>) => setStatus(e.target.value);
+  const onChangeStatus = (e:React.ChangeEvent<HTMLSelectElement>) => setStatus(e.target.value as Status);
   const onChangeContributors =  (e:React.ChangeEvent<HTMLInputElement>) => setContributors(e.target.value);
   const onChangeReviewers =  (e:React.ChangeEvent<HTMLInputElement>) => setReviewers(e.target.value);
   const onClickSave = async () => {
     try {
-        await updateDocument({
-            uid: 'testUser',
-            documentData: {
-                id:urlParams?.id ?? "",
-                title: title,
-                contents: contents,
-                // status: status,
-                owner_id: 'testUser',
-                contributors: contributors.split(','),
-                reviewers: reviewers.split(','),
-                url_privilege: 'private',
-            }
-        });
-        navigate(`/list`);
-      } catch (e) {
+      await updateDocument({
+          uid: uid,
+          documentData: {
+              id:urlParams?.id ?? "",
+              title: title,
+              contents: contents,
+              status: status,
+              owner_id: uid,
+              contributors: contributors.split(','),
+              reviewers: reviewers.split(','),
+              url_privilege: 'private',
+          }
+      });
+      navigate(`/`);
+    } catch (e) {
         alert(`エラー: ${e?.toString()}`)
     }
   }
@@ -69,12 +72,8 @@ function Edit() {
               <option value="final">final</option>
               <option value="obsolete">obsolete</option>
             </select>
-            <span>
-              <input className="authors" type="text" value={contributors} onChange={onChangeContributors}></input>
-            </span>
-            <span>
-              <input className="reviewers" type="text" value={reviewers} onChange={onChangeReviewers}></input>
-            </span>
+            <input className="authors" type="text" value={contributors} onChange={onChangeContributors}></input>
+            <input className="reviewers" type="text" value={reviewers} onChange={onChangeReviewers}></input>
         </span>
         <span>
             <span className="updated">
