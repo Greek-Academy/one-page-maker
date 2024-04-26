@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import './Login.css';
 import {
     Box,
@@ -12,23 +12,32 @@ import googleLogo from '../assets/web_light_rd_na.svg';
 import githubLogo from '../assets/github-mark-white.svg';
 
 const Login = () => {
-    const mailSignin = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
+
+    const [formData, setFormData] = useState({ email: "", password: "" });
+
+    const handleFormData = useCallback((event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        setFormData({
+            ...formData,
+            [event.target.id]: event.target.value,
+        })
+    }, [formData])
+
+    const mailSignin = useCallback(() => {
         signInWithEmailAndPassword(
             auth,
-            String(data.get('email')),
-            String(data.get('password'))
+            formData.email,
+            formData.password
         ).catch((err) => {
             alert(`エラー: ${err?.toString()}`);
         });
-    };
+    }, [formData]);
 
-    const signinWithProvider = (provider: AuthProvider) => {
+    const signinWithProvider = useCallback((provider: AuthProvider) => {
         signInWithPopup(auth, provider).catch((err) => {
             alert(`エラー: ${err?.toString()}`);
-        });
-    };
+        })
+    }, []);
+
 
     return (
         <div className={"login flex flex-col justify-center items-center bg-slate-100 h-screen"}>
@@ -36,7 +45,7 @@ const Login = () => {
                 <div className={"text-6xl pb-4"}>
                     <p>{'Sign In'}</p>
                 </div>
-                <Box component="form" onSubmit={mailSignin} >
+                <Box >
                     <div className={"flex flex-col w-96 gap-5 pb-3"}>
                         <TextField
                             required
@@ -45,6 +54,8 @@ const Login = () => {
                             name="email"
                             autoComplete="email"
                             autoFocus
+                            value={formData.email}
+                            onChange={handleFormData}
                         />
                         <TextField
                             required
@@ -53,11 +64,13 @@ const Login = () => {
                             name="password"
                             type="password"
                             autoComplete="current-password"
+                            value={formData.password}
+                            onChange={handleFormData}
                         />
                         <Button
                             className={"normal-case h-12"}
-                            type="submit"
                             variant="contained"
+                            onClick={mailSignin}
                         >
                             {'Sign in'}
                         </Button>
