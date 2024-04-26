@@ -16,11 +16,11 @@ const Login = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
 
     const handleFormData = useCallback((event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setFormData({
+        setFormData(formData => ({
             ...formData,
             [event.target.id]: event.target.value,
-        })
-    }, [formData])
+        }))
+    }, [])
 
     const mailSignin = useCallback(() => {
         signInWithEmailAndPassword(
