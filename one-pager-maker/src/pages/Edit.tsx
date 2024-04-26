@@ -69,7 +69,7 @@ function Edit() {
             placeholder="Enter Markdown here"
           />
           <div className="document-markdown">
-            <Markdown>{documentData?.contents}</Markdown>
+            <Markdown className='markdown'>{documentData?.contents}</Markdown>
           </div>
         </div>
       </div>
