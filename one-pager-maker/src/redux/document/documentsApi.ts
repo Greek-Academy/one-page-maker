@@ -140,18 +140,19 @@ export const documentsApi = createApi({
                 }
             },
             async onQueryStarted({uid, documentId}, { dispatch, queryFulfilled, getCacheEntry }) {
-                const patchResult = dispatch(
-                    documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
-                        if (draft === undefined) return;
-                        const docIndex = draft.findIndex(d => d.id === documentId);
-                        const updatedDoc = getCacheEntry();
-                        draft[docIndex] = {...draft[docIndex], ...updatedDoc.data}
-                    })
-                )
+
                 try {
                     await queryFulfilled
+                    dispatch(
+                        documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
+                            if (draft === undefined) return;
+                            const docIndex = draft.findIndex(d => d.id === documentId);
+                            const updatedDoc = getCacheEntry();
+                            draft[docIndex] = {...draft[docIndex], ...updatedDoc.data}
+                        })
+                    )
                 } catch {
-                    patchResult.undo()
+                    // patchResult.undo()
                 }
             },
         })
