@@ -80,10 +80,8 @@ export const documentsApi = createApi({
                     dispatch(
                         documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
                             if (draft === undefined) return;
-                            console.log("a")
                             const updatedDoc = getCacheEntry().data;
 
-                            console.log(updatedDoc)
                             if (updatedDoc === undefined) {
                                 return;
                             }
