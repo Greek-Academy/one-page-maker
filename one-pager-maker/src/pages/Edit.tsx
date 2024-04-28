@@ -1,23 +1,23 @@
 import './Edit.css'
 import { useEffect, useState } from 'react'
-import { useAppSelector } from '../redux/hooks.ts'
 import Markdown from 'react-markdown'
+import { useAppSelector } from '../redux/hooks.ts'
 import { useUpdateDocumentMutation, useFetchDocumentQuery } from "../redux/document/documentsApi.ts";
-import { useNavigate, useParams } from "react-router-dom";
 import { Document, Status } from "../redux/document/documentType.ts";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Edit() {
-  const uid = useAppSelector(state => state.user.user?.uid)
-  const [documentData, setDocumentData] = useState<Document | undefined>(undefined);
-  const urlParams = useParams<{ id: string }>()
   const navigate = useNavigate();
-  const { data } = useFetchDocumentQuery({ uid: uid ?? "", docId: urlParams.id ?? "" });
+  const uid = useAppSelector(state => state.user.user?.uid);
+  const {data: document} = useFetchDocumentQuery({ uid: uid ?? "", docId: useParams<{ id: string }>().id ?? "" });
+  const [documentData, setDocumentData] = useState(document);
   const [updateDocument] = useUpdateDocumentMutation();
 
   useEffect(() => {
-    if (data === undefined) return;
-    setDocumentData(data);
-  }, [data]);
+    if (document === undefined) return;
+    setDocumentData(document);
+  }, [document]);
+
   const updateDocumentState = <K extends keyof Document>(key: K, val: Document[K]) => {
     setDocumentData(prev => prev === undefined ? prev : ({ ...prev, [key]: val }))
   }
@@ -37,14 +37,15 @@ function Edit() {
       alert(`エラー: ${e?.toString()}`)
     }
   }
+  
   return (
     <>
       <div>
-        <div className="document-title-div">
-          <input className="document-title" type="text" value={documentData?.title} onChange={onChangeTitle} ></input>
-          <button type="button" onClick={() => onClickSave()}>Save</button>
+        <div className="w-full flex">
+          <input className="w-full" type="text" value={documentData?.title} onChange={onChangeTitle} ></input>
+          <button className="border-solid" type="button" onClick={() => onClickSave()}>Save</button>
         </div>
-        <div className="document-parameter-div">
+        <div className="flex justify-between">
           <span>
             <select name="status" value={documentData?.status} onChange={onChangeStatus}>
               <option value="draft">draft</option>
@@ -61,14 +62,14 @@ function Edit() {
             </span>
           </span>
         </div>
-        <div className="document-contents-div">
+        <div className="flex w-full h-svh">
           <textarea
-            className="document-contents"
+            className="w-1/2 p-1"
             value={documentData?.contents}
             onChange={onChangeContents}
             placeholder="Enter Markdown here"
           />
-          <div className="document-markdown">
+          <div className="w-1/2  overflow-scroll overflow-visible overflow-x-hidden">
             <Markdown className='markdown'>{documentData?.contents}</Markdown>
           </div>
         </div>
