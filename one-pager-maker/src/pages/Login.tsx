@@ -3,9 +3,9 @@ import './Login.css';
 import {
     Box,
     Button,
-    Link,
     TextField,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup, AuthProvider } from 'firebase/auth';
 import { auth, githubProvider, googleProvider } from '../firebase';
 import googleLogo from '../assets/web_light_rd_na.svg';
@@ -77,10 +77,10 @@ const Login = () => {
                     </div>
                 </Box>
                 <div className={"flex flex-col items-center gap-3 pb-4"}>
-                    <Link href="#" variant="h6">
+                    <Link to="/sign-up" className="font-medium text-blue-600 hover:underline">
                         {"Sign up here"}
                     </Link>
-                    <Link href="#" variant="h6">
+                    <Link to="/reset-password" className="font-medium text-blue-600 hover:underline">
                         {"Reset password"}
                     </Link>
                 </div>

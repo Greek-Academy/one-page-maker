@@ -5,8 +5,9 @@ import { auth } from './firebase.ts';
 import { login, logout } from './redux/user/userSlice';
 import { BrowserRouter, Link } from 'react-router-dom';
 import { Router } from './Router';
-
-import Login from './pages/Login.tsx';
+import { SignInRouter } from './SignInRouter.tsx';
+import { Button } from '@mui/material';
+import { signOut } from 'firebase/auth';
 
 function App() {
     const user = useAppSelector((state) => state.user.user);
@@ -30,9 +31,9 @@ function App() {
 
     return (
         <div className="App">
-            {user ? (
-                <>
-                    <BrowserRouter>
+            <BrowserRouter>
+                {user ? (
+                    <>
                         <nav>
                             <ul id="nav">
                                 <li>
@@ -42,16 +43,16 @@ function App() {
                                     <Link to="/edit">編集</Link>
                                 </li>
                                 <li>
-                                    <Link to="/login">ログイン</Link>
+                                    <Button onClick={() => { signOut(auth) }}>ログアウト</Button>
                                 </li>
                             </ul>
                         </nav>
                         <Router />
-                    </BrowserRouter>
-                </>
-            ) : (
-                <Login />
-            )}
+                    </>
+                ) : (
+                    <SignInRouter />
+                )}
+            </BrowserRouter>
         </div>
     );
 }
