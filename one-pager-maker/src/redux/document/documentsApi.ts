@@ -74,6 +74,27 @@ export const documentsApi = createApi({
                     return {error}
                 }
             },
+            async onQueryStarted({uid}, { dispatch, queryFulfilled, getCacheEntry }) {
+                try {
+                    await queryFulfilled
+                    dispatch(
+                        documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
+                            if (draft === undefined) return;
+                            console.log("a")
+                            const updatedDoc = getCacheEntry().data;
+
+                            console.log(updatedDoc)
+                            if (updatedDoc === undefined) {
+                                return;
+                            }
+
+                            draft.unshift(updatedDoc);
+                        })
+                    )
+                } catch {
+                    // patchResult.undo()
+                }
+            },
         }),
         updateDocument: builder.mutation({
             async queryFn(args: { uid: string, documentData: DocumentForUpdate }) {
