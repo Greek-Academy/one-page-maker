@@ -2,6 +2,8 @@ import {FirestoreDataConverter, Timestamp} from 'firebase/firestore';
 import {z} from "zod";
 import {assertZodSchema} from "../../utils/asserts.ts";
 
+const statusSchema = z.enum(['draft', 'reviewed', 'final', 'obsolete']);
+const privilegeSchema = z.enum(['private', 'can_view', 'can_edit']);
 /**
  * Firestore の Document 型のスキーマ
  */
@@ -9,11 +11,11 @@ const documentSchema = z.object({
     id: z.string(),
     title: z.string(),
     contents: z.string(),
-    status: z.enum(['draft', 'reviewed', 'final', 'obsolete']),
+    status: statusSchema,
     owner_id: z.string(),
     contributors: z.array(z.string()),
     reviewers: z.array(z.string()),
-    url_privilege: z.enum(['private', 'can_view', 'can_edit']),
+    url_privilege: privilegeSchema,
     deleted_at: z.instanceof(Timestamp).nullable(),
     updated_at: z.instanceof(Timestamp),
     created_at: z.instanceof(Timestamp)
@@ -24,6 +26,10 @@ export type DocumentForCreate = Omit<Document, "id" | "deleted_at" | "updated_at
 export type DocumentForUpdate = Partial<Omit<Document, "updated_at">> & {
     id: string
 }
+export type Status = z.infer<typeof statusSchema>;
+export const statusValues = Object.values(statusSchema.enum);
+export type UrlPrivilege = z.infer<typeof privilegeSchema>;
+export const urlPrivilegeValues = Object.values(privilegeSchema.enum);
 
 export const documentConverter: FirestoreDataConverter<Document> = {
     fromFirestore(snapshot): Document {

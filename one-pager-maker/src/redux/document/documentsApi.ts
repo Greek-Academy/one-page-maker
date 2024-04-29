@@ -1,5 +1,5 @@
 import {createApi, fakeBaseQuery} from "@reduxjs/toolkit/query/react";
-import {collection, doc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc} from "firebase/firestore";
+import {collection, doc, getDoc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc} from "firebase/firestore";
 import {db} from "../../firebase.ts";
 import {Document, documentConverter, DocumentForCreate, DocumentForUpdate} from "./documentType.ts";
 import {WithTimestamp} from "../../utils/typeUtils.ts";
@@ -32,6 +32,23 @@ export const documentsApi = createApi({
                 }
             }
         }),
+        fetchDocument: builder.query({
+            async queryFn(args: { uid: string, docId: string }) {
+                try {
+                    const snapshot = await getDoc(docRef(args.uid, args.docId));
+                    return {data: snapshot.data()};
+                } catch (error) {
+                    return {error}
+                }
+            },
+            providesTags: (result) => {
+                if (result === undefined) {
+                    return [];
+                } else {
+                    return [{type: 'Documents', id: result.id}]
+                }
+            }
+        }),
         createDocument: builder.mutation({
             async queryFn(args: { uid: string, documentData: DocumentForCreate }) {
                 try {
@@ -55,6 +72,25 @@ export const documentsApi = createApi({
                 } catch (error) {
                     console.error(error);
                     return {error}
+                }
+            },
+            async onQueryStarted({uid}, { dispatch, queryFulfilled, getCacheEntry }) {
+                try {
+                    await queryFulfilled
+                    dispatch(
+                        documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
+                            if (draft === undefined) return;
+                            const updatedDoc = getCacheEntry().data;
+
+                            if (updatedDoc === undefined) {
+                                return;
+                            }
+
+                            draft.unshift(updatedDoc);
+                        })
+                    )
+                } catch {
+                    // patchResult.undo()
                 }
             },
         }),
@@ -104,18 +140,19 @@ export const documentsApi = createApi({
                 }
             },
             async onQueryStarted({uid, documentId}, { dispatch, queryFulfilled, getCacheEntry }) {
-                const patchResult = dispatch(
-                    documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
-                        if (draft === undefined) return;
-                        const docIndex = draft.findIndex(d => d.id === documentId);
-                        const updatedDoc = getCacheEntry();
-                        draft[docIndex] = {...draft[docIndex], ...updatedDoc.data}
-                    })
-                )
+
                 try {
                     await queryFulfilled
+                    dispatch(
+                        documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
+                            if (draft === undefined) return;
+                            const docIndex = draft.findIndex(d => d.id === documentId);
+                            const updatedDoc = getCacheEntry();
+                            draft[docIndex] = {...draft[docIndex], ...updatedDoc.data}
+                        })
+                    )
                 } catch {
-                    patchResult.undo()
+                    // patchResult.undo()
                 }
             },
         })
@@ -128,6 +165,7 @@ export const documentsApi = createApi({
  */
 export const {
     useFetchDocumentsQuery,
+    useFetchDocumentQuery,
     useCreateDocumentMutation,
     useUpdateDocumentMutation,
     useDeleteDocumentMutation

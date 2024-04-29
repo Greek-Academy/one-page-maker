@@ -1,54 +1,81 @@
-import { useState } from 'react'
-import Markdown from 'react-markdown'
 import './Edit.css'
+import { useEffect, useState } from 'react'
+import Markdown from 'react-markdown'
+import { useAppSelector } from '../redux/hooks.ts'
+import { useUpdateDocumentMutation, useFetchDocumentQuery } from "../redux/document/documentsApi.ts";
+import { Document, Status } from "../redux/document/documentType.ts";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Edit() {
-  const [markdown, setMarkdown] = useState('');
-  const toMarkdownText = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMarkdown(e.target.value);
-  };
+  const navigate = useNavigate();
+  const uid = useAppSelector(state => state.user.user?.uid);
+  const {data: document} = useFetchDocumentQuery({ uid: uid ?? "", docId: useParams<{ id: string }>().id ?? "" });
+  const [documentData, setDocumentData] = useState(document);
+  const [updateDocument] = useUpdateDocumentMutation();
+
+  useEffect(() => {
+    if (document === undefined) return;
+    setDocumentData(document);
+  }, [document]);
+
+  const updateDocumentState = <K extends keyof Document>(key: K, val: Document[K]) => {
+    setDocumentData(prev => prev === undefined ? prev : ({ ...prev, [key]: val }))
+  }
+  const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("title", e.target.value);
+  const onChangeContents = (e: React.ChangeEvent<HTMLTextAreaElement>) => updateDocumentState("contents", e.target.value);
+  const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) => updateDocumentState("status", e.target.value as Status);
+  const onChangeContributors = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("contributors", e.target.value.split(','));
+  const onChangeReviewers = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("reviewers", e.target.value.split(','));
+  const onClickSave = async () => {
+    if (uid == undefined) return;
+    if (documentData == undefined) return;
+
+    try {
+      await updateDocument({ uid, documentData });
+      navigate(`/`);
+    } catch (e) {
+      alert(`エラー: ${e?.toString()}`)
+    }
+  }
+  
   return (
     <>
-    <div>
-      <div className="document-title-div">
-        <input className="document-title" type="text"></input>
-        <button type="button">Save</button>
-      </div>
-      <div className="document-parameter-div">
-        <span>
-            <select name="status">
+      <div>
+        <div className="w-full flex">
+          <input className="w-full" type="text" value={documentData?.title} onChange={onChangeTitle} ></input>
+          <button className="border-solid" type="button" onClick={() => onClickSave()}>Save</button>
+        </div>
+        <div className="flex justify-between">
+          <span>
+            <select name="status" value={documentData?.status} onChange={onChangeStatus}>
               <option value="draft">draft</option>
               <option value="reviewed">reviewed</option>
               <option value="final">final</option>
               <option value="obsolete">obsolete</option>
             </select>
-            <span>
-              <input className="authors" type="text"></input>
-            </span>
-            <span>
-              <input className="reviewers" type="text"></input>
-            </span>
-        </span>
-        <span>
+            <input className="authors" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
+            <input className="reviewers" type="text" value={documentData?.reviewers} onChange={onChangeReviewers}></input>
+          </span>
+          <span>
             <span className="updated">
-              Updated 2024/01/01
+              Updated {documentData?.updated_at.toDate().toLocaleString()}
             </span>
-        </span>
-      </div>
-      <div className="document-contents-div">
-        <textarea
-          className="document-contents"
-          value={markdown}
-          onChange={toMarkdownText}
-          placeholder="Enter Markdown here"
-        />
-        <div className="document-markdown">
-          <Markdown>{markdown}</Markdown>
+          </span>
+        </div>
+        <div className="flex w-full h-svh">
+          <textarea
+            className="w-1/2 p-1"
+            value={documentData?.contents}
+            onChange={onChangeContents}
+            placeholder="Enter Markdown here"
+          />
+          <div className="w-1/2  overflow-scroll overflow-visible overflow-x-hidden">
+            <Markdown className='markdown'>{documentData?.contents}</Markdown>
+          </div>
         </div>
       </div>
-    </div>
-   </>
+    </>
   )
 }
 
-export default Edit
+export default Edit;

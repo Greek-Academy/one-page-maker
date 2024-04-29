@@ -1,23 +1,60 @@
+import './App.css';
+import { useAppSelector, useAppDispatch } from './redux/hooks';
+import { useEffect } from 'react';
+import { auth } from './firebase.ts';
+import { login, logout } from './redux/user/userSlice';
 import { BrowserRouter, Link } from 'react-router-dom';
-import { Router } from "./Router";
-import './App.css'
+import { Router } from './Router';
+import { SignInRouter } from './SignInRouter.tsx';
+import { Button } from '@mui/material';
+import { signOut } from 'firebase/auth';
 
 function App() {
-  return (
-    <>
-      <BrowserRouter>
-        <nav>
-          <ul id="nav">
-            <li><Link to="/">ホーム</Link></li>
-            <li><Link to="/edit">編集</Link></li>
-            <li><Link to="/list">一覧</Link></li>
-            <li><Link to="/login">ログイン</Link></li>
-          </ul>
-        </nav>   
-        <Router/>
-      </BrowserRouter>
-    </>
-  )
+    const user = useAppSelector((state) => state.user.user);
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        auth.onAuthStateChanged((authUser) => {
+            if (authUser) {
+                console.log(authUser);
+                dispatch(
+                    login({
+                        uid: authUser.uid,
+                        email: authUser.email,
+                        displayName: authUser.displayName,
+                    })
+                );
+            } else {
+                dispatch(logout());
+            }
+        });
+    }, [dispatch]);
+
+    return (
+        <div className="App">
+            <BrowserRouter>
+                {user ? (
+                    <>
+                        <nav>
+                            <ul id="nav">
+                                <li>
+                                    <Link to="/">一覧</Link>
+                                </li>
+                                <li>
+                                    <Link to="/edit">編集</Link>
+                                </li>
+                                <li>
+                                    <Button onClick={() => { signOut(auth) }}>ログアウト</Button>
+                                </li>
+                            </ul>
+                        </nav>
+                        <Router />
+                    </>
+                ) : (
+                    <SignInRouter />
+                )}
+            </BrowserRouter>
+        </div>
+    );
 }
 
-export default App
+export default App;
