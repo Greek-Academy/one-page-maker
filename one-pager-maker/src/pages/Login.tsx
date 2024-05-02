@@ -5,7 +5,7 @@ import {
     Button,
     TextField,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup, AuthProvider } from 'firebase/auth';
 import { auth, githubProvider, googleProvider } from '../firebase';
 import googleLogo from '../assets/web_light_rd_na.svg';
@@ -13,6 +13,7 @@ import githubLogo from '../assets/github-mark-white.svg';
 
 const Login = () => {
 
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({ email: "", password: "" });
 
     const handleFormData = useCallback((event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -27,13 +28,17 @@ const Login = () => {
             auth,
             formData.email,
             formData.password
-        ).catch((err) => {
+        ).then(()=>{
+            navigate('/')
+        }).catch((err) => {
             alert(`エラー: ${err?.toString()}`);
         });
     }, [formData]);
 
     const signinWithProvider = useCallback((provider: AuthProvider) => {
-        signInWithPopup(auth, provider).catch((err) => {
+        signInWithPopup(auth, provider).then(()=>{
+            navigate('/')
+        }).catch((err) => {
             alert(`エラー: ${err?.toString()}`);
         })
     }, []);

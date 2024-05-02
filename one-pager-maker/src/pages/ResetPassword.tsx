@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 const ResetPassword = () => {
 
     const navigate = useNavigate();
-
     const [formData, setFormData] = useState({ email: "" });
 
     const handleFormData = useCallback((event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -23,12 +22,11 @@ const ResetPassword = () => {
 
 
     const reset = useCallback(() => {
-        // TODO: redirect sign in page 
         sendPasswordResetEmail(
             auth,
             formData.email,
         ).then(() => {
-            alert('send mail and please check your mail box')
+            alert('We sent an email to you. Please check your mail box.')
             navigate('/')
         }).catch((err) => {
             alert(`エラー: ${err?.toString()}`);
