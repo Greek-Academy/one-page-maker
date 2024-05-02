@@ -4,7 +4,7 @@ import {beforeAll, beforeEach, describe, expect, test} from "vitest";
 import {act, renderHook, waitFor} from "@testing-library/react";
 import {connectFirestoreEmulator} from "firebase/firestore";
 import {store} from "../../../src/redux/store";
-import {DocumentForCreate} from "../../../src/redux/document/documentType";
+import {DocumentForCreate} from "../../../src/entity/documentType";
 import {db} from "../../../src/firebase";
 import {useCreateDocumentMutation, useFetchDocumentsQuery} from "../../../src/redux/document/documentsApi";
 
@@ -49,7 +49,6 @@ describe("documentsApi Unit Test", () => {
             const [createDocument] = result.current;
             createDocument({
                 uid: testUserId,
-                documentData: testDocument
             });
         })
 
@@ -83,7 +82,6 @@ describe("documentsApi Unit Test", () => {
             for (let i = 0; i < 3; i++) {
                 createDocument({
                     uid: testUserId,
-                    documentData: testDocument
                 });
             }
         });
@@ -103,7 +101,6 @@ describe("documentsApi Unit Test", () => {
             for (let i = 0; i < 3; i++) {
                 createDocument({
                     uid: testUserId,
-                    documentData: testDocument
                 });
             }
         });

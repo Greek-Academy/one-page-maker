@@ -1,42 +1,20 @@
 import {createApi, fakeBaseQuery} from "@reduxjs/toolkit/query/react";
-import {collection, doc, getDoc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc} from "firebase/firestore";
-import {db} from "../../firebase.ts";
-import {Document, documentConverter, DocumentForCreate, DocumentForUpdate} from "./documentType.ts";
-import {WithTimestamp} from "../../utils/typeUtils.ts";
+import {Document} from "../../entity/documentType.ts";
+import {documentService} from "../../service/documentService.ts";
 
-const colRef = (uid: string) => collection(db, `users/${uid}/documents`)
-    .withConverter(documentConverter);
-const docRef = (uid: string, docId: string) => doc(db, `users/${uid}/documents/${docId}`)
-    .withConverter(documentConverter)
+const DOCUMENT_TAG = 'Document';
 
 // TODO: providesTags or invalidatesTag を追加する必要があるかもしれない
 export const documentsApi = createApi({
     reducerPath: "documents",
     baseQuery: fakeBaseQuery(),
-    tagTypes: ['Documents'],
+    tagTypes: [DOCUMENT_TAG],
     endpoints: (builder) => ({
         fetchDocuments: builder.query({
             async queryFn(args: { uid: string }) {
                 try {
-                    const snapshot = await getDocs(colRef(args.uid));
-                    return {data: snapshot.docs.map(doc => doc.data())};
-                } catch (error) {
-                    return {error}
-                }
-            },
-            providesTags: (results) => {
-                if (results === undefined) {
-                    return [];
-                } else {
-                    return results.map(result => ({type: 'Documents', id: result.id}))
-                }
-            }
-        }),
-        fetchDocument: builder.query({
-            async queryFn(args: { uid: string, docId: string }) {
-                try {
-                    const snapshot = await getDoc(docRef(args.uid, args.docId));
-                    return {data: snapshot.data()};
+                    const data = await documentService.getMany(args.uid);
+                    return {data};
                 } catch (error) {
                     return {error}
                 }
@@ -45,116 +23,83 @@ export const documentsApi = createApi({
                 if (result === undefined) {
                     return [];
                 } else {
-                    return [{type: 'Documents', id: result.id}]
+                    return result.map(result => ({
+                        type: DOCUMENT_TAG,
+                        id: result.id
+                    }))
+                }
+            }
+        }),
+        fetchDocument: builder.query({
+            async queryFn(args: { uid: string, docId: string }) {
+                try {
+                    const data = await documentService.get(args.uid, args.docId);
+                    return {data};
+                } catch (error) {
+                    return {error}
+                }
+            },
+            providesTags: (result) => {
+                if (result === undefined) {
+                    return [];
+                } else {
+                    return [{type: DOCUMENT_TAG, id: result.id}]
                 }
             }
         }),
         createDocument: builder.mutation({
-            async queryFn(args: { uid: string, documentData: DocumentForCreate }) {
+            async queryFn(args: { uid: string }) {
                 try {
-                    const docRef = doc(colRef(args.uid));
-                    const data: WithTimestamp<Document> = {
-                        ...args.documentData,
-                        id: docRef.id,
-                        created_at: serverTimestamp(),
-                        updated_at: serverTimestamp(),
-                        deleted_at: null
-                    }
-                    await setDoc(docRef, data);
-                    const resultData: Document = {
-                        ...data,
-                        created_at: Timestamp.now(),
-                        updated_at: Timestamp.now(),
-                        deleted_at: null,
-                    }
-
-                    return {data: resultData}
+                    const data = await documentService.create(args.uid);
+                    return {data}
                 } catch (error) {
-                    console.error(error);
                     return {error}
                 }
             },
-            async onQueryStarted({uid}, { dispatch, queryFulfilled, getCacheEntry }) {
-                try {
-                    await queryFulfilled
-                    dispatch(
-                        documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
-                            if (draft === undefined) return;
-                            const updatedDoc = getCacheEntry().data;
-
-                            if (updatedDoc === undefined) {
-                                return;
-                            }
-
-                            draft.unshift(updatedDoc);
-                        })
-                    )
-                } catch {
-                    // patchResult.undo()
+            invalidatesTags(result) {
+                if (result === undefined) {
+                    return [];
+                } else {
+                    return [{type: DOCUMENT_TAG, id: result.id}];
                 }
-            },
+            }
         }),
         updateDocument: builder.mutation({
-            async queryFn(args: { uid: string, documentData: DocumentForUpdate }) {
+            async queryFn({uid, documentData}: {
+                uid: string,
+                documentData: Document
+            }) {
                 try {
-                    await updateDoc(docRef(args.uid, args.documentData.id), {
-                        ...args.documentData,
-                        updated_at: serverTimestamp(),
-                    });
-                    const data = {
-                        updated_at: Timestamp.now(),
-                    }
+                    const data = await documentService.update(uid, documentData);
                     return {data};
                 } catch (error) {
                     return {error};
                 }
             },
-            async onQueryStarted({uid, documentData}, { dispatch, queryFulfilled, getCacheEntry }) {
-                const patchResult = dispatch(
-                    documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
-                        if (draft === undefined) return;
-                        const docIndex = draft.findIndex(d => d.id === documentData.id);
-                        const updatedDoc = getCacheEntry();
-                        draft[docIndex] = {...draft[docIndex], ...updatedDoc.data}
-                    })
-                )
-                try {
-                    await queryFulfilled
-                } catch {
-                    patchResult.undo()
+            invalidatesTags(result) {
+                if (result === undefined) {
+                    return [];
+                } else {
+                    return [{type: DOCUMENT_TAG, id: result.id}];
                 }
-            },
+            }
         }),
         deleteDocument: builder.mutation({
-            async queryFn(args: { uid: string, documentId: string }) {
+            async queryFn(args: { document: Document }) {
                 try {
-                    await updateDoc(docRef(args.uid, args.documentId), {
-                        deleted_at: serverTimestamp(),
-                    });
-                    const data = {
-                        deleted_at: Timestamp.now(),
-                    }
+                    const data = await documentService.delete(args.document.owner_id, args.document);
                     return {data};
                 } catch (error) {
                     return {error};
                 }
             },
-            async onQueryStarted({uid, documentId}, { dispatch, queryFulfilled, getCacheEntry }) {
-
-                try {
-                    await queryFulfilled
-                    dispatch(
-                        documentsApi.util.updateQueryData('fetchDocuments', {uid}, (draft) => {
-                            if (draft === undefined) return;
-                            const docIndex = draft.findIndex(d => d.id === documentId);
-                            const updatedDoc = getCacheEntry();
-                            draft[docIndex] = {...draft[docIndex], ...updatedDoc.data}
-                        })
-                    )
-                } catch {
-                    // patchResult.undo()
+            invalidatesTags(result) {
+                if (result === undefined) {
+                    return [];
+                } else {
+                    return [{type: DOCUMENT_TAG, id: result.id}];
                 }
-            },
+            }
         })
     })
 })

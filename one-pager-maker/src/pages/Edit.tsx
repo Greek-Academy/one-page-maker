@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import { useAppSelector } from '../redux/hooks.ts'
 import { useUpdateDocumentMutation, useFetchDocumentQuery } from "../redux/document/documentsApi.ts";
-import { Document, Status } from "../redux/document/documentType.ts";
+import { Document, Status } from "../entity/documentType.ts";
 import { useNavigate, useParams } from "react-router-dom";
 
 function Edit() {
