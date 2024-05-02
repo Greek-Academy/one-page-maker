@@ -5,7 +5,7 @@ import { auth } from './firebase.ts';
 import { login, logout } from './redux/user/userSlice';
 import { BrowserRouter, Link } from 'react-router-dom';
 import { Router } from './Router';
-import { SignInRouter } from './SignInRouter.tsx';
+// import { SignInRouter } from './SignInRouter.tsx';
 import { Button } from '@mui/material';
 import { signOut } from 'firebase/auth';
 
@@ -47,11 +47,9 @@ function App() {
                                 </li>
                             </ul>
                         </nav>
-                        <Router />
                     </>
-                ) : (
-                    <SignInRouter />
-                )}
+                ):(null)}
+                <Router />
             </BrowserRouter>
         </div>
     );
