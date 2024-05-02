@@ -48,11 +48,13 @@ export class DocumentRepositoryImpl implements DocumentRepository {
     }): Promise<Document> {
         try {
             await updateDoc(this.docRef(uid, document.id), {
+                updated_at: serverTimestamp(),
                 deleted_at: serverTimestamp(),
             });
 
             return {
                 ...document,
+                updated_at: Timestamp.now(),
                 deleted_at: Timestamp.now()
             };
         } catch (e) {
