@@ -1,4 +1,4 @@
-import {Document} from "../redux/document/documentType.ts";
+import {Document} from "../entity/documentType.ts";
 import {useState} from "react";
 import {Menu, MenuItem} from "./Menu.tsx";
 import {useDetectClickOutside} from "react-detect-click-outside";

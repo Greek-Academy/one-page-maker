@@ -1,6 +1,6 @@
 import {FirestoreDataConverter, Timestamp} from 'firebase/firestore';
 import {z} from "zod";
-import {assertZodSchema} from "../../utils/asserts.ts";
+import {assertZodSchema} from "../utils/asserts.ts";
 
 const statusSchema = z.enum(['draft', 'reviewed', 'final', 'obsolete']);
 const privilegeSchema = z.enum(['private', 'can_view', 'can_edit']);

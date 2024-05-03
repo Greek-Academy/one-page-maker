@@ -16,7 +16,12 @@ const getStatus = (isError: boolean, isLoading: boolean) => {
 
 function List() {
     const uid = auth.currentUser?.uid ?? "";
-    const {data, error, isError, isLoading} = useFetchDocumentsQuery({uid: uid});
+    const {
+        data,
+        error,
+        isError,
+        isLoading
+    } = useFetchDocumentsQuery({uid: uid});
     const [createDocument] = useCreateDocumentMutation();
     const [deleteDocument] = useDeleteDocumentMutation();
     const navigate = useNavigate();
@@ -24,18 +29,7 @@ function List() {
 
     const handleCreate = async () => {
         try {
-            const result = await createDocument({
-                uid: uid,
-                documentData: {
-                    title: "新規ドキュメント",
-                    contents: "",
-                    status: 'draft',
-                    owner_id: uid,
-                    contributors: [],
-                    reviewers: [],
-                    url_privilege: 'private',
-                }
-            });
+            const result = await createDocument({uid: uid,});
             if ('data' in result) {
                 navigate(`/edit/${result.data?.id}`);
             }
@@ -49,9 +43,17 @@ function List() {
     }
 
     const handleDelete = async (id: string) => {
-        console.log("delete");
+        if (data === undefined) {
+            return;
+        }
         try {
-            await deleteDocument({uid: uid, documentId: id});
+            const document = data.find(d => d.id === id)
+
+            if (document === undefined) {
+                return;
+            }
+
+            await deleteDocument({document});
         } catch (e) {
             alert(`エラー: ${e?.toString()}`)
 
@@ -69,7 +71,9 @@ function List() {
                 {status == 'completed' &&
                     <div className={'grid grid-cols-5 gap-x-4 gap-y-6'}>
                         {data?.filter(d => d.deleted_at == null).map(d =>
-                            <DocumentItem key={d.id} document={d} onDelete={handleDelete} onClick={handleClickDocument}/>
+                            <DocumentItem key={d.id} document={d}
+                                          onDelete={handleDelete}
+                                          onClick={handleClickDocument}/>
                         )}
                     </div>
                 }
