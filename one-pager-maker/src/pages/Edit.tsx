@@ -5,10 +5,12 @@ import { useAppSelector } from '../redux/hooks.ts'
 import { useUpdateDocumentMutation, useFetchDocumentQuery } from "../redux/document/documentsApi.ts";
 import { Document, Status } from "../entity/documentType.ts";
 import { useNavigate, useParams } from "react-router-dom";
+import { UserItem } from "../stories/Usertem.tsx";
 
 function Edit() {
   const navigate = useNavigate();
   const uid = useAppSelector(state => state.user.user?.uid);
+  const displayName = useAppSelector(state => state.user.user?.displayName ?? "");
   const {data: document} = useFetchDocumentQuery({ uid: uid ?? "", docId: useParams<{ id: string }>().id ?? "" });
   const [documentData, setDocumentData] = useState(document);
   const [updateDocument] = useUpdateDocumentMutation();
@@ -26,6 +28,26 @@ function Edit() {
   const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) => updateDocumentState("status", e.target.value as Status);
   const onChangeContributors = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("contributors", e.target.value.split(','));
   const onChangeReviewers = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("reviewers", e.target.value.split(','));
+  const onContributorsClick = (user: string) =>
+  {
+    if (documentData?.contributors[0] === "") {
+      updateDocumentState("contributors", [user]); 
+    } else {
+      let copy = [...documentData?.contributors ?? []];
+      copy.push(user);
+      updateDocumentState("contributors", copy); 
+    }
+  }
+  const onReviewerClick = (user: string) =>
+  {
+    if (documentData?.reviewers[0] === "") {
+      updateDocumentState("reviewers", [user]); 
+    } else {
+      let copy = [...documentData?.reviewers ?? []];
+      copy.push(user);
+      updateDocumentState("reviewers", copy); 
+    }
+  } 
   const onClickSave = async () => {
     if (uid == undefined) return;
     if (documentData == undefined) return;
@@ -37,7 +59,7 @@ function Edit() {
       alert(`エラー: ${e?.toString()}`)
     }
   }
-  
+
   return (
     <>
       <div>
@@ -53,8 +75,10 @@ function Edit() {
               <option value="final">final</option>
               <option value="obsolete">obsolete</option>
             </select>
-            <input className="authors" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
+            <input className="contributors" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
+            <UserItem userName={displayName} onClick={onContributorsClick}/>
             <input className="reviewers" type="text" value={documentData?.reviewers} onChange={onChangeReviewers}></input>
+            <UserItem userName={displayName} onClick={onReviewerClick}/>
           </span>
           <span>
             <span className="updated">
