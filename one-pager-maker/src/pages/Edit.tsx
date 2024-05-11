@@ -28,26 +28,20 @@ function Edit() {
   const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) => updateDocumentState("status", e.target.value as Status);
   const onChangeContributors = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("contributors", e.target.value.split(','));
   const onChangeReviewers = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("reviewers", e.target.value.split(','));
-  const onContributorsClick = (user: string) =>
+  const onUserClick = (user: string, key: string) =>
   {
-    if (documentData?.contributors[0] === "") {
-      updateDocumentState("contributors", [user]); 
+    if (key !== "contributors" && key !== "reviewers") return;
+    
+    const users = key === "contributors" ? documentData?.contributors : documentData?.reviewers;
+    if (users && users[0] === "") {
+      updateDocumentState(key, [user]); 
     } else {
-      let copy = [...documentData?.contributors ?? []];
+      const copy = [...users ?? []];
       copy.push(user);
-      updateDocumentState("contributors", copy); 
+      updateDocumentState(key, copy); 
     }
   }
-  const onReviewerClick = (user: string) =>
-  {
-    if (documentData?.reviewers[0] === "") {
-      updateDocumentState("reviewers", [user]); 
-    } else {
-      let copy = [...documentData?.reviewers ?? []];
-      copy.push(user);
-      updateDocumentState("reviewers", copy); 
-    }
-  } 
+
   const onClickSave = async () => {
     if (uid == undefined) return;
     if (documentData == undefined) return;
@@ -76,9 +70,9 @@ function Edit() {
               <option value="obsolete">obsolete</option>
             </select>
             <input className="contributors" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
-            <UserItem userName={displayName} onClick={onContributorsClick}/>
+            <UserItem userName={displayName} onClick={e => onUserClick(e, "contributors")}/>
             <input className="reviewers" type="text" value={documentData?.reviewers} onChange={onChangeReviewers}></input>
-            <UserItem userName={displayName} onClick={onReviewerClick}/>
+            <UserItem userName={displayName} onClick={e => onUserClick(e, "reviewers")}/>
           </span>
           <span>
             <span className="updated">
