@@ -2,10 +2,11 @@ import {useState} from "react";
 import {Menu, MenuItem} from "./Menu.tsx";
 import {useDetectClickOutside} from "react-detect-click-outside";
 
-export const UserItem = ({userName, onClick}: {
-    userName: string,
-    onClick: (user: string) => void,
-}) => {
+interface UserItemProps {
+    userName: string;
+    onClick: (user: string) => void;
+}
+export const UserItem: React.FC<UserItemProps> = ({userName, onClick}) => {
     const [openMenu, setOpenMenu] = useState(false);
     const ref = useDetectClickOutside({
         onTriggered: () => setOpenMenu(false)
@@ -25,4 +26,3 @@ export const UserItem = ({userName, onClick}: {
         </span>
     )
 }
-

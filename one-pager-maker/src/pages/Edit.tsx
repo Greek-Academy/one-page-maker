@@ -28,18 +28,11 @@ function Edit() {
   const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) => updateDocumentState("status", e.target.value as Status);
   const onChangeContributors = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("contributors", e.target.value.split(','));
   const onChangeReviewers = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("reviewers", e.target.value.split(','));
-  const onUserClick = (user: string, key: string) =>
+  const onUserClick = (user: string, key: 'contributors' | 'reviewers') =>
   {
-    if (key !== "contributors" && key !== "reviewers") return;
-    
-    const users = key === "contributors" ? documentData?.contributors : documentData?.reviewers;
-    if (users && users[0] === "") {
-      updateDocumentState(key, [user]); 
-    } else {
-      const copy = [...users ?? []];
-      copy.push(user);
-      updateDocumentState(key, copy); 
-    }
+    const preUser = documentData ? documentData[key] : [];
+    const value = preUser[0] === "" ? [user] : [...preUser, user];
+    updateDocumentState(key, value); 
   }
 
   const onClickSave = async () => {
