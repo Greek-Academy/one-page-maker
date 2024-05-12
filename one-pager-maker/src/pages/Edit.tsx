@@ -5,7 +5,7 @@ import { useAppSelector } from '../redux/hooks.ts'
 import { useUpdateDocumentMutation, useFetchDocumentQuery } from "../redux/document/documentsApi.ts";
 import { Document, Status } from "../entity/documentType.ts";
 import { useNavigate, useParams } from "react-router-dom";
-import { UserItem } from "../stories/Usertem.tsx";
+import { UserSelectMenu } from "../stories/Usertem.tsx";
 
 function Edit() {
   const navigate = useNavigate();
@@ -63,9 +63,9 @@ function Edit() {
               <option value="obsolete">obsolete</option>
             </select>
             <input className="contributors" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
-            <UserItem userName={displayName} onSelectUser={e => handleAddingUser(e, "contributors")}/>
+            <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "contributors")}/>
             <input className="reviewers" type="text" value={documentData?.reviewers} onChange={onChangeReviewers}></input>
-            <UserItem userName={displayName} onSelectUser={e => handleAddingUser(e, "reviewers")}/>
+            <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "reviewers")}/>
           </span>
           <span>
             <span className="updated">
