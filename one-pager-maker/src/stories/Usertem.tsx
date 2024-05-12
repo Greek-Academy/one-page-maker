@@ -1,12 +1,13 @@
 import {useState} from "react";
 import {Menu, MenuItem} from "./Menu.tsx";
 import {useDetectClickOutside} from "react-detect-click-outside";
+import { IoSettingsOutline } from "react-icons/io5";
 
 interface UserItemProps {
     userName: string;
-    onClick: (user: string) => void;
+    onSelectUser: (uid: string) => void;    
 }
-export const UserItem: React.FC<UserItemProps> = ({userName, onClick}) => {
+export const UserItem = ({userName, onSelectUser}: UserItemProps) => {
     const [openMenu, setOpenMenu] = useState(false);
     const ref = useDetectClickOutside({
         onTriggered: () => setOpenMenu(false)
@@ -14,11 +15,11 @@ export const UserItem: React.FC<UserItemProps> = ({userName, onClick}) => {
     return (
         <span ref={ref}>
             <button onClick={() => setOpenMenu(true)}>
-                ...
+                <IoSettingsOutline />
             </button>
             <Menu open={openMenu}>
                 <MenuItem>
-                    <button onClick={() => onClick(userName)}>
+                    <button onClick={() => onSelectUser(userName)}>
                         {userName}
                     </button>
                 </MenuItem>

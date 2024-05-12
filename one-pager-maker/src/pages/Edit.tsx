@@ -28,7 +28,7 @@ function Edit() {
   const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) => updateDocumentState("status", e.target.value as Status);
   const onChangeContributors = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("contributors", e.target.value.split(','));
   const onChangeReviewers = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("reviewers", e.target.value.split(','));
-  const onUserClick = (user: string, key: 'contributors' | 'reviewers') =>
+  const handleAddingUser = (user: string, key: 'contributors' | 'reviewers') =>
   {
     const preUser = documentData ? documentData[key] : [];
     const value = preUser[0] === "" ? [user] : [...preUser, user];
@@ -63,9 +63,9 @@ function Edit() {
               <option value="obsolete">obsolete</option>
             </select>
             <input className="contributors" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
-            <UserItem userName={displayName} onClick={e => onUserClick(e, "contributors")}/>
+            <UserItem userName={displayName} onSelectUser={e => handleAddingUser(e, "contributors")}/>
             <input className="reviewers" type="text" value={documentData?.reviewers} onChange={onChangeReviewers}></input>
-            <UserItem userName={displayName} onClick={e => onUserClick(e, "reviewers")}/>
+            <UserItem userName={displayName} onSelectUser={e => handleAddingUser(e, "reviewers")}/>
           </span>
           <span>
             <span className="updated">
