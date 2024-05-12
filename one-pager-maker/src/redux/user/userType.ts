@@ -3,6 +3,7 @@ export interface InitialUserState {
     user: null | {
         uid: string,
         email: string,
-        displayName: string
+        displayName: string,
+        photoUrl: null | string
     }
 }
