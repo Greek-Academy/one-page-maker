@@ -62,12 +62,16 @@ function Edit() {
               <option value="final">final</option>
               <option value="obsolete">obsolete</option>
             </select>
-            <input className="contributors" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
-            <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "contributors")}/>
-            <input className="reviewers" type="text" value={documentData?.reviewers} onChange={onChangeReviewers}></input>
-            <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "reviewers")}/>
-          </span>
+         </span>
           <span>
+            <input className="contributors" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
+            <span className="absolute">
+              <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "contributors")}/>
+            </span>
+            <input className="reviewers mx-5" type="text" value={documentData?.reviewers} onChange={onChangeReviewers}></input>
+            <span className="absolute">
+              <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "reviewers")}/>
+            </span>
             <span className="updated">
               Updated {documentData?.updated_at.toDate().toLocaleString()}
             </span>
