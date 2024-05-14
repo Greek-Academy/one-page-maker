@@ -82,24 +82,11 @@ export class ViewHistoryRepositoryImpl implements ViewHistoryRepository {
     async update({uid, viewHistory}: {
         uid: string;
         viewHistory: ForUpdate<ViewHistory>
-    }): Promise<ViewHistory> {
+    }): Promise<void> {
         try {
             await this.clientManager.getClient().update(this.docRef(uid, viewHistory.id), {
                 updated_at: serverTimestamp(),
             });
-
-            const result = await this.get({uid, viewHistoryId: viewHistory.id});
-
-            if (result === null) {
-                const err = 'Could not find viewHistory';
-                console.error(err);
-                return Promise.reject(err);
-            }
-
-            return {
-                ...result,
-                updated_at: Timestamp.now()
-            };
         } catch (e) {
             return Promise.reject(e);
         }

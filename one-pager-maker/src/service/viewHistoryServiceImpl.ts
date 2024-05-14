@@ -12,20 +12,21 @@ export class ViewHistoryServiceImpl implements ViewHistoryService {
 
     private getViewHistory(viewType: 'edit' | 'review', {
         uid,
-        orderBy,
-        lastFetched
+        orderBy = 'desc',
+        lastFetched,
+        limit = 10,
     }: {
         uid: string;
-        orderBy: OrderByDirection;
-        lastFetched: ViewHistory
+        orderBy?: OrderByDirection;
+        lastFetched?: ViewHistory,
+        limit?: number,
     }) {
-        const limit = 10;
         return this.viewHistoryRepository.getMany({uid}, {
             orderBy: {
                 field: 'updated_at',
                 direction: orderBy
             },
-            startAt: lastFetched.updated_at,
+            startAt: lastFetched?.updated_at,
             where: {
                 field: 'viewType',
                 op: '==',
@@ -79,8 +80,9 @@ export class ViewHistoryServiceImpl implements ViewHistoryService {
 
     async getEditHistory(args: {
         uid: string;
-        orderBy: OrderByDirection;
-        lastFetched: ViewHistory
+        orderBy?: OrderByDirection;
+        lastFetched?: ViewHistory,
+        limit?: number,
     }): Promise<ViewHistory[]> {
         try {
             return await this.getViewHistory('edit', args);
@@ -91,8 +93,9 @@ export class ViewHistoryServiceImpl implements ViewHistoryService {
 
     async getReviewHistory(args: {
         uid: string;
-        orderBy: OrderByDirection;
-        lastFetched: ViewHistory
+        orderBy?: OrderByDirection,
+        lastFetched?: ViewHistory,
+        limit?: number,
     }): Promise<ViewHistory[]> {
         try {
             return await this.getViewHistory('review', args);

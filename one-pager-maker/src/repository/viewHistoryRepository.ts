@@ -12,7 +12,7 @@ export interface ViewHistoryRepository {
 
     getMany<K extends keyof ViewHistory>(args: {uid: string}, query: QueryParams<ViewHistory, K>): Promise<ViewHistory[]>;
 
-    update(args: {uid: string, viewHistory: ForUpdate<ViewHistory>}): Promise<ViewHistory>;
+    update(args: {uid: string, viewHistory: ForUpdate<ViewHistory>}): Promise<void>;
 
     delete(args: {uid: string, viewHistoryId: string}): Promise<void>;
 }

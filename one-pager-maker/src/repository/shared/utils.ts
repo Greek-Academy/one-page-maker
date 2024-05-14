@@ -32,21 +32,21 @@ type WhereFilterOp =
     | 'array-contains-any'
     | 'not-in';
 
-export type QueryParams<T, K extends keyof T> = {
+export type QueryParams<T> = {
     orderBy?: OrderBy<T>,
     startAt?: unknown
     startAfter?: unknown
     endAt?: unknown,
     endBefore?: unknown,
     limit?: number,
-    where?: WhereFilter<T, K> | WhereFilter<T, K>[]
+    where?: WhereFilter<T, keyof T> | WhereFilter<T, keyof T>[]
 }
 
 /**
  * QueryParams を QueryConstraint[] に変換します
  * @param query
  */
-export function buildQueryConstraints<T, K extends keyof T>(query: QueryParams<T, K>) {
+export function buildQueryConstraints<T>(query: QueryParams<T>) {
     const constraints: QueryConstraint[] = [];
 
     if (query.orderBy && typeof query.orderBy.field === 'string') constraints.push(orderBy(query.orderBy.field, query.orderBy.direction))
@@ -56,7 +56,7 @@ export function buildQueryConstraints<T, K extends keyof T>(query: QueryParams<T
     if (query.endBefore) constraints.push(endBefore(query.endBefore))
     if (query.limit) constraints.push(limit(query.limit))
 
-    const addWhereConstraint = (whereFilter: WhereFilter<T, K>) => {
+    const addWhereConstraint = (whereFilter: WhereFilter<T, keyof T>) => {
         if (typeof whereFilter.field === 'string')
             constraints.push(where(whereFilter.field, whereFilter.op, whereFilter.value))
     }
