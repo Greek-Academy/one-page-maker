@@ -1,5 +1,4 @@
 import {ViewHistoryRepository} from "./viewHistoryRepository.ts";
-import {ForCreate, ForUpdate} from "../entity/utils.ts";
 import {ViewHistory} from "../entity/viewHistoryType.ts";
 import {QueryParams} from "./shared/utils.ts";
 import {MockDBRepository} from "./shared/mockDBRepository.ts";
@@ -14,9 +13,11 @@ export class MockViewHistoryRepository implements ViewHistoryRepository {
 
     create(args: {
         uid: string;
-        viewHistory: ForCreate<ViewHistory>
+        viewHistory: ViewHistory
     }): Promise<ViewHistory> {
-        return this.mock.create({uid: args.uid, data: args.viewHistory});
+        return this.mock.create({uid: args.uid, data: {
+            ...args.viewHistory,
+            }});
     }
 
     async delete(args: { uid: string; viewHistoryId: string }): Promise<void> {
@@ -48,7 +49,7 @@ export class MockViewHistoryRepository implements ViewHistoryRepository {
                 const sortOrder = query.orderBy.direction === "asc" ? 1 : -1;
 
                 if (aVal instanceof Timestamp && bVal instanceof Timestamp) {
-                    return sortOrder * (aVal.nanoseconds - bVal.nanoseconds);
+                    return sortOrder * (aVal.nanoseconds - bVal.nanoseconds) > 0 ? 1 : -1;
                 }
 
                 if (typeof aVal === 'string' && typeof bVal === 'string') {
@@ -59,11 +60,13 @@ export class MockViewHistoryRepository implements ViewHistoryRepository {
             })
             .filter((val) => {
                 if (query.orderBy === undefined) return true;
-                const field = query.orderBy.field;
-                if (field === 'updated_at' && query.startAt instanceof Timestamp) {
-                    return val[field].seconds - query.startAt.seconds >= 0;
+                const key = query.orderBy.field;
+                const field = val[key];
+                const direction = query.orderBy.direction === 'desc' ? -1 : 1;
+                if (field instanceof Timestamp && typeof field && query.startAt instanceof Timestamp) {
+                    const diff = field.seconds - query.startAt.seconds;
+                    return diff * direction > 0;
                 }
-
                 return true;
             })
             .slice(0, query.limit);
@@ -72,7 +75,7 @@ export class MockViewHistoryRepository implements ViewHistoryRepository {
 
     async update(args: {
         uid: string;
-        viewHistory: ForUpdate<ViewHistory>
+        viewHistory: ViewHistory
     }): Promise<void> {
         await this.mock.update({uid: args.uid, data: args.viewHistory});
     }
