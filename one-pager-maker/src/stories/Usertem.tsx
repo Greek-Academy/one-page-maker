@@ -17,13 +17,15 @@ export const UserSelectMenu = ({userName, onSelectUser}: UserSelectMenuProps) =>
             <button onClick={() => setOpenMenu(true)}>
                 <IoSettingsOutline />
             </button>
-            <Menu open={openMenu}>
-                <MenuItem>
-                    <button onClick={() => onSelectUser(userName)}>
-                        {userName}
-                    </button>
-                </MenuItem>
-            </Menu>
+            <span className="absolute w-full">
+                <Menu open={openMenu}>
+                    <MenuItem>
+                        <button onClick={() => onSelectUser(userName)}>
+                            {userName}
+                        </button>
+                    </MenuItem>
+                </Menu>
+            </span>
         </span>
     )
 }
