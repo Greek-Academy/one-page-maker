@@ -28,8 +28,13 @@ export class MockDocumentRepository implements DocumentRepository {
     }
 
     async delete({uid, document}: { uid: string; document: Document }): Promise<Document> {
-        await this.mock.delete({uid: uid, id: document.id});
-        return document;
+        const data = {
+            ...document,
+            id: document.id,
+            deleted_at: Timestamp.now(),
+        };
+        await this.mock.update({uid, data});
+        return data;
     }
 
     get({uid, documentId}: { uid: string; documentId: string }): Promise<Document | null> {
@@ -43,8 +48,12 @@ export class MockDocumentRepository implements DocumentRepository {
     }
 
     async update({uid, document}: { uid: string; document: Document }): Promise<Document> {
-        await this.mock.update({uid: uid, data: document});
-        return document;
+        const data = {
+            ...document,
+            updated_at: Timestamp.now(),
+        }
+        await this.mock.update({uid, data});
+        return data;
     }
 
 }
