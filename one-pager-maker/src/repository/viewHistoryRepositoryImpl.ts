@@ -68,7 +68,7 @@ export class ViewHistoryRepositoryImpl implements ViewHistoryRepository {
         }
     }
 
-    async getMany<K extends keyof ViewHistory>({uid}: { uid: string }, _q: QueryParams<ViewHistory, K>): Promise<ViewHistory[]> {
+    async getMany({uid}: { uid: string }, _q: QueryParams<ViewHistory>): Promise<ViewHistory[]> {
         try {
             const constraints = buildQueryConstraints(_q);
             const q = query(this.colRef(uid), ...constraints);
