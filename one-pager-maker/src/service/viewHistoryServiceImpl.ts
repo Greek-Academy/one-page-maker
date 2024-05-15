@@ -115,6 +115,6 @@ export class ViewHistoryServiceImpl implements ViewHistoryService {
         uid: string;
         documentId: string
     }): Promise<ViewHistory> {
-        return this.setViewHistory('edit', args);
+        return this.setViewHistory('review', args);
     }
 }

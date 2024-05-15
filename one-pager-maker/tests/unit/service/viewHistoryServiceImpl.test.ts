@@ -116,5 +116,28 @@ describe('ViewHistoryServiceImpl', function () {
             expect(result).toMatchObject({viewType: 'edit', documentId: history.documentId});
             expect(result.updated_at.toMillis()).toBeGreaterThan(history.updated_at.toMillis());
         });
-    })
+    });
+
+    describe('setReviewHistory()', async () => {
+        test('creates a new history', async () => {
+            const [created] = await createViewHistory(1, 'edit');
+            await viewHistoryRepo.delete({uid, viewHistoryId: created.documentId});
+            const documentId = 'documentId';
+            const result = await viewHistoryService.setReviewHistory({uid, documentId});
+
+            expect(result).toMatchObject({viewType: 'review', documentId});
+        });
+
+        test('updates the history', async () => {
+            const history = await viewHistoryRepo.create({uid, viewHistory: viewHistoryFactory.build({
+                    viewType: 'review',
+                    updated_at: Timestamp.fromMillis(Date.now() - 1000),
+                })
+            });
+            const result = await viewHistoryService.setReviewHistory({uid, documentId: history.documentId});
+
+            expect(result).toMatchObject({viewType: 'review', documentId: history.documentId});
+            expect(result.updated_at.toMillis()).toBeGreaterThan(history.updated_at.toMillis());
+        });
+    });
 });

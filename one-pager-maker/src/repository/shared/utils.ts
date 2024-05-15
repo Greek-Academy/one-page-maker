@@ -5,7 +5,7 @@ import {
     orderBy,
     QueryConstraint,
     startAfter,
-    startAt,
+    startAt, Timestamp,
     where
 } from "firebase/firestore";
 
@@ -49,7 +49,9 @@ export type QueryParams<T> = {
 export function buildQueryConstraints<T>(query: QueryParams<T>) {
     const constraints: QueryConstraint[] = [];
 
-    if (query.orderBy && typeof query.orderBy.field === 'string') constraints.push(orderBy(query.orderBy.field, query.orderBy.direction))
+    if (query.orderBy && typeof query.orderBy.field === 'string') {
+        constraints.push(orderBy(query.orderBy.field, query.orderBy.direction))
+    }
     if (query.startAt) constraints.push(startAt(query.startAt))
     if (query.startAfter) constraints.push(startAfter(query.startAfter))
     if (query.endAt) constraints.push(endAt(query.endAt))
@@ -70,4 +72,33 @@ export function buildQueryConstraints<T>(query: QueryParams<T>) {
     }
 
     return constraints;
+}
+
+export const sortByQuery = <T>(a: T, b: T, query: QueryParams<T>): number => {
+    if (query.orderBy === undefined) return 1;
+    const aVal = a[query.orderBy.field];
+    const bVal = b[query.orderBy.field];
+    const sortOrder = query.orderBy.direction === "asc" ? 1 : -1;
+
+    if (aVal instanceof Timestamp && bVal instanceof Timestamp) {
+        return sortOrder * (aVal.nanoseconds - bVal.nanoseconds) > 0 ? 1 : -1;
+    }
+
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return aVal > bVal ? 1 : -1;
+    }
+
+    return 1;
+}
+
+export const filterByQuery = <T>(val: T, query: QueryParams<T>): boolean => {
+    if (query.orderBy === undefined) return true;
+    const key = query.orderBy.field;
+    const field = val[key];
+    const direction = query.orderBy.direction === 'desc' ? -1 : 1;
+    if (field instanceof Timestamp && typeof field && query.startAt instanceof Timestamp) {
+        const diff = field.seconds - query.startAt.seconds;
+        return diff * direction > 0;
+    }
+    return true;
 }
