@@ -18,6 +18,7 @@ describe('MockViewHistoryRepository', () => {
             await mockViewHistoryRepository.create({uid, viewHistory});
             const result = await mockViewHistoryRepository.getMany({uid}, {});
             expect(result).toHaveLength(1);
+            expect(result[0]).toMatchObject(viewHistory);
         });
 
         test('startAt query works correctly', async () => {

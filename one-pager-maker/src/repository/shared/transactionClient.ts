@@ -25,8 +25,8 @@ export class TransactionClient implements FirestoreClient {
     }
 
     getMany<AppModelType, DbModelType extends DocumentData>(): Promise<QuerySnapshot<AppModelType, DbModelType>> {
-        console.warn("You can't use getMany() while transaction!");
-        return Promise.reject("You can't use getMany() while transaction!");
+        console.warn("getMany() is not supported within a transaction.");
+        return Promise.reject("getMany() is not supported within a transaction.");
     }
 
     set<AppModel, DbModel extends DocumentData>(documentRef: DocumentReference<AppModel, DbModel>, data: WithFieldValue<AppModel>): Promise<void> {

@@ -1,7 +1,9 @@
 import {FirestoreClient} from "./firestoreClient.ts";
 import {dbClient} from "./dbClient.ts";
 
-
+/**
+ * Singleton class to manage Firestore client.
+ */
 export class FirestoreClientManager {
     static readonly INSTANCE = new FirestoreClientManager();
 
