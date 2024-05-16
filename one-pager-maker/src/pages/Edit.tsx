@@ -5,10 +5,15 @@ import { useAppSelector } from '../redux/hooks.ts'
 import { useUpdateDocumentMutation, useFetchDocumentQuery } from "../redux/document/documentsApi.ts";
 import { Document, Status } from "../entity/documentType.ts";
 import { useNavigate, useParams } from "react-router-dom";
+import { UserSelectMenu } from "../stories/Usertem.tsx";
+import { RiPencilFill } from "react-icons/ri";
+import { BiCommentEdit } from "react-icons/bi";
+import { GoClock } from "react-icons/go";
 
 function Edit() {
   const navigate = useNavigate();
   const uid = useAppSelector(state => state.user.user?.uid);
+  const displayName = useAppSelector(state => state.user.user?.displayName ?? "");
   const {data: document} = useFetchDocumentQuery({ uid: uid ?? "", docId: useParams<{ id: string }>().id ?? "" });
   const [documentData, setDocumentData] = useState(document);
   const [updateDocument] = useUpdateDocumentMutation();
@@ -26,6 +31,16 @@ function Edit() {
   const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) => updateDocumentState("status", e.target.value as Status);
   const onChangeContributors = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("contributors", e.target.value.split(','));
   const onChangeReviewers = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("reviewers", e.target.value.split(','));
+  const handleAddingUser = (user: string, key: 'contributors' | 'reviewers') =>
+  {
+    const preUser = documentData ? documentData[key] : [];
+    const value = preUser[0] === "" ? [user] : [...preUser, user];
+    if (key == 'reviewers') {
+      updateDocumentState("status", 'reviewed');      
+    }
+    updateDocumentState(key, value); 
+  }
+
   const onClickSave = async () => {
     if (uid == undefined) return;
     if (documentData == undefined) return;
@@ -37,39 +52,45 @@ function Edit() {
       alert(`エラー: ${e?.toString()}`)
     }
   }
-  
+
   return (
     <>
       <div>
-        <div className="w-full flex">
-          <input className="w-full" type="text" value={documentData?.title} onChange={onChangeTitle} ></input>
-          <button className="border-solid" type="button" onClick={() => onClickSave()}>Save</button>
+        <div className="flex justify-between py-1">
+          <input className="font-bold w-full border px-1" type="text" value={documentData?.title} onChange={onChangeTitle} ></input>
+          <button className="border-solid border-4" type="button" onClick={() => onClickSave()}>Save</button>
         </div>
         <div className="flex justify-between">
           <span>
-            <select name="status" value={documentData?.status} onChange={onChangeStatus}>
+            <select className='border mx-1 mr-5' name="status" value={documentData?.status} onChange={onChangeStatus}>
               <option value="draft">draft</option>
               <option value="reviewed">reviewed</option>
               <option value="final">final</option>
               <option value="obsolete">obsolete</option>
             </select>
-            <input className="authors" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
-            <input className="reviewers" type="text" value={documentData?.reviewers} onChange={onChangeReviewers}></input>
-          </span>
+            <RiPencilFill className='inline' />
+            <input className="contributors border mx-1 px-1" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
+            <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "contributors")}/>
+            <span className='mr-5' />
+            <BiCommentEdit className='inline' />
+            <input className="reviewers border mx-1 px-1" type="text" value={documentData?.reviewers} onChange={onChangeReviewers}></input>
+            <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "reviewers")}/>
+         </span>
           <span>
-            <span className="updated">
-              Updated {documentData?.updated_at.toDate().toLocaleString()}
+            <GoClock className='inline mx-1' />
+            <span className="updated px-1 italic">
+              {documentData?.updated_at.toDate().toLocaleString()}
             </span>
           </span>
         </div>
-        <div className="flex w-full h-svh">
+        <div className="flex p-1 w-full h-svh">
           <textarea
-            className="w-1/2 p-1"
+            className="border w-1/2 p-1"
             value={documentData?.contents}
             onChange={onChangeContents}
             placeholder="Enter Markdown here"
           />
-          <div className="w-1/2  overflow-scroll overflow-visible overflow-x-hidden">
+          <div className="border w-1/2 p-1 overflow-scroll overflow-visible overflow-x-hidden">
             <Markdown className='markdown'>{documentData?.contents}</Markdown>
           </div>
         </div>
