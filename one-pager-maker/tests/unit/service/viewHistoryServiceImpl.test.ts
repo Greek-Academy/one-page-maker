@@ -99,7 +99,7 @@ describe('ViewHistoryServiceImpl', function () {
     describe('setEditHistory()', async () => {
         test('creates a new history', async () => {
             const [created] = await createViewHistory(1, 'review');
-            await viewHistoryRepo.delete({uid, viewHistoryId: created.documentId});
+            await viewHistoryRepo.delete({uid, viewHistoryId: created.id});
             const documentId = 'documentId';
             const result = await viewHistoryService.setEditHistory({uid, documentId});
 
@@ -121,7 +121,7 @@ describe('ViewHistoryServiceImpl', function () {
     describe('setReviewHistory()', async () => {
         test('creates a new history', async () => {
             const [created] = await createViewHistory(1, 'edit');
-            await viewHistoryRepo.delete({uid, viewHistoryId: created.documentId});
+            await viewHistoryRepo.delete({uid, viewHistoryId: created.id});
             const documentId = 'documentId';
             const result = await viewHistoryService.setReviewHistory({uid, documentId});
 
