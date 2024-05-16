@@ -14,6 +14,18 @@ export interface UserService {
      * @param query id は前方一致で検索する.
      */
     searchUsers(query: {id: string}): Promise<Result<User[], UserServiceError>>;
+
+    /**
+     * ユーザーを取得する
+     * @param id
+     */
+    findUserByID(id: string): Promise<Result<User, UserServiceError>>;
+
+    /**
+     * ユーザーを UID で取得する. ログインしているユーザーのものしか取得できない
+     * @param uid
+     */
+    findUserByUID(uid: string): Promise<Result<User, UserServiceError>>;
 }
 
 export class UserServiceError extends Error {
@@ -23,4 +35,5 @@ export class UserServiceError extends Error {
     }
 }
 
-type UserServiceErrorCode = 'invalid-url' | 'duplicated-id' | 'empty-id' | 'unknown'
+type UserServiceErrorCode = 'invalid-url' | 'duplicated-id'
+    | 'empty-id' | 'user-not-found' | 'permission-denied' | 'unknown'

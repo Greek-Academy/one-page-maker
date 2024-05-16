@@ -1,13 +1,20 @@
-import {describe, expect, test} from "vitest";
+import {beforeEach, describe, expect, test} from "vitest";
 import {container} from "tsyringe";
 import {UserServiceImpl} from "../../../src/service/userServiceImpl";
 import {userFactory} from "../../_shared/factory/userFactory";
 import {DI} from "../../../src/di";
 import {MockUserRepository} from "../../_shared/mock/mockUserRepository";
+import {MockAuthRepository} from "../../_shared/mock/mockAuthRepository";
 
 describe('UserServiceImpl', () => {
     const service = container.resolve(UserServiceImpl);
     const userRepository = container.resolve(DI.UserRepository) as MockUserRepository;
+    const authRepository = container.resolve(DI.AuthRepository) as MockAuthRepository;
+
+    beforeEach(() => {
+        userRepository.clear();
+        authRepository.setUser(null);
+    });
 
     describe('createUser', () => {
         test('create user', async () => {
@@ -92,6 +99,66 @@ describe('UserServiceImpl', () => {
 
             expect(result.isSuccess).toBe(true);
             expect(result.value).toEqual([]);
+        });
+    });
+
+    describe('findUserByID', () => {
+        test('find user by id', async () => {
+            const user = await userRepository.create(userFactory.build());
+
+            const result = await service.findUserByID(user.id);
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.value).toEqual(user);
+        });
+
+        test('throws error if user is not found', async () => {
+            const result = await service.findUserByID('not-found');
+
+            expect(result.isFailure).toBe(true);
+            expect(result.error.code).toBe('user-not-found');
+        });
+
+        test('throws error if id is empty', async () => {
+            const result = await service.findUserByID('');
+
+            expect(result.isFailure).toBe(true);
+            expect(result.error.code).toBe('empty-id');
+        });
+    });
+
+    describe('findUserByUID', () => {
+        test('find user by uid', async () => {
+            const user = await userRepository.create(userFactory.build());
+            authRepository.setUser(user.uid);
+
+            const result = await service.findUserByUID(user.uid);
+
+            expect(result.isSuccess).toBe(true);
+            expect(result.value).toEqual(user);
+        });
+
+        test('throws error if user is not found', async () => {
+            const uid = 'test-uid';
+            authRepository.setUser(uid);
+            const result = await service.findUserByUID(uid);
+
+            expect(result.isFailure).toBe(true);
+            expect(result.error.code).toBe('user-not-found');
+        });
+
+        test('throws error if uid is empty', async () => {
+            const result = await service.findUserByUID('');
+
+            expect(result.isFailure).toBe(true);
+            expect(result.error.code).toBe('empty-id');
+        });
+
+        test('throws error if user is not logged in', async () => {
+            const result = await service.findUserByUID('test-uid');
+
+            expect(result.isFailure).toBe(true);
+            expect(result.error.code).toBe('permission-denied');
         });
     });
 })
