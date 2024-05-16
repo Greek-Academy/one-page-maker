@@ -8,8 +8,8 @@ import {MockAuthRepository} from "../../_shared/mock/mockAuthRepository";
 
 describe('UserServiceImpl', () => {
     const service = container.resolve(UserServiceImpl);
-    const userRepository = container.resolve(DI.UserRepository) as MockUserRepository;
-    const authRepository = container.resolve(DI.AuthRepository) as MockAuthRepository;
+    const userRepository = container.resolve<MockUserRepository>(DI.UserRepository);
+    const authRepository = container.resolve<MockAuthRepository>(DI.AuthRepository);
 
     beforeEach(() => {
         userRepository.clear();
@@ -63,7 +63,7 @@ describe('UserServiceImpl', () => {
     });
 
     describe('searchUsers', () => {
-        test('search users with exact id query', async () => {
+        test('search users with exact id api', async () => {
             const user1 = await userRepository.create(userFactory.build());
             await userRepository.create(userFactory.build());
 
@@ -73,7 +73,7 @@ describe('UserServiceImpl', () => {
             expect(result.value).toEqual([user1]);
         });
 
-        test('search users with partial id query', async () => {
+        test('search users with partial id api', async () => {
             await userRepository.create(userFactory.build({
                 id: 'a'
             }));

@@ -5,8 +5,8 @@ import {DI} from "../../../src/di";
 import {MockUserRepository} from "../../_shared/mock/mockUserRepository";
 import {userFactory} from "../../_shared/factory/userFactory";
 
-describe('UserDomainService', () => {
-    const userRepository = container.resolve(DI.UserRepository) as MockUserRepository;
+describe('UserDomainServiceImpl', () => {
+    const userRepository = container.resolve<MockUserRepository>(DI.UserRepository);
     const service = container.resolve(UserDomainServiceImpl);
 
     describe('isDuplicatedId', () => {

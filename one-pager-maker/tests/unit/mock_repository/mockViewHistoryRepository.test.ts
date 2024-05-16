@@ -21,7 +21,7 @@ describe('MockViewHistoryRepository', () => {
             expect(result[0]).toMatchObject(viewHistory);
         });
 
-        test('startAt query works correctly', async () => {
+        test('startAt api works correctly', async () => {
             const viewHistory1 = viewHistoryFactory.build();
             const viewHistory2 = viewHistoryFactory.build();
             await mockViewHistoryRepository.create({uid, viewHistory: viewHistory1});
