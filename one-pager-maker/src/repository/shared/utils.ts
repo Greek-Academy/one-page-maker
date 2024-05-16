@@ -93,12 +93,26 @@ export const sortByQuery = <T>(a: T, b: T, query: QueryParams<T>): number => {
 
 export const filterByQuery = <T>(val: T, query: QueryParams<T>): boolean => {
     if (query.orderBy === undefined) return true;
+
+    let shouldContain = true;
+
     const key = query.orderBy.field;
     const field = val[key];
     const direction = query.orderBy.direction === 'desc' ? -1 : 1;
     if (field instanceof Timestamp && typeof field && query.startAt instanceof Timestamp) {
         const diff = field.seconds - query.startAt.seconds;
-        return diff * direction > 0;
+        shouldContain &&= diff * direction > 0;
     }
-    return true;
+
+    if (typeof field === 'string') {
+        if (typeof query.startAfter === 'string') {
+            shouldContain &&= field >= query.startAfter;
+        }
+
+        if (typeof query.endBefore === 'string') {
+            shouldContain &&= field <= query.endBefore;
+        }
+    }
+
+    return shouldContain;
 }

@@ -10,7 +10,7 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "noEmit": true,
     "jsx": "react-jsx",
 
@@ -22,7 +22,11 @@
 
     "types": [
       "vitest/importMeta"
-    ]
+    ],
+
+    /* tsyringe */
+    "experimentalDecorators": true,                   /* Enable experimental support for legacy experimental decorators. */
+    "emitDecoratorMetadata": true,                    /* Emit design-type metadata for decorated declarations in source files. */
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
