@@ -2,103 +2,58 @@ import {DocumentRepository} from "./documentRepository.ts";
 import {ForCreate} from "../entity/utils.ts";
 import {Document} from "../entity/documentType.ts";
 import {Timestamp} from "firebase/firestore";
+import {MockDBRepository} from "./shared/mockDBRepository.ts";
 
 export class MockDocumentRepository implements DocumentRepository {
-    // [uid]: documents の形式
-    private store = new Map<string, Document[]>();
-    private index = 0;
+    private readonly mock = new MockDBRepository<Document>();
 
     /**
      * データを全て削除する
      */
     clear() {
-        this.store = new Map<string, Document[]>();
+        this.mock.clear();
     }
 
     create({uid, document}: {
         uid: string;
         document: ForCreate<Document>
     }): Promise<Document> {
-        const result: Document = {
+        const doc: Document = {
             ...document,
+            id: '',
             created_at: Timestamp.now(),
             updated_at: Timestamp.now(),
-            id: `document-${this.index++}`
         }
-
-        if (!this.store.has(uid)) {
-            this.store.set(uid, []);
-        }
-
-        this.store.get(uid)!.push(result);
-
-        return Promise.resolve(result);
+        return this.mock.create({uid: uid, data: doc});
     }
 
-    delete({uid, document}: { uid: string; document: Document }): Promise<Document> {
-        const result: Document = {
+    async delete({uid, document}: { uid: string; document: Document }): Promise<Document> {
+        const data = {
             ...document,
-            updated_at: Timestamp.now(),
+            id: document.id,
             deleted_at: Timestamp.now(),
-        }
-
-        if (!this.store.has(uid)) {
-            return Promise.reject(`${uid} does not have any documents`);
-        }
-
-        const docs = this.store.get(uid)!;
-        const index = docs.findIndex(d => d.id === document.id);
-
-        if (index === -1) {
-            return Promise.reject(`${uid} does not have document ${document.id}`);
-        }
-
-        docs[index] = result;
-
-        return Promise.resolve(result);
+        };
+        await this.mock.update({uid, data});
+        return data;
     }
 
     get({uid, documentId}: { uid: string; documentId: string }): Promise<Document | null> {
-        if (!this.store.has(uid)) {
-            return Promise.resolve(null)
-        }
-
-        const document = this.store.get(uid)!.find(d => d.id === documentId) ?? null;
-
-        return Promise.resolve(document);
+        return this.mock.get({uid: uid, dataId: documentId});
     }
 
     getMany({uid}: { uid: string }): Promise<Document[]> {
-        if (!this.store.has(uid)) {
-            // return Promise.reject(`${uid} does not have any documents`);
-            return Promise.resolve([]);
-        }
-
-        const documents = this.store.get(uid)!;
-
-        return Promise.resolve(documents);
+        return Promise.resolve(
+            this.mock.getAll().get(uid) ?? []
+        )
     }
 
-    update({uid, document}: { uid: string; document: Document }): Promise<Document> {
-        const result: Document = {
+    async update({uid, document}: { uid: string; document: Document }): Promise<Document> {
+        const data = {
             ...document,
             updated_at: Timestamp.now(),
         }
-
-        if (!this.store.has(uid)) {
-            return Promise.reject(`${uid} does not have any documents`);
-        }
-
-        const docs = this.store.get(uid)!;
-        const index = docs.findIndex(d => d.id === document.id);
-
-        if (index === -1) {
-            return Promise.reject(`${uid} does not have document ${document.id}`);
-        }
-
-        docs[index] = result;
-
-        return Promise.resolve(result);
+        await this.mock.update({uid, data});
+        return data;
     }
 
 }

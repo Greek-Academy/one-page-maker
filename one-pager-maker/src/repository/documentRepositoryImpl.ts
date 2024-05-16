@@ -1,20 +1,17 @@
 import {DocumentRepository} from "./documentRepository.ts";
 import {ForCreate, WithTimestamp} from "../entity/utils.ts";
 import {Document, documentConverter} from "../entity/documentType.ts";
-import {
-    collection,
-    doc, getDoc, getDocs,
-    serverTimestamp,
-    setDoc,
-    Timestamp, updateDoc
-} from "firebase/firestore";
+import {collection, doc, serverTimestamp, Timestamp,} from "firebase/firestore";
 import {db} from "../firebase.ts";
+import {FirestoreClientManager} from "./shared/firestoreClientManager.ts";
 
 export class DocumentRepositoryImpl implements DocumentRepository {
     private readonly colRef = (uid: string) => collection(db, `users/${uid}/documents`)
         .withConverter(documentConverter);
     private readonly docRef = (uid: string, docId: string) => doc(db, `users/${uid}/documents/${docId}`)
         .withConverter(documentConverter)
+
+    private readonly clientManager = FirestoreClientManager.INSTANCE;
 
     async create({uid, document}: {
         uid: string;
@@ -29,7 +26,7 @@ export class DocumentRepositoryImpl implements DocumentRepository {
                 updated_at: serverTimestamp(),
                 deleted_at: null
             }
-            await setDoc(ref, data);
+            await this.clientManager.getClient().set(ref, data);
 
             return {
                 ...data,
@@ -47,7 +44,7 @@ export class DocumentRepositoryImpl implements DocumentRepository {
         document: Document
     }): Promise<Document> {
         try {
-            await updateDoc(this.docRef(uid, document.id), {
+            await this.clientManager.getClient().update(this.docRef(uid, document.id), {
                 updated_at: serverTimestamp(),
                 deleted_at: serverTimestamp(),
             });
@@ -67,7 +64,7 @@ export class DocumentRepositoryImpl implements DocumentRepository {
         documentId: string
     }): Promise<Document | null> {
         try {
-            const snapshot = await getDoc(this.docRef(uid, documentId));
+            const snapshot = await this.clientManager.getClient().get(this.docRef(uid, documentId));
             return snapshot.data() ?? null;
         } catch (e) {
             return Promise.reject(e);
@@ -76,7 +73,7 @@ export class DocumentRepositoryImpl implements DocumentRepository {
 
     async getMany(args: { uid: string }): Promise<Document[]> {
         try {
-            const snapshot = await getDocs(this.colRef(args.uid));
+            const snapshot = await this.clientManager.getClient().getMany(this.colRef(args.uid));
             return snapshot.docs.map(d => d.data());
         } catch (e) {
             return Promise.reject(e);
@@ -88,7 +85,7 @@ export class DocumentRepositoryImpl implements DocumentRepository {
         document: Document
     }): Promise<Document> {
         try {
-            await updateDoc(this.docRef(uid, document.id), {
+            await this.clientManager.getClient().update(this.docRef(uid, document.id), {
                 ...document,
                 updated_at: serverTimestamp(),
             });
