@@ -8,8 +8,8 @@ import {MockAuthRepository} from "../../_shared/mock/mockAuthRepository";
 
 describe('UserServiceImpl', () => {
     const service = container.resolve(UserServiceImpl);
-    const userRepository = container.resolve(DI.UserRepository) as MockUserRepository;
-    const authRepository = container.resolve(DI.AuthRepository) as MockAuthRepository;
+    const userRepository = container.resolve<MockUserRepository>(DI.UserRepository);
+    const authRepository = container.resolve<MockAuthRepository>(DI.AuthRepository);
 
     beforeEach(() => {
         userRepository.clear();
