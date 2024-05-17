@@ -2,10 +2,13 @@ import {z} from "zod";
 import {FirestoreDataConverter, Timestamp} from "firebase/firestore";
 import {assertZodSchema} from "../../utils/asserts.ts";
 
+export const idSchema = z.string().regex(/^[a-zA-Z0-9-_]+$/);
+export const photoUrlSchema = z.string().url();
+
 const userSchema = z.object({
-    id: z.string(),
+    id: idSchema,
     uid: z.string(),
-    photoUrl: z.string().url(),
+    photoUrl: photoUrlSchema,
     updated_at: z.instanceof(Timestamp),
     created_at: z.instanceof(Timestamp)
 });

@@ -1,14 +1,12 @@
 import {UserService, UserServiceError} from "./userService.ts";
 import {Result} from "result-type-ts";
 import {User} from "../entity/user/userType.ts";
-import {z} from "zod";
 import {UserRepository} from "../repository/userRepository.ts";
 import {inject, injectable} from "tsyringe";
 import {DI} from "../di.ts";
 import {UserDomainService} from "../domain_service/userDomainService.ts";
 import {AuthRepository} from "../repository/authRepository.ts";
-
-const urlSchema = z.string().url();
+import {createUser} from "../entity/user/user.ts";
 
 @injectable()
 export class UserServiceImpl implements UserService {
@@ -21,14 +19,10 @@ export class UserServiceImpl implements UserService {
 
     async createUser(args: { id: string; uid: string; photoUrl: string }): Promise<Result<User, UserServiceError>> {
         try {
-            if (args.id === '') {
-                return Result.failure(new UserServiceError("ID is empty.", 'empty-id'));
-            }
+            const createUserResult = createUser(args);
 
-            const parserPhotoUrl = urlSchema.safeParse(args.photoUrl);
-
-            if (!parserPhotoUrl.success) {
-                return Result.failure(new UserServiceError("photoUrl is invalid.", 'invalid-url'));
+            if (createUserResult.isFailure) {
+                return Result.failure(new UserServiceError(createUserResult.error.message, createUserResult.error.code));
             }
 
             const isDuplicated = await this.userDomainService.isDuplicatedId(args.id);

@@ -60,6 +60,21 @@ describe('UserServiceImpl', () => {
             expect(result.isFailure).toBe(true);
             expect(result.error.code).toBe('duplicated-id');
         });
+
+        test.each([
+            '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*',
+            '+', ',', '.', '/', ':', ';', '<', '=', '>',
+            '?', '@', '^', '|', '~', '`', '[', ']', '{', '}'
+        ])(`throws error if id contains invalid character (%s)`, async (char) => {
+            const result = await service.createUser({
+                id: `test${char}`,
+                uid: 'test',
+                photoUrl: 'https://example.com'
+            });
+
+            expect(result.isFailure).toBe(true);
+            expect(result.error.code).toBe('invalid-id');
+        })
     });
 
     describe('searchUsers', () => {
