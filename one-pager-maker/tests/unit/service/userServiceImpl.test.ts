@@ -28,6 +28,23 @@ describe('UserServiceImpl', () => {
             expect(result.isSuccess).toBe(true);
         });
 
+        test.each([
+            'abcdefghijklm',
+            'nopqrstuvwxyz',
+            'ABCDEFGHIJKLM',
+            'NOPQRSTUVWXYZ',
+            '0123456789-_'
+        ])('create user with available id (%s)', async (id) => {
+            await authRepository.setUser('test');
+            const result = await service.createUser({
+                id,
+                uid: 'test',
+                photoUrl: 'https://example.com'
+            });
+
+            expect(result.isSuccess).toBe(true);
+        });
+
         test('throws error if id is empty', async () => {
             const result = await service.createUser({
                 id: '',
@@ -78,6 +95,18 @@ describe('UserServiceImpl', () => {
             expect(result.isFailure).toBe(true);
             expect(result.error.code).toBe('invalid-id');
         })
+
+        test('throws error if id is too long', async () => {
+            const id = 'a'.repeat(21);
+            const result = await service.createUser({
+                id,
+                uid: 'test',
+                photoUrl: 'https://example.com'
+            });
+
+            expect(result.isFailure).toBe(true);
+            expect(result.error.code).toBe('too-long-id');
+        });
 
         test('throws error if user is not logged in', async () => {
             const result = await service.createUser({

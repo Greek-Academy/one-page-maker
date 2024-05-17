@@ -35,5 +35,5 @@ export class UserServiceError extends Error {
     }
 }
 
-type UserServiceErrorCode = 'invalid-url' | 'duplicated-id' | 'invalid-id'
+type UserServiceErrorCode = 'invalid-url' | 'duplicated-id' | 'invalid-id' | 'too-long-id'
     | 'empty-id' | 'user-not-found' | 'permission-denied' | 'unknown'

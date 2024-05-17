@@ -11,6 +11,10 @@ export const createUser = (args: {
         return Result.failure(new CreateUserError('User ID is empty', 'empty-id'));
     }
 
+    if (args.id.length > 20) {
+        return Result.failure(new CreateUserError('User ID is too long', 'too-long-id'));
+    }
+
     const parsedId = idSchema.safeParse(args.id);
 
     if (!parsedId.success) {
@@ -30,7 +34,7 @@ export const createUser = (args: {
     });
 }
 
-type CreateUserErrorCode = 'invalid-id' | 'empty-id' | 'invalid-url';
+type CreateUserErrorCode = 'invalid-id' | 'empty-id' | 'too-long-id' | 'invalid-url';
 
 class CreateUserError extends Error {
     constructor(message: string, public readonly code: CreateUserErrorCode) {
