@@ -21,6 +21,29 @@ function Edit() {
   useEffect(() => {
     if (document === undefined) return;
     setDocumentData(document);
+    if(documentData?.contributors === undefined) {
+      updateDocumentState("contributors", [displayName]);
+    }
+    if (documentData?.contents === undefined) {
+      // TODO:migrate to template
+      const defaultContents  = `# Summary
+- Item1
+- Item2
+- Item3
+
+# Background
+
+# Design/Proposal
+
+# Open questions
+
+# Reference
+
+# Memo
+      `;      
+      updateDocumentState("contents", defaultContents);
+    }
+
   }, [document]);
 
   const updateDocumentState = <K extends keyof Document>(key: K, val: Document[K]) => {

@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Menu, MenuItem} from "./Menu.tsx";
 import {useDetectClickOutside} from "react-detect-click-outside";
-import { IoSettingsOutline } from "react-icons/io5";
+import { FaPlus } from "react-icons/fa";
 
 interface UserSelectMenuProps {
     userName: string;
@@ -15,12 +15,15 @@ export const UserSelectMenu = ({userName, onSelectUser}: UserSelectMenuProps) =>
     return (
         <span ref={ref}>
             <button onClick={() => setOpenMenu(true)}>
-                <IoSettingsOutline />
+                <FaPlus />
             </button>
-            <span className="absolute w-full">
+            <span className="absolute w-full my-1">
                 <Menu open={openMenu}>
                     <MenuItem>
-                        <button onClick={() => onSelectUser(userName)}>
+                        <button onClick={() => {
+                            onSelectUser(userName);
+                            setOpenMenu(false);
+                        }}>
                             {userName}
                         </button>
                     </MenuItem>
