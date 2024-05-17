@@ -5,7 +5,7 @@ export interface UserService {
     /**
      * ユーザーを作成する.
      * @param args
-     * @throws UserServiceError invalid-url, duplicated-id, empty-id, unknown
+     * @throws UserServiceError invalid-url, duplicated-id, invalid-id, empty-id, permission-denied, unknown,
      */
     createUser(args: {id: string, uid: string, photoUrl: string}): Promise<Result<User, UserServiceError>>;
 

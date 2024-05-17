@@ -18,6 +18,7 @@ describe('UserServiceImpl', () => {
 
     describe('createUser', () => {
         test('create user', async () => {
+            await authRepository.setUser('test');
             const result = await service.createUser({
                 id: 'test',
                 uid: 'test',
@@ -51,10 +52,12 @@ describe('UserServiceImpl', () => {
 
         test('throws error if user is duplicated', async () => {
             const existingUser = userFactory.build();
+            await authRepository.setUser(existingUser.uid);
             await service.createUser(existingUser);
             const anotherUser = userFactory.build({
                 id: existingUser.id
             });
+            await authRepository.setUser(anotherUser.uid);
             const result = await service.createUser(anotherUser);
 
             expect(result.isFailure).toBe(true);
@@ -75,6 +78,17 @@ describe('UserServiceImpl', () => {
             expect(result.isFailure).toBe(true);
             expect(result.error.code).toBe('invalid-id');
         })
+
+        test('throws error if user is not logged in', async () => {
+            const result = await service.createUser({
+                id: 'test',
+                uid: 'test',
+                photoUrl: 'https://example.com'
+            });
+
+            expect(result.isFailure).toBe(true);
+            expect(result.error.code).toBe('permission-denied');
+        });
     });
 
     describe('searchUsers', () => {
