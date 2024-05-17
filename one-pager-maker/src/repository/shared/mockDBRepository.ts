@@ -35,6 +35,11 @@ export class MockDBRepository<T extends DBEntity> {
 
         const docs = this.store.get(uid)!;
         const index = docs.findIndex(d => d.id === id);
+
+        if (index === -1) {
+            return Promise.reject(`Document ${id} not found`)
+        }
+
         docs.splice(index, 1);
         return Promise.resolve()
     }
