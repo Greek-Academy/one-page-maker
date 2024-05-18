@@ -1,14 +1,15 @@
 import './Edit.css'
-import { useEffect, useState } from 'react'
+import {useEffect, useState} from 'react'
 import Markdown from 'react-markdown'
-import { useAppSelector } from '../redux/hooks.ts'
-import { useUpdateDocumentMutation, useFetchDocumentQuery } from "../redux/document/documentsApi.ts";
-import { Document, Status } from "../entity/documentType.ts";
-import { useNavigate, useParams } from "react-router-dom";
-import { UserSelectMenu } from "../stories/Usertem.tsx";
-import { RiPencilFill } from "react-icons/ri";
-import { BiCommentEdit } from "react-icons/bi";
-import { GoClock } from "react-icons/go";
+import {useAppSelector} from '../redux/hooks.ts'
+import {useFetchDocumentQuery, useUpdateDocumentMutation} from "../redux/document/documentsApi.ts";
+import {Document, Status} from "../entity/documentType.ts";
+import {useNavigate, useParams} from "react-router-dom";
+import {UserSelectMenu} from "../stories/Usertem.tsx";
+import {RiPencilFill} from "react-icons/ri";
+import {BiCommentEdit} from "react-icons/bi";
+import {GoClock} from "react-icons/go";
+import {userApi} from "../api/userApi.ts";
 
 function Edit() {
   const navigate = useNavigate();
@@ -17,6 +18,11 @@ function Edit() {
   const {data: document} = useFetchDocumentQuery({ uid: uid ?? "", docId: useParams<{ id: string }>().id ?? "" });
   const [documentData, setDocumentData] = useState(document);
   const [updateDocument] = useUpdateDocumentMutation();
+  const result = userApi.useSearchUsersQuery('ta');
+
+  useEffect(() => {
+    console.log(result.data);
+  }, [])
 
   function getDefaultContents() {
     return `# Summary
