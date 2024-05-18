@@ -121,7 +121,7 @@ describe('UserServiceImpl', () => {
     });
 
     describe('searchUsers', () => {
-        test('search users with exact id query', async () => {
+        test('search users with exact id api', async () => {
             const user1 = await userRepository.create(userFactory.build());
             await userRepository.create(userFactory.build());
 
@@ -131,7 +131,7 @@ describe('UserServiceImpl', () => {
             expect(result.value).toEqual([user1]);
         });
 
-        test('search users with partial id query', async () => {
+        test('search users with partial id api', async () => {
             await userRepository.create(userFactory.build({
                 id: 'a'
             }));
