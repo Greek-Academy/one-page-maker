@@ -9,7 +9,6 @@ import {UserSelectMenu} from "../stories/Usertem.tsx";
 import {RiPencilFill} from "react-icons/ri";
 import {BiCommentEdit} from "react-icons/bi";
 import {GoClock} from "react-icons/go";
-import {userApi} from "../api/userApi.ts";
 
 function Edit() {
   const navigate = useNavigate();
@@ -18,11 +17,6 @@ function Edit() {
   const {data: document} = useFetchDocumentQuery({ uid: uid ?? "", docId: useParams<{ id: string }>().id ?? "" });
   const [documentData, setDocumentData] = useState(document);
   const [updateDocument] = useUpdateDocumentMutation();
-  const result = userApi.useSearchUsersQuery('ta');
-
-  useEffect(() => {
-    console.log(result.data);
-  }, [])
 
   function getDefaultContents() {
     return `# Summary

@@ -12,7 +12,9 @@ import {
 import {db} from "../firebase.ts";
 import {FirestoreClientManager} from "./shared/firestoreClientManager.ts";
 import {buildQueryConstraints, QueryParams} from "./shared/utils.ts";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class ViewHistoryRepositoryImpl implements ViewHistoryRepository {
     private readonly colRef = (uid: string) => collection(db, `users/${uid}/viewHistories`)
         .withConverter(viewHistoryConverter);

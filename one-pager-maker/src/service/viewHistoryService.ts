@@ -1,9 +1,5 @@
 import {ViewHistory} from "../entity/viewHistoryType.ts";
 import {OrderByDirection} from "../repository/shared/utils.ts";
-import {ViewHistoryServiceImpl} from "./viewHistoryServiceImpl.ts";
-import {viewHistoryRepository} from "../repository/viewHistoryRepository.ts";
-
-export const viewHistoryService: ViewHistoryService = new ViewHistoryServiceImpl(viewHistoryRepository);
 
 export interface ViewHistoryService {
     /**
