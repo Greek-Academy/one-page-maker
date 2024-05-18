@@ -1,12 +1,6 @@
-import {container} from "tsyringe";
-import {DI} from "../di.ts";
-import {UserService} from "../service/userService.ts";
-import {UserDomainService} from "../domain_service/userDomainService.ts";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {queryClient} from "../queryClient.ts";
-
-const userService = container.resolve<UserService>(DI.UserService);
-const userDomainService = container.resolve<UserDomainService>(DI.UserDomainService);
+import {userDomainService, userService} from "./services.ts";
 
 const queryKeys = {
     userId: (id: string) => `user-id-${id}`,

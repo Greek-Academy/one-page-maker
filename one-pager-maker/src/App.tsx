@@ -1,17 +1,18 @@
 import './App.css';
-import { useAppSelector, useAppDispatch } from './redux/hooks';
-import { useEffect } from 'react';
-import { auth } from './firebase.ts';
-import { login, logout } from './redux/user/userSlice';
-import { BrowserRouter, Link } from 'react-router-dom';
-import { Router } from './Router';
-import { Button } from '@mui/material';
-import { signOut } from 'firebase/auth';
-import { selectUser } from './redux/user/selector.ts';
+import {useAppDispatch, useAppSelector} from './redux/hooks';
+import {useEffect} from 'react';
+import {auth} from './firebase.ts';
+import {login, logout} from './redux/user/userSlice';
+import {BrowserRouter, Link} from 'react-router-dom';
+import {Router} from './Router';
+import {Button} from '@mui/material';
+import {signOut} from 'firebase/auth';
+import {selectUser} from './redux/user/selector.ts';
 
 function App() {
     const user = useAppSelector(selectUser);
     const dispatch = useAppDispatch();
+
     useEffect(() => {
         auth.onAuthStateChanged((authUser) => {
             if (authUser) {

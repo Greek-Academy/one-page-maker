@@ -18,6 +18,7 @@ export const setupDIService = () => {
 }
 
 export const setupDI = () => {
+    console.log("test");
     setupDIRepository();
     setupDIService();
 }

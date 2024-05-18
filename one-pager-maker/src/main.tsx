@@ -7,11 +7,8 @@ import App from './App.tsx'
 import './index.css'
 import {Provider} from "react-redux";
 import {store} from "./redux/store.ts";
-import {setupDI} from "./di.setup.ts";
 import {QueryClientProvider} from "@tanstack/react-query";
 import {queryClient} from "./queryClient.ts";
-
-setupDI();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
