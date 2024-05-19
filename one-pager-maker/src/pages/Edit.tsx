@@ -23,18 +23,24 @@ function Edit() {
 - Item1
 - Item2
 - Item3
+
 # Background
+
 # Design/Proposal
+
 # Open questions
+
 # Reference
+
 # Memo
+
   `;
   }  
 
   useEffect(() => {
     if (document === undefined) return;
     setDocumentData(document);
-    if (documentData?.contributors === undefined) {
+    if (documentData?.contributors === undefined || documentData?.contributors?.length === 0) {
       updateDocumentState("contributors", [displayName]);
     }
     if (documentData?.contents === undefined) {
