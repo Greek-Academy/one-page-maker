@@ -55,6 +55,17 @@ export const userApi = {
             return result.value;
         }
     }),
+
+    useSearchUsersByIDQuery: (id: string) => useQuery({
+        queryKey: [queryKeys.searchUsers, queryKeys.userId(id)],
+        queryFn: async () => {
+            console.log('called')
+            const result = await userService.searchUsers({id});
+            return result.value;
+        }
+    }),
+
+
     useFindUserByIDQuery: (id: string) => useQuery({
         queryKey: [queryKeys.findUserByID, queryKeys.userId(id)],
         queryFn: async () => {

@@ -5,7 +5,7 @@ import {useAppSelector} from '../redux/hooks.ts'
 import {useFetchDocumentQuery, useUpdateDocumentMutation} from "../redux/document/documentsApi.ts";
 import {Document, Status} from "../entity/documentType.ts";
 import {useNavigate, useParams} from "react-router-dom";
-import {UserSelectMenu} from "../stories/Usertem.tsx";
+import {UserSelectMenu} from "../stories/UserItem.tsx";
 import {RiPencilFill} from "react-icons/ri";
 import {BiCommentEdit} from "react-icons/bi";
 import {GoClock} from "react-icons/go";
@@ -90,11 +90,11 @@ function Edit() {
             </select>
             <RiPencilFill className='inline' />
             <input className="contributors border mx-1 px-1" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
-            <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "contributors")}/>
+            <UserSelectMenu onSelectUser={e => handleAddingUser(e, "contributors")}/>
             <span className='mr-5' />
             <BiCommentEdit className='inline' />
             <input className="reviewers border mx-1 px-1" type="text" value={documentData?.reviewers} onChange={onChangeReviewers}></input>
-            <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "reviewers")}/>
+            <UserSelectMenu onSelectUser={e => handleAddingUser(e, "reviewers")}/>
          </span>
           <span>
             <GoClock className='inline mx-1' />
