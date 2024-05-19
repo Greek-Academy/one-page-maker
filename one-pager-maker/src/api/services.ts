@@ -9,5 +9,4 @@ setupDI();
 
 export const userService = container.resolve<UserService>(DI.UserService);
 export const userDomainService = container.resolve<UserDomainService>(DI.UserDomainService);
-
 export const viewHistoryService = container.resolve<ViewHistoryService>(DI.ViewHistoryService);
