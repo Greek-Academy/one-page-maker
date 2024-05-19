@@ -1,9 +1,10 @@
 import {useState} from "react";
 import {Menu, MenuItem} from "./Menu.tsx";
 import {useDetectClickOutside} from "react-detect-click-outside";
-import {FaPlus} from "react-icons/fa";
 import {userApi} from "../api/userApi.ts";
 import {useDebounce} from "../hook/useDebounce.ts";
+import {FaPlus} from "react-icons/fa";
+import {CiUser} from "react-icons/ci";
 
 interface UserSelectMenuProps {
     onSelectUser: (uid: string) => void;
@@ -27,11 +28,12 @@ export const UserSelectMenu = ({onSelectUser}: UserSelectMenuProps) => {
                     <input className="border m-1 p-1" type="text" placeholder="Type or choose a user" value={query} onChange={(e) => setQuery(e.target.value)}/>
                     {result.data?.map(user => (
                         <MenuItem>
-                            <button className="" key={user.id} onClick={() => {
+                            <button key={user.id} onClick={() => {
                                 onSelectUser(user.id);
                                 setOpenMenu(false);
                                 setQuery("");
                             }}>
+                                <CiUser className='inline mx-1' />
                                 {user.id}
                             </button>
                         </MenuItem>
