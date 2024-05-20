@@ -17,7 +17,7 @@ export type User = z.infer<typeof userSchema>;
 
 export const userConverter: FirestoreDataConverter<User> = {
     fromFirestore(snapshot): User {
-        const data = {...snapshot.data()};
+        const data = {...snapshot.data(), id: snapshot.id};
         assertZodSchema(userSchema, data);
         return data;
     },
