@@ -14,12 +14,12 @@ export class UserRepositoryImpl implements UserRepository {
     private readonly colRef = () => collection(db, `users`)
         .withConverter(userConverter);
 
-    private readonly docRef = (uid: string) => doc(db, `users/${uid}`)
+    private readonly docRef = (id: string) => doc(db, `users/${id}`)
         .withConverter(userConverter);
 
     async create(user: ForCreateWithId<User>): Promise<User> {
         try {
-            const ref = doc(this.colRef());
+            const ref = this.docRef(user.id);
             const data: WithTimestamp<Omit<User, 'id'>> = {
                 ...user,
                 created_at: serverTimestamp(),
