@@ -5,11 +5,10 @@ import {useAppSelector} from '../redux/hooks.ts'
 import {useFetchDocumentQuery, useUpdateDocumentMutation} from "../redux/document/documentsApi.ts";
 import {Document, Status} from "../entity/documentType.ts";
 import {useNavigate, useParams} from "react-router-dom";
-import {UserSelectMenu} from "../stories/Usertem.tsx";
+import {UserSelectMenu} from "../stories/UserItem.tsx";
 import {RiPencilFill} from "react-icons/ri";
 import {BiCommentEdit} from "react-icons/bi";
 import {GoClock} from "react-icons/go";
-import {userApi} from "../api/userApi.ts";
 
 function Edit() {
   const navigate = useNavigate();
@@ -18,29 +17,30 @@ function Edit() {
   const {data: document} = useFetchDocumentQuery({ uid: uid ?? "", docId: useParams<{ id: string }>().id ?? "" });
   const [documentData, setDocumentData] = useState(document);
   const [updateDocument] = useUpdateDocumentMutation();
-  const result = userApi.useSearchUsersQuery('ta');
-
-  useEffect(() => {
-    console.log(result.data);
-  }, [])
 
   function getDefaultContents() {
     return `# Summary
 - Item1
 - Item2
 - Item3
+
 # Background
+
 # Design/Proposal
+
 # Open questions
+
 # Reference
+
 # Memo
+
   `;
   }  
 
   useEffect(() => {
     if (document === undefined) return;
     setDocumentData(document);
-    if (documentData?.contributors === undefined) {
+    if (documentData?.contributors === undefined || documentData?.contributors?.length === 0) {
       updateDocumentState("contributors", [displayName]);
     }
     if (documentData?.contents === undefined) {
@@ -96,11 +96,11 @@ function Edit() {
             </select>
             <RiPencilFill className='inline' />
             <input className="contributors border mx-1 px-1" type="text" value={documentData?.contributors} onChange={onChangeContributors}></input>
-            <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "contributors")}/>
+            <UserSelectMenu onSelectUser={e => handleAddingUser(e, "contributors")}/>
             <span className='mr-5' />
             <BiCommentEdit className='inline' />
             <input className="reviewers border mx-1 px-1" type="text" value={documentData?.reviewers} onChange={onChangeReviewers}></input>
-            <UserSelectMenu userName={displayName} onSelectUser={e => handleAddingUser(e, "reviewers")}/>
+            <UserSelectMenu onSelectUser={e => handleAddingUser(e, "reviewers")}/>
          </span>
           <span>
             <GoClock className='inline mx-1' />

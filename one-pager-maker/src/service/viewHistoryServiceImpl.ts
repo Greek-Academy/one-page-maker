@@ -3,10 +3,13 @@ import {ViewHistory} from "../entity/viewHistoryType.ts";
 import {ViewHistoryRepository} from "../repository/viewHistoryRepository.ts";
 import {OrderByDirection} from "../repository/shared/utils.ts";
 import {Timestamp} from "firebase/firestore";
+import {inject, injectable} from "tsyringe";
+import {DI} from "../di.ts";
 
+@injectable()
 export class ViewHistoryServiceImpl implements ViewHistoryService {
     constructor(
-        private viewHistoryRepository: ViewHistoryRepository,
+        @inject(DI.ViewHistoryRepository) private viewHistoryRepository: ViewHistoryRepository,
     ) {
     }
 

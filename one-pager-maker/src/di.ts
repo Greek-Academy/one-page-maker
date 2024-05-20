@@ -4,4 +4,7 @@ export const DI = {
     UserRepository: 'UserRepository',
     UserDomainService: 'UserDomainService',
     UserService: 'UserService',
+
+    ViewHistoryRepository: 'ViewHistoryRepository',
+    ViewHistoryService: 'ViewHistoryService',
 }

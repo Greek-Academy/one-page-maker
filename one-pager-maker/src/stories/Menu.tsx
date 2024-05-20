@@ -1,8 +1,9 @@
 import {Fragment, ReactNode} from "react";
 
-export const Menu = ({open, children}: {
+export const Menu = ({open, children, className = ''}: {
     open: boolean,
     children: ReactNode,
+    className?: string
 }) => {
     if (!open) {
         return (
@@ -11,7 +12,7 @@ export const Menu = ({open, children}: {
     }
 
     return (
-        <menu className={'absolute bg-slate-200 rounded-md z-10'}>
+        <menu className={`absolute bg-slate-200 rounded-md z-10 ${className}`}>
             {children}
         </menu>
     )
