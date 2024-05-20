@@ -26,18 +26,18 @@ export const UserSelectMenu = ({onSelectUser}: UserSelectMenuProps) => {
             <span className="absolute w-full my-1">
                 <Menu open={openMenu} className={'flex flex-col gap-1'}>
                     <input className="border m-1 p-1" type="text" placeholder="Type or choose a user" value={query} onChange={(e) => setQuery(e.target.value)}/>
-                    <MenuItem>
                         {result.data?.map(user => (
-                                <button key={user.id} onClick={() => {
-                                    onSelectUser(user.id);
-                                    setOpenMenu(false);
-                                    setQuery("");
-                                }}>
+                            <button key={user.id} onClick={() => {
+                                onSelectUser(user.id);
+                                setOpenMenu(false);
+                                setQuery("");
+                            }}>
+                                <MenuItem>
                                     <CiUser className='inline mx-1' />
                                     {user.id}
-                                </button>
+                                </MenuItem>
+                            </button>
                         ))}
-                    </MenuItem>
                 </Menu>
             </span>
         </span>
