@@ -10,7 +10,6 @@ import { signInWithEmailAndPassword, signInWithPopup, AuthProvider } from 'fireb
 import { auth, githubProvider, googleProvider } from '../firebase';
 import googleLogo from '../assets/web_light_rd_na.svg';
 import githubLogo from '../assets/github-mark-white.svg';
-import { userApi } from "../api/userApi.ts";
 
 const Login = () => {
 
@@ -37,12 +36,7 @@ const Login = () => {
     }, [formData]);
 
     const signinWithProvider = useCallback((provider: AuthProvider) => {
-        signInWithPopup(auth, provider).then((authUser) => {
-            const result = userApi.useFindUserByUIDQuery(authUser.user.uid);
-            if (result.data?.id === undefined) {
-                navigate('/set-id')
-                return
-            }
+        signInWithPopup(auth, provider).then(() => {
             navigate('/')
         }).catch((err) => {
             alert(`エラー: ${err?.toString()}`);
