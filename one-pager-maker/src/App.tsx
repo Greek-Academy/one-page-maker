@@ -58,7 +58,7 @@ function App() {
                                 </li>
                                 <li><Link className="text-sm text-gray-400 hover:text-gray-500" to="/">about</Link></li>
                             </ul>
-                            <a className="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200" onClick={() => {signOut(auth)}}>SignOut</a>
+                            <a className="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200" onClick={() => {signOut(auth).catch(error =>console.error('Sign out failed:', error))}}>SignOut</a>
                         </nav>
                     </>
                 ):(null)}
