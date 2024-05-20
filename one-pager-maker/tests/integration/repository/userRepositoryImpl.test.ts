@@ -11,10 +11,12 @@ describe("UserRepositoryImpl Test", () => {
 
     beforeAll(() => useFirestoreEmulator());
 
-    beforeEach(() => deleteFirestoreEmulatorData());
+    beforeEach(async () => {
+        await deleteFirestoreEmulatorData()
+    });
 
     describe('create()', function () {
-        test("returns correct data", async () => {
+        test("id field become primary key", async () => {
             const id = 'test';
             await repository.create(userFactory.build({
                 id,
@@ -24,4 +26,38 @@ describe("UserRepositoryImpl Test", () => {
             expect(result).toHaveProperty('id', id);
         })
     });
-})
+
+    describe('findMany()', function () {
+        test('should query by document id', async () => {
+            const id = 'abcde';
+            for (let i = 0; i < 5; i++) {
+                await repository.create(userFactory.build({
+                    id: id.slice(0, i + 1)
+                }));
+            }
+            const result = await repository.findMany({
+                orderBy: {
+                    field: 'id',
+                    direction: 'asc'
+                },
+                startAt: 'abc'
+            });
+
+            expect(result).toHaveLength(3);
+            expect(result).toEqual(
+                expect.arrayContaining([
+                        expect.objectContaining({
+                            id: 'abc'
+                        }),
+                        expect.objectContaining({
+                            id: 'abcd'
+                        }),
+                        expect.objectContaining({
+                            id: 'abcde'
+                        }),
+                    ]
+                )
+            )
+        });
+    });
+});

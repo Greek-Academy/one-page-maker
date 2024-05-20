@@ -6,7 +6,7 @@ import {
     QueryConstraint,
     startAfter,
     startAt, Timestamp,
-    where
+    where, documentId
 } from "firebase/firestore";
 
 export type OrderByDirection = 'asc' | 'desc';
@@ -50,7 +50,9 @@ export function buildQueryConstraints<T>(query: QueryParams<T>) {
     const constraints: QueryConstraint[] = [];
 
     if (query.orderBy && typeof query.orderBy.field === 'string') {
-        constraints.push(orderBy(query.orderBy.field, query.orderBy.direction))
+        const field = query.orderBy.field;
+        // field が 'id' の場合は documentId() を使用する
+        constraints.push(orderBy(field === 'id' ? documentId() : field, query.orderBy.direction))
     }
     if (query.startAt) constraints.push(startAt(query.startAt))
     if (query.startAfter) constraints.push(startAfter(query.startAfter))
@@ -59,8 +61,10 @@ export function buildQueryConstraints<T>(query: QueryParams<T>) {
     if (query.limit) constraints.push(limit(query.limit))
 
     const addWhereConstraint = (whereFilter: WhereFilter<T, keyof T>) => {
-        if (typeof whereFilter.field === 'string')
-            constraints.push(where(whereFilter.field, whereFilter.op, whereFilter.value))
+        if (typeof whereFilter.field === 'string') {
+            const field = whereFilter.field;
+            constraints.push(where(field === 'id' ? documentId() : field, whereFilter.op, whereFilter.value))
+        }
     }
 
     if (query.where instanceof Array) {
@@ -105,12 +109,22 @@ export const filterByQuery = <T>(val: T, query: QueryParams<T>): boolean => {
     }
 
     if (typeof field === 'string') {
+        // 開始点を含まない
         if (typeof query.startAfter === 'string') {
-            shouldContain &&= field >= query.startAfter;
+            shouldContain &&= field > query.startAfter;
         }
 
         if (typeof query.endBefore === 'string') {
-            shouldContain &&= field <= query.endBefore;
+            shouldContain &&= field < query.endBefore;
+        }
+
+        // 開始点を含む
+        if (typeof query.startAt === 'string') {
+            shouldContain &&= field >= query.startAt;
+        }
+
+        if (typeof query.endAt === 'string') {
+            shouldContain &&= field <= query.endAt;
         }
     }
 
