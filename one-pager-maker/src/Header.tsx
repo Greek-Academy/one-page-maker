@@ -29,7 +29,7 @@ function Header() {
                     <li>|</li>
                     <li><Link className="text-sm text-gray-400 hover:text-gray-500" to="/">About</Link></li>
                 </ul>
-                <a className="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200" onClick={() => {handleSignOut()}}>SignOut</a>                
+                <button className="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200" onClick={() => {handleSignOut()}}>Sign Out</button>                
             </nav>
         </header>) : (null)
     );    
