@@ -10,14 +10,12 @@ type Props = {
 
 export const RouteAuthGuard = (props: Props) => {
     const user = useAppSelector((state) => state.user.user);
-    console.log(user)
-    const { data: result, error: err } = userApi.useFindUserByUIDQuery(user?.uid ?? "");
-    console.log(result)
-    console.log(err)
+    const { data: result } = userApi.useFindUserByUIDQuery(user?.uid ?? "");
+
     if (!user) {
         return <Navigate to={props.redirect} state={{ from: useLocation() }} replace={false} />
     }
-    if (result === undefined) {
+    if (!result) {
         return <Navigate to={'/set-id'} />
     }
 

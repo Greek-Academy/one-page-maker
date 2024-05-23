@@ -65,7 +65,10 @@ export const userApi = {
         queryKey: [queryKeys.findUserByUID, queryKeys.userUId(uid)],
         queryFn: async () => {
             const result = await userService.findUserByUID(uid);
-            return result.value;
+            if (result && result.value !== undefined) {
+                return result.value;
+            }
+            return null;
         }
     }),
     useIsDuplicatedIdQuery: (id: string) => useQuery({

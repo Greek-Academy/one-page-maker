@@ -53,7 +53,7 @@ const SetId = () => {
             photoUrl: photoUrl ? photoUrl : "https://fonts.gstatic.com/s/materialsymbolsoutlined/v183/kJEhBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oFsI.woff2",
         }
         mutation.mutate(user)
-        navigate('/')
+        navigate('/', { replace: false })
     }, [formData]);
 
     return (
