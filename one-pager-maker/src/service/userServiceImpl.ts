@@ -57,8 +57,9 @@ export class UserServiceImpl implements UserService {
                     field: 'id',
                     direction: 'asc'
                 },
-                startAfter: query.id,
-                endBefore: query.id + '\uf8ff',
+                // 開始点を含む
+                startAt: query.id,
+                endAt: query.id + '\uf8ff',
             });
 
             return Result.success(users);
