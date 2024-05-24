@@ -3,6 +3,7 @@
 // ↑ これがないと test: {...} がエラーになる. 参考: https://stackoverflow.com/questions/77153736/troubleshooting-vitest-setup-in-vite-config-js-with-react-ts-template
 import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react'
+import * as path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -28,5 +29,10 @@ export default defineConfig({
         esbuildOptions: {
             tsconfig: 'tsconfig.json'
         }
+    },
+    resolve: {
+        alias: {
+            "@": path.resolve(__dirname, "./src"),
+        },
     },
 })
