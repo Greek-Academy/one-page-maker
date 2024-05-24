@@ -2,21 +2,23 @@ import './Edit.css'
 import {useEffect, useState} from 'react'
 import Markdown from 'react-markdown'
 import {useAppSelector} from '../redux/hooks.ts'
-import {useFetchDocumentQuery, useUpdateDocumentMutation} from "../redux/document/documentsApi.ts";
 import {Document, Status} from "../entity/documentType.ts";
 import {useNavigate, useParams} from "react-router-dom";
 import {UserSelectMenu} from "../stories/UserItem.tsx";
 import {RiPencilFill} from "react-icons/ri";
 import {BiCommentEdit} from "react-icons/bi";
 import {GoClock} from "react-icons/go";
+import {documentApi} from "../api/documentApi.ts";
 
 function Edit() {
   const navigate = useNavigate();
   const uid = useAppSelector(state => state.user.user?.uid);
   const displayName = useAppSelector(state => state.user.user?.displayName ?? "");
-  const {data: document} = useFetchDocumentQuery({ uid: uid ?? "", docId: useParams<{ id: string }>().id ?? "" });
-  const [documentData, setDocumentData] = useState(document);
-  const [updateDocument] = useUpdateDocumentMutation();
+  const params = useParams<{ id: string }>();
+
+  const document = documentApi.useGetDocumentQuery({ uid: uid ?? "", documentId: params.id ?? ''});
+  const [documentData, setDocumentData] = useState(document.data);
+  const updateDocument = documentApi.useUpdateDocumentMutation();
 
   function getDefaultContents() {
     return `# Summary
@@ -38,8 +40,8 @@ function Edit() {
   }  
 
   useEffect(() => {
-    if (document === undefined) return;
-    setDocumentData(document);
+    if (document.data === undefined) return;
+    setDocumentData(document.data);
     if (documentData?.contributors === undefined || documentData?.contributors?.length === 0) {
       updateDocumentState("contributors", [displayName]);
     }
@@ -72,7 +74,7 @@ function Edit() {
     if (documentData == undefined) return;
 
     try {
-      await updateDocument({ uid, documentData });
+      await updateDocument.mutateAsync({ uid, document: documentData });
       navigate(`/`);
     } catch (e) {
       alert(`エラー: ${e?.toString()}`)

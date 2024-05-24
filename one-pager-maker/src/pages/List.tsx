@@ -1,37 +1,28 @@
-import './List.css'
-import {
-    useCreateDocumentMutation,
-    useDeleteDocumentMutation,
-    useFetchDocumentsQuery
-} from "../redux/document/documentsApi.ts";
 import {AddDocumentButton, DocumentItem} from "../stories/DocumentItem.tsx";
 import {useNavigate} from "react-router-dom";
 import {auth} from '../firebase';
+import {viewHistoryApi} from "../api/viewHistoryApi.ts";
+import {ReactNode, useMemo} from "react";
+import {documentApi} from "../api/documentApi.ts";
 
-const getStatus = (isError: boolean, isLoading: boolean) => {
-    if (isError) return 'error'
-    if (isLoading) return 'loading'
-    return 'completed'
-}
-
-function List() {
+export default function List() {
     const uid = auth.currentUser?.uid ?? "";
-    const {
-        data,
-        error,
-        isError,
-        isLoading
-    } = useFetchDocumentsQuery({uid: uid});
-    const [createDocument] = useCreateDocumentMutation();
-    const [deleteDocument] = useDeleteDocumentMutation();
+    const createDocument = documentApi.useCreateDocumentMutation();
+    const deleteDocument = documentApi.useDeleteDocumentMutation();
     const navigate = useNavigate();
-    const status = getStatus(isError, isLoading);
+
+    const reviewHistories = viewHistoryApi.useGetReviewHistoryQuery({uid: uid});
+    const editHistories = viewHistoryApi.useGetEditHistoryQuery({uid: uid});
+
+    const documents = useMemo(() => {
+        return editHistories.data?.map(his => his.document);
+    }, [editHistories]);
 
     const handleCreate = async () => {
         try {
-            const result = await createDocument({uid: uid,});
-            if ('data' in result) {
-                navigate(`/edit/${result.data?.id}`);
+            const result = await createDocument.mutateAsync({uid: uid});
+            if (result !== undefined) {
+                navigate(`/edit/${result.id}`);
             }
         } catch (e) {
             alert(`エラー: ${e?.toString()}`)
@@ -43,17 +34,17 @@ function List() {
     }
 
     const handleDelete = async (id: string) => {
-        if (data === undefined) {
+        if (documents === undefined) {
             return;
         }
         try {
-            const document = data.find(d => d.id === id)
+            const document = documents.find(d => d.id === id)
 
             if (document === undefined) {
                 return;
             }
 
-            await deleteDocument({document});
+            await deleteDocument.mutateAsync({uid, documentId: id});
         } catch (e) {
             alert(`エラー: ${e?.toString()}`)
 
@@ -62,24 +53,35 @@ function List() {
 
     return (
         <main className={"bg-slate-100 h-screen"}>
-            <div className={"max-w-screen-lg mx-auto py-8 flex flex-col gap-6"}>
+            <div className={"max-w-screen-lg mx-auto px-4 py-8 flex flex-col gap-6"}>
                 <div>
                     <AddDocumentButton onClick={() => handleCreate()}/>
                 </div>
-                {status == 'loading' && <p>Loading...</p>}
-                {status == 'error' && <p>{error?.toString()}</p>}
-                {status == 'completed' &&
-                    <div className={'grid grid-cols-5 gap-x-4 gap-y-6'}>
-                        {data?.filter(d => d.deleted_at == null).map(d =>
-                            <DocumentItem key={d.id} document={d}
-                                          onDelete={handleDelete}
-                                          onClick={handleClickDocument}/>
-                        )}
-                    </div>
-                }
+                <div>
+                    <h2 className={"text-lg py-4"}>最近使用したドキュメント</h2>
+                    {editHistories.status === 'error' && (
+                        <p>{editHistories.error?.message}</p>
+                    )}
+                    {editHistories.status === 'success' && (
+                        <div className={'grid gap-x-4 gap-y-6 flex-wrap'} style={{
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))'
+                        }}>
+                            {documents?.map(d => (
+                                <DocumentItem key={d.id} document={d}
+                                              onDelete={handleDelete}
+                                              onClick={handleClickDocument}/>
+                            ))}
+                        </div>
+                    )}
+                    <h2 className={"text-lg py-4"}>最近使用したドキュメント</h2>
+                </div>
             </div>
         </main>
     )
 }
 
-export default List
+function Heading({children}: {
+    children: ReactNode
+}) {
+    ret
+}

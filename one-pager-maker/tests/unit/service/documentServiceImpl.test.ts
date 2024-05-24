@@ -1,16 +1,18 @@
 import {beforeEach, describe, expect, test} from "vitest";
 import {
     MockDocumentRepository
-} from "../../../src/repository/mockDocumentRepository";
+} from "../../_shared/mock/mockDocumentRepository";
 import {DocumentServiceImpl} from "../../../src/service/documentServiceImpl";
 import {mockDocument} from "../../../src/entity/mock";
+import {container} from "tsyringe";
+import {DI} from "../../../src/di";
 
 describe('DocumentServiceImpl', () => {
-    const documentRepository = new MockDocumentRepository();
-    const documentService = new DocumentServiceImpl(documentRepository);
+    const documentRepository = container.resolve<MockDocumentRepository>(DI.DocumentRepository);
+    const documentService = container.resolve<DocumentServiceImpl>(DI.DocumentService);
 
-    const testUid = 'testUser';
-    const testDocumentId = 'testDocument';
+    const uid = 'testUser';
+    const documentId = 'testDocument';
     const docForCreate = mockDocument.forCreate;
     const docForUpdate = mockDocument.forUpdate;
 
@@ -20,55 +22,34 @@ describe('DocumentServiceImpl', () => {
 
     describe('get()', () => {
         test('returns nothing if data is empty', async () => {
-            const result = await documentService.get(testUid, testDocumentId);
+            const result = await documentService.getDocument({uid, documentId});
             expect(result).toBe(undefined);
         });
 
         test('returns data if data exits', async () => {
             const createdDoc = await documentRepository.create({
-                uid: testUid,
+                uid: uid,
                 document: docForCreate
             });
-            const result = await documentService.get(testUid, createdDoc.id);
+            const result = await documentService.getDocument({uid, documentId: createdDoc.id});
             expect(result).toMatchObject(createdDoc);
-        })
-    });
-
-    describe('getMany()', () => {
-        test('returns [] if data is empty', async () => {
-            const result = await documentService.getMany(testUid);
-            expect(result).toHaveLength(0);
-        })
-
-        test('returns certain amount of data if data exits', async () => {
-            const amount = 5;
-
-            for (let i = 0; i < amount; i++) {
-                await documentRepository.create({
-                    uid: testUid,
-                    document: docForCreate
-                });
-            }
-
-            const result = await documentService.getMany(testUid);
-            expect(result).toHaveLength(amount);
         })
     });
 
     describe('create()', () => {
         test('returns proper data', async () => {
-            const result = await documentService.create(testUid);
+            const result = await documentService.createDocument(uid);
             expect(result).toMatchObject({
                 status: 'draft',
-                owner_id: testUid,
+                owner_id: uid,
                 url_privilege: 'private',
                 deleted_at: null
             })
         })
 
         test('add data to database properly', async () => {
-            await documentService.create(testUid);
-            const data = await documentRepository.getMany({uid: testUid});
+            await documentService.createDocument(uid);
+            const data = await documentRepository.getMany({uid: uid});
             expect(data).toHaveLength(1);
         })
     });
@@ -76,21 +57,21 @@ describe('DocumentServiceImpl', () => {
     describe('delete()', () => {
         test('returns proper data', async () => {
             const createdDoc = await documentRepository.create({
-                uid: testUid,
+                uid: uid,
                 document: docForCreate
             });
-            const result = await documentService.delete(testUid, createdDoc);
+            const result = await documentService.deleteDocument({uid, documentId: createdDoc.id});
             expect(result.deleted_at).not.toBe(null);
         })
 
         test('deletes data in database', async () => {
             const createdDoc = await documentRepository.create({
-                uid: testUid,
+                uid: uid,
                 document: docForCreate
             });
-            await documentService.delete(testUid, createdDoc);
+            await documentService.deleteDocument({uid, documentId: createdDoc.id});
             const deletedDoc = await documentRepository.get({
-                uid: testUid,
+                uid: uid,
                 documentId: createdDoc.id
             });
             expect(deletedDoc.deleted_at).not.toBe(null);
@@ -99,16 +80,18 @@ describe('DocumentServiceImpl', () => {
 
     describe('update()', () => {
         test('fails if data does not exist', () => {
-            expect(documentService.update(testUid, mockDocument.doc))
-                .rejects.toThrow();
+            expect(documentService.updateDocument(uid, {
+                id: documentId,
+                title: 'test',
+            })).rejects.toThrow();
         });
 
         test('returns proper data', async () => {
             const createdDoc = await documentRepository.create({
-                uid: testUid,
+                uid: uid,
                 document: docForCreate
             });
-            const result = await documentService.update(testUid, {
+            const result = await documentService.updateDocument(uid, {
                 ...createdDoc, ...docForUpdate
             });
             expect(result.updated_at).not.toBe(createdDoc.updated_at);
@@ -116,51 +99,17 @@ describe('DocumentServiceImpl', () => {
 
         test('updates data in database', async () => {
             const createdDoc = await documentRepository.create({
-                uid: testUid,
+                uid: uid,
                 document: docForCreate
             });
-            const result = await documentService.update(testUid, {
+            const result = await documentService.updateDocument(uid, {
                 ...createdDoc, ...docForUpdate
             });
             const docInDB = await documentRepository.get({
-                uid: testUid,
+                uid: uid,
                 documentId: createdDoc.id
             });
             expect(docInDB.updated_at).toBe(result.updated_at);
-        })
-    });
-
-    describe('updateTitle()', function () {
-        const newTitle = 'New Title';
-        test('fails if data does not exist', () => {
-            expect(documentService.updateTitle(testUid, mockDocument.doc, newTitle))
-                .rejects.toThrow();
-        });
-
-        test('returns proper data', async () => {
-            const createdDoc = await documentRepository.create({
-                uid: testUid,
-                document: docForCreate
-            });
-            const result = await documentService.updateTitle(testUid, {
-                ...createdDoc, ...docForUpdate
-            }, newTitle);
-            expect(result.title).toBe(newTitle);
-        })
-
-        test('updates data in database', async () => {
-            const createdDoc = await documentRepository.create({
-                uid: testUid,
-                document: docForCreate
-            });
-            const result = await documentService.updateTitle(testUid, {
-                ...createdDoc, ...docForUpdate
-            }, newTitle);
-            const docInDB = await documentRepository.get({
-                uid: testUid,
-                documentId: createdDoc.id
-            });
-            expect(docInDB.title).toBe(result.title);
         })
     });
 })

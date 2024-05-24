@@ -9,7 +9,7 @@ export class UserDomainServiceImpl implements UserDomainService {
         @inject(DI.UserRepository) private readonly userRepository: UserRepository
     ) {}
 
-    async isDuplicatedId(id: string): Promise<boolean> {
+    async exists(id: string): Promise<boolean> {
         const user = await this.userRepository.findUnique(id);
         return user !== undefined;
     }

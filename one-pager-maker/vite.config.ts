@@ -24,4 +24,9 @@ export default defineConfig({
             'tests/e2e/**'
         ]
     },
+    optimizeDeps: {
+        esbuildOptions: {
+            tsconfig: 'tsconfig.json'
+        }
+    },
 })

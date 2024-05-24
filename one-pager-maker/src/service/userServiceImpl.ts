@@ -31,7 +31,7 @@ export class UserServiceImpl implements UserService {
                 return Result.failure(new UserServiceError("You can't create user with unsigned-in user's data.", 'permission-denied'));
             }
 
-            const isDuplicated = await this.userDomainService.isDuplicatedId(args.id);
+            const isDuplicated = await this.userDomainService.exists(args.id);
 
             if (isDuplicated) {
                 return Result.failure(new UserServiceError("ID is duplicated.", 'duplicated-id'));

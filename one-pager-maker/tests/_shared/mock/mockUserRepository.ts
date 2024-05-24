@@ -26,7 +26,7 @@ export class MockUserRepository implements UserRepository {
     delete(id: string): Promise<void> {
         const index = this.store.findIndex((user) => user.id === id);
         if (index === -1) {
-            return Promise.reject(`User ${id} not found`);
+            return Promise.reject(new MockUserRepositoryError(`User ${id} not found`));
         }
         this.store.splice(index, 1);
         return Promise.resolve();
@@ -39,7 +39,7 @@ export class MockUserRepository implements UserRepository {
     update(user: ForUpdate<User>): Promise<void> {
         const index = this.store.findIndex((u) => u.id === user.id);
         if (index === -1) {
-            return Promise.reject(`User ${user.id} not found`);
+            return Promise.reject(new MockUserRepositoryError(`User ${user.id} not found`));
         }
         this.store[index] = {
             ...this.store[index],
@@ -58,4 +58,11 @@ export class MockUserRepository implements UserRepository {
         );
     }
 
+}
+
+class MockUserRepositoryError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'MockUserRepositoryError';
+    }
 }
