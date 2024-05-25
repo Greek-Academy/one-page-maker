@@ -87,6 +87,7 @@ export class ViewHistoryRepositoryImpl implements ViewHistoryRepository {
     }): Promise<void> {
         try {
             await this.clientManager.getClient().update(this.docRef(uid, viewHistory.id), {
+                ...viewHistory,
                 updated_at: serverTimestamp(),
             });
         } catch (e) {
