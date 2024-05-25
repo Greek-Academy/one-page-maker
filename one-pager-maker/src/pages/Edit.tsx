@@ -3,53 +3,29 @@ import {useEffect, useState} from 'react'
 import Markdown from 'react-markdown'
 import {useAppSelector} from '../redux/hooks.ts'
 import {Document, Status} from "../entity/documentType.ts";
-import {useNavigate, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {UserSelectMenu} from "../stories/UserItem.tsx";
 import {RiPencilFill} from "react-icons/ri";
 import {BiCommentEdit} from "react-icons/bi";
 import {GoClock} from "react-icons/go";
 import {documentApi} from "../api/documentApi.ts";
+import {viewHistoryApi} from "@/api/viewHistoryApi.ts";
 
 function Edit() {
-  const navigate = useNavigate();
   const uid = useAppSelector(state => state.user.user?.uid);
-  const displayName = useAppSelector(state => state.user.user?.displayName ?? "");
   const params = useParams<{ id: string }>();
 
   const document = documentApi.useGetDocumentQuery({ uid: uid ?? "", documentId: params.id ?? ''});
   const [documentData, setDocumentData] = useState(document.data);
   const updateDocument = documentApi.useUpdateDocumentMutation();
 
-  function getDefaultContents() {
-    return `# Summary
-- Item1
-- Item2
-- Item3
-
-# Background
-
-# Design/Proposal
-
-# Open questions
-
-# Reference
-
-# Memo
-
-  `;
-  }  
+  const editHistoryMutation = viewHistoryApi.useSetEditHistoryMutation();
+  const reviewHistoryMutation = viewHistoryApi.useSetReviewHistoryMutation();
 
   useEffect(() => {
     if (document.data === undefined) return;
     setDocumentData(document.data);
-    if (documentData?.contributors === undefined || documentData?.contributors?.length === 0) {
-      updateDocumentState("contributors", [displayName]);
-    }
-    if (documentData?.contents === undefined) {
-      // TODO:migrate to template
-      updateDocumentState("contents", getDefaultContents());
-    }
-  }, [document]);
+  }, [document.data]);
 
   const updateDocumentState = <K extends keyof Document>(key: K, val: Document[K]) => {
     setDocumentData(prev => prev === undefined ? prev : ({ ...prev, [key]: val }))
@@ -74,8 +50,14 @@ function Edit() {
     if (documentData == undefined) return;
 
     try {
-      await updateDocument.mutateAsync({ uid, document: documentData });
-      navigate(`/`);
+      const result = await updateDocument.mutateAsync({ uid, document: documentData });
+
+      // 更新したときに閲覧履歴を設定
+      if (documentData.status === 'reviewed') {
+        reviewHistoryMutation.mutate({uid, documentId: documentData.id, document: result });
+      } else {
+        editHistoryMutation.mutate({uid, documentId: documentData.id, document: result });
+      }
     } catch (e) {
       alert(`エラー: ${e?.toString()}`)
     }
