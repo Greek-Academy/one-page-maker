@@ -1,4 +1,4 @@
-import {beforeEach, describe, expect, test, vi} from "vitest";
+import {beforeEach, describe, expect, test} from "vitest";
 import {MockViewHistoryRepository} from "../../_shared/mock/mockViewHistoryRepository";
 import {viewHistoryFactory} from "../../_shared/factory/viewHistoryFactory";
 import {ViewHistory} from "../../../src/entity/viewHistoryType";
@@ -17,7 +17,6 @@ describe('ViewHistoryServiceImpl', function () {
     const userRepository = container.resolve<MockUserRepository>(DI.UserRepository);
     const documentRepository  = container.resolve<MockDocumentRepository>(DI.DocumentRepository);
 
-    const userId = 'test-user-id'
     const userUid = 'test-user-uid';
     const documentId = 'test-documentId';
 
