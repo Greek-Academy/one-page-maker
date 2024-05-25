@@ -1,4 +1,4 @@
-import {AddDocumentButton, DocumentItem} from "../stories/DocumentItem.tsx";
+import {DocumentItem} from "../stories/DocumentItem.tsx";
 import {useNavigate} from "react-router-dom";
 import {auth} from '../firebase';
 import {viewHistoryApi} from "../api/viewHistoryApi.ts";
@@ -6,6 +6,8 @@ import {useMemo} from "react";
 import {documentApi} from "../api/documentApi.ts";
 import ErrorContainer from "@/stories/ErrorContainer.tsx";
 import {Document} from "@/entity/documentType.ts";
+import {Button} from "@/components/ui/button.tsx";
+import {toUndeletedDocuments} from "@/entity/viewHistory/viewHistoryUtils.ts";
 
 export default function List() {
     const uid = auth.currentUser?.uid ?? "";
@@ -15,12 +17,14 @@ export default function List() {
 
     const editHistories = viewHistoryApi.useGetEditHistoryQuery({uid: uid});
     const reviewHistories = viewHistoryApi.useGetReviewHistoryQuery({uid: uid});
+    const editHistoryMutation = viewHistoryApi.useSetEditHistoryMutation();
 
     const editedDocuments = useMemo(() => {
-        return editHistories.data?.map(his => his.document) ?? [];
+        return toUndeletedDocuments(editHistories.data ?? []);
     }, [editHistories]);
+
     const reviewedDocuments = useMemo(() => {
-        return reviewHistories.data?.map(his => his.document) ?? [];
+        return toUndeletedDocuments(reviewHistories.data ?? []);
     }, [reviewHistories]);
 
     const handleCreate = async () => {
@@ -49,7 +53,8 @@ export default function List() {
                 return;
             }
 
-            await deleteDocument.mutateAsync({uid, documentId: id});
+            const deletedDoc = await deleteDocument.mutateAsync({uid, documentId: id});
+            await editHistoryMutation.mutateAsync({uid, documentId: id, document: deletedDoc});
         } catch (e) {
             alert(`エラー: ${e?.toString()}`)
 
@@ -57,10 +62,12 @@ export default function List() {
     }
 
     return (
-        <main className={"bg-slate-100 h-screen"}>
+        <main className={"bg-background h-min-screen"}>
             <div className={"max-w-screen-lg mx-auto px-4 py-8 flex flex-col gap-6"}>
                 <div>
-                    <AddDocumentButton onClick={() => handleCreate()}/>
+                    <Button onClick={handleCreate}>
+                        新規ドキュメントを作成
+                    </Button>
                 </div>
                 <DocumentListSection heading={"最近更新したドキュメント"}
                                      documents={editedDocuments}
@@ -88,12 +95,12 @@ function DocumentListSection({heading, documents, status, error, onDeleteDocumen
     onClickDocument: (id: string) => void
 }) {
     return (
-        <div>
+        <section>
             <h2 className={"text-lg py-4"}>{heading}</h2>
             {status === 'error' && (
                 <ErrorContainer>{error?.message}</ErrorContainer>
             )}
-            {status === 'success' && (
+            {status === 'success' && documents.length > 0 && (
                 <div className={'grid gap-x-4 gap-y-6 flex-wrap'} style={{
                     gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))'
                 }}>
@@ -104,6 +111,11 @@ function DocumentListSection({heading, documents, status, error, onDeleteDocumen
                     ))}
                 </div>
             )}
-        </div>
+            {status === 'success' && documents.length === 0 && (
+                <div className={"text-secondary-foreground text-sm"}>
+                    ドキュメントがありません
+                </div>
+            )}
+        </section>
     )
 }
