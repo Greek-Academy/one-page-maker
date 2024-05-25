@@ -34,15 +34,16 @@ const SetId = () => {
         try {
             assertZodSchema(idSchema, formData.userId)
         } catch {
-            alert(`User ID is allowed only alphanumeric characters, underscores (_), and hyphens (-).`);
+            alert('User ID is allowed only alphanumeric characters, underscores (_), and hyphens (-).');
             return
         }
 
         if (result.data) {
-            alert(`User ID "${formData.userId}" is already registerd.`);
+            alert('User ID is already registerd.');
             return
-        } else if (result.error) {
-            alert(`Server Internal Error. Please retry.`);
+        }
+        if (result.error) {
+            alert('Server Internal Error. Please retry.');
             return
         }
 
