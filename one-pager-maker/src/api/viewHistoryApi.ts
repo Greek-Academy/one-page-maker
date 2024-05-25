@@ -1,4 +1,4 @@
-import {QueryClient, useMutation, useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {OrderByDirection} from "../repository/shared/utils.ts";
 import {ViewHistory} from "../entity/viewHistoryType.ts";
 import {viewHistoryService} from "./services.ts";
@@ -38,32 +38,38 @@ export const viewHistoryApi = {
             return result;
         }
     }),
-    useSetEditHistoryMutation: (queryClient: QueryClient) => useMutation({
-        mutationFn: async (args: { uid: string, documentId: string, document?: Document }) => {
-            if (args.uid === "" || args.documentId === "")
-                return Promise.reject(new Error("Invalid args"));
-            try {
-                const result = await viewHistoryService.setEditHistory(args);
-                return result.value;
-            } catch (e) {
-                console.error(e);
-                return Promise.reject(e);
+    useSetEditHistoryMutation: () => {
+        const queryClient = useQueryClient();
+        return useMutation({
+            mutationFn: async (args: { uid: string, documentId: string, document?: Document }) => {
+                if (args.uid === "" || args.documentId === "")
+                    return Promise.reject(new Error("Invalid args"));
+                try {
+                    const result = await viewHistoryService.setEditHistory(args);
+                    return result.value;
+                } catch (e) {
+                    console.error(e);
+                    return Promise.reject(e);
+                }
+            },
+            onSuccess: async (history) => {
+                if (history === undefined) return;
+                await queryClient.refetchQueries({queryKey: [queryKeys.editHistoryId(history.id), queryKeys.editHistories]})
             }
-        },
-        onSuccess: async (history) => {
-            if (history === undefined) return;
-            await queryClient.refetchQueries({queryKey: [queryKeys.editHistoryId(history.id), queryKeys.editHistories]})
-        }
-    }),
-    useSetReviewHistoryMutation: (queryClient: QueryClient) => useMutation({
-        mutationFn: async (args: { uid: string, documentId: string, document?: Document }) => {
-            if (args.uid === "" || args.documentId === "") return;
-            const result = await viewHistoryService.setReviewHistory(args);
-            return result.value;
-        },
-        onSuccess: async (history) => {
-            if (history === undefined) return;
-            await queryClient.invalidateQueries({queryKey: [queryKeys.reviewHistoryId(history.id), queryKeys.reviewHistories]})
-        }
-    }),
+        })
+    },
+    useSetReviewHistoryMutation: () => {
+        const queryClient = useQueryClient();
+        return useMutation({
+            mutationFn: async (args: { uid: string, documentId: string, document?: Document }) => {
+                if (args.uid === "" || args.documentId === "") return;
+                const result = await viewHistoryService.setReviewHistory(args);
+                return result.value;
+            },
+            onSuccess: async (history) => {
+                if (history === undefined) return;
+                await queryClient.invalidateQueries({queryKey: [queryKeys.reviewHistoryId(history.id), queryKeys.reviewHistories]})
+            }
+        })
+    },
 };
