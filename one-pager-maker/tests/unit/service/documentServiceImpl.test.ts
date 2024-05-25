@@ -21,7 +21,7 @@ describe('DocumentServiceImpl', () => {
     describe('get()', () => {
         test('returns nothing if data is empty', async () => {
             const result = await documentService.getDocument({uid, documentId});
-            expect(result).toBe(undefined);
+            expect(result.value).toBe(undefined);
         });
 
         test('returns data if data exits', async () => {
@@ -30,7 +30,7 @@ describe('DocumentServiceImpl', () => {
                 document: docForCreate
             });
             const result = await documentService.getDocument({uid, documentId: createdDoc.id});
-            expect(result).toMatchObject(createdDoc);
+            expect(result.value).toMatchObject(createdDoc);
         })
     });
 
