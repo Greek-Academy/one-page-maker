@@ -9,7 +9,7 @@ describe('UserDomainServiceImpl', () => {
     const userRepository = container.resolve<MockUserRepository>(DI.UserRepository);
     const service = container.resolve(UserDomainServiceImpl);
 
-    describe('isDuplicatedId', () => {
+    describe('exists()', () => {
         test('returns false if id is not duplicated', async () => {
             const result = await service.exists('test');
             expect(result).toBe(false);
