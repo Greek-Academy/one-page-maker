@@ -1,10 +1,12 @@
 import {DocumentRepository} from "./documentRepository.ts";
-import {ForCreate, WithTimestamp} from "../entity/utils.ts";
+import {ForCreate, ForUpdate, WithTimestamp} from "../entity/utils.ts";
 import {Document, documentConverter} from "../entity/documentType.ts";
 import {collection, doc, serverTimestamp, Timestamp,} from "firebase/firestore";
 import {db} from "../firebase.ts";
 import {FirestoreClientManager} from "./shared/firestoreClientManager.ts";
+import {injectable} from "tsyringe";
 
+@injectable()
 export class DocumentRepositoryImpl implements DocumentRepository {
     private readonly colRef = (uid: string) => collection(db, `users/${uid}/documents`)
         .withConverter(documentConverter);
@@ -39,21 +41,25 @@ export class DocumentRepositoryImpl implements DocumentRepository {
         }
     }
 
-    async delete({uid, document}: {
+    async delete({uid, documentId}: {
         uid: string,
-        document: Document
+        documentId: string
     }): Promise<Document> {
         try {
-            await this.clientManager.getClient().update(this.docRef(uid, document.id), {
+            const ref = this.docRef(uid, documentId);
+            await this.clientManager.getClient().update(ref, {
                 updated_at: serverTimestamp(),
                 deleted_at: serverTimestamp(),
             });
 
-            return {
-                ...document,
-                updated_at: Timestamp.now(),
-                deleted_at: Timestamp.now()
-            };
+            const snapshot = await this.clientManager.getClient().get(ref);
+            const result = snapshot.data();
+
+            if (result === undefined) {
+                return Promise.reject(new Error("Document not found"));
+            }
+
+            return result;
         } catch (e) {
             return Promise.reject(e);
         }
@@ -82,15 +88,24 @@ export class DocumentRepositoryImpl implements DocumentRepository {
 
     async update({uid, document}: {
         uid: string;
-        document: Document
+        document: ForUpdate<Document>
     }): Promise<Document> {
         try {
-            await this.clientManager.getClient().update(this.docRef(uid, document.id), {
+            const ref = this.docRef(uid, document.id);
+            await this.clientManager.getClient().update(ref, {
                 ...document,
                 updated_at: serverTimestamp(),
             });
+
+            const snapshot = await this.clientManager.getClient().get(ref);
+            const result = snapshot.data();
+
+            if (result === undefined) {
+                return Promise.reject(new Error("Document not found"));
+            }
+
             return {
-                ...document,
+                ...result,
                 updated_at: Timestamp.now()
             };
         } catch (e) {

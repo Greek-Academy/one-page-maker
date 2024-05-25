@@ -6,8 +6,9 @@ import {
     QueryConstraint,
     startAfter,
     startAt, Timestamp,
-    where, documentId
+    where, documentId, FieldPath
 } from "firebase/firestore";
+import {FlattenObject} from "../../utils/typeUtils/flattenUtils.ts";
 
 export type OrderByDirection = 'asc' | 'desc';
 export type OrderBy<T> = {
@@ -15,10 +16,10 @@ export type OrderBy<T> = {
     direction: OrderByDirection
 }
 
-export type WhereFilter<T, K extends keyof T> = {
+export type WhereFilter<T, U extends FlattenObject<T> = FlattenObject<T>, K extends keyof U = keyof U> = {
     field: K,
     op: WhereFilterOp,
-    value: T[K],
+    value: U[K],
 }
 type WhereFilterOp =
     '<'
@@ -39,7 +40,7 @@ export type QueryParams<T> = {
     endAt?: unknown,
     endBefore?: unknown,
     limit?: number,
-    where?: WhereFilter<T, keyof T> | WhereFilter<T, keyof T>[]
+    where?: WhereFilter<T> | WhereFilter<T>[]
 }
 
 /**
@@ -60,10 +61,18 @@ export function buildQueryConstraints<T>(query: QueryParams<T>) {
     if (query.endBefore) constraints.push(endBefore(query.endBefore))
     if (query.limit) constraints.push(limit(query.limit))
 
-    const addWhereConstraint = (whereFilter: WhereFilter<T, keyof T>) => {
+    const addWhereConstraint = (whereFilter: WhereFilter<T>) => {
         if (typeof whereFilter.field === 'string') {
             const field = whereFilter.field;
-            constraints.push(where(field === 'id' ? documentId() : field, whereFilter.op, whereFilter.value))
+
+            if (field === 'id') {
+                constraints.push(where(documentId(), whereFilter.op, whereFilter.value))
+            } else if (field.includes('.')) {
+                const splitField = field.split('.');
+                constraints.push(where(new FieldPath(...splitField), whereFilter.op, whereFilter.value))
+            } else {
+                constraints.push(where(field, whereFilter.op, whereFilter.value))
+            }
         }
     }
 

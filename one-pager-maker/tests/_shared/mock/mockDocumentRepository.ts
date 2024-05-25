@@ -1,9 +1,11 @@
-import {DocumentRepository} from "./documentRepository.ts";
-import {ForCreate} from "../entity/utils.ts";
-import {Document} from "../entity/documentType.ts";
+import {DocumentRepository} from "../../../src/repository/documentRepository";
+import {ForCreate} from "../../../src/entity/utils";
+import {Document} from "../../../src/entity/documentType";
 import {Timestamp} from "firebase/firestore";
-import {MockDBRepository} from "./shared/mockDBRepository.ts";
+import {MockDBRepository} from "../../../src/repository/shared/mockDBRepository";
+import {singleton} from "tsyringe";
 
+@singleton()
 export class MockDocumentRepository implements DocumentRepository {
     private readonly mock = new MockDBRepository<Document>();
 
@@ -20,14 +22,14 @@ export class MockDocumentRepository implements DocumentRepository {
     }): Promise<Document> {
         const doc: Document = {
             ...document,
-            id: '',
             created_at: Timestamp.now(),
             updated_at: Timestamp.now(),
         }
         return this.mock.create({uid: uid, data: doc});
     }
 
-    async delete({uid, document}: { uid: string; document: Document }): Promise<Document> {
+    async delete({uid, documentId}: { uid: string; documentId: string }): Promise<Document> {
+        const document = await this.get({uid, documentId});
         const data = {
             ...document,
             id: document.id,

@@ -71,7 +71,7 @@ export const userApi = {
     useIsDuplicatedIdQuery: (id: string) => useQuery({
         queryKey: [queryKeys.isDuplicatedId, queryKeys.userId(id)],
         queryFn: async () => {
-            return await userDomainService.isDuplicatedId(id);
+            return await userDomainService.exists(id);
         }
     })
 }

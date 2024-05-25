@@ -1,37 +1,33 @@
-import './List.css'
-import {
-    useCreateDocumentMutation,
-    useDeleteDocumentMutation,
-    useFetchDocumentsQuery
-} from "../redux/document/documentsApi.ts";
 import {AddDocumentButton, DocumentItem} from "../stories/DocumentItem.tsx";
 import {useNavigate} from "react-router-dom";
 import {auth} from '../firebase';
+import {viewHistoryApi} from "../api/viewHistoryApi.ts";
+import {useMemo} from "react";
+import {documentApi} from "../api/documentApi.ts";
+import ErrorContainer from "@/stories/ErrorContainer.tsx";
+import {Document} from "@/entity/documentType.ts";
 
-const getStatus = (isError: boolean, isLoading: boolean) => {
-    if (isError) return 'error'
-    if (isLoading) return 'loading'
-    return 'completed'
-}
-
-function List() {
+export default function List() {
     const uid = auth.currentUser?.uid ?? "";
-    const {
-        data,
-        error,
-        isError,
-        isLoading
-    } = useFetchDocumentsQuery({uid: uid});
-    const [createDocument] = useCreateDocumentMutation();
-    const [deleteDocument] = useDeleteDocumentMutation();
+    const createDocument = documentApi.useCreateDocumentMutation();
+    const deleteDocument = documentApi.useDeleteDocumentMutation();
     const navigate = useNavigate();
-    const status = getStatus(isError, isLoading);
+
+    const editHistories = viewHistoryApi.useGetEditHistoryQuery({uid: uid});
+    const reviewHistories = viewHistoryApi.useGetReviewHistoryQuery({uid: uid});
+
+    const editedDocuments = useMemo(() => {
+        return editHistories.data?.map(his => his.document) ?? [];
+    }, [editHistories]);
+    const reviewedDocuments = useMemo(() => {
+        return reviewHistories.data?.map(his => his.document) ?? [];
+    }, [reviewHistories]);
 
     const handleCreate = async () => {
         try {
-            const result = await createDocument({uid: uid,});
-            if ('data' in result) {
-                navigate(`/edit/${result.data?.id}`);
+            const result = await createDocument.mutateAsync({uid: uid});
+            if (result !== undefined) {
+                navigate(`/edit/${result.id}`);
             }
         } catch (e) {
             alert(`エラー: ${e?.toString()}`)
@@ -42,18 +38,20 @@ function List() {
         navigate(`/edit/${id}`);
     }
 
-    const handleDelete = async (id: string) => {
-        if (data === undefined) {
-            return;
-        }
+    const handleDeleteDocument = async (id: string) => {
+        // edited と reviewed から id に一致するドキュメントを探す
+        const findDocumentById = (id: string) =>
+            editedDocuments.find(d => d.id === id) ??
+            reviewedDocuments.find(d => d.id === id);
+
         try {
-            const document = data.find(d => d.id === id)
+            const document = findDocumentById(id);
 
             if (document === undefined) {
                 return;
             }
 
-            await deleteDocument({document});
+            await deleteDocument.mutateAsync({uid, documentId: id});
         } catch (e) {
             alert(`エラー: ${e?.toString()}`)
 
@@ -62,24 +60,52 @@ function List() {
 
     return (
         <main className={"bg-slate-100 h-screen"}>
-            <div className={"max-w-screen-lg mx-auto py-8 flex flex-col gap-6"}>
+            <div className={"max-w-screen-lg mx-auto px-4 py-8 flex flex-col gap-6"}>
                 <div>
                     <AddDocumentButton onClick={() => handleCreate()}/>
                 </div>
-                {status == 'loading' && <p>Loading...</p>}
-                {status == 'error' && <p>{error?.toString()}</p>}
-                {status == 'completed' &&
-                    <div className={'grid grid-cols-5 gap-x-4 gap-y-6'}>
-                        {data?.filter(d => d.deleted_at == null).map(d =>
-                            <DocumentItem key={d.id} document={d}
-                                          onDelete={handleDelete}
-                                          onClick={handleClickDocument}/>
-                        )}
-                    </div>
-                }
+                <DocumentListSection heading={"最近更新したドキュメント"}
+                                     documents={editedDocuments}
+                                     status={editHistories.status}
+                                     error={editHistories.error}
+                                     onDeleteDocument={handleDeleteDocument}
+                                     onClickDocument={handleClickDocument}/>
+                <DocumentListSection heading={"最近レビューしたドキュメント"}
+                                     documents={reviewedDocuments}
+                                     status={reviewHistories.status}
+                                     error={reviewHistories.error}
+                                     onDeleteDocument={handleDeleteDocument}
+                                     onClickDocument={handleClickDocument}/>
             </div>
         </main>
     )
 }
 
-export default List
+function DocumentListSection({heading, documents, status, error, onDeleteDocument, onClickDocument}: {
+    heading: string
+    documents: Document[],
+    status: 'success' | 'error' | 'pending',
+    error: Error | null,
+    onDeleteDocument: (id: string) => void,
+    onClickDocument: (id: string) => void
+}) {
+    return (
+        <div>
+            <h2 className={"text-lg py-4"}>{heading}</h2>
+            {status === 'error' && (
+                <ErrorContainer>{error?.message}</ErrorContainer>
+            )}
+            {status === 'success' && (
+                <div className={'grid gap-x-4 gap-y-6 flex-wrap'} style={{
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))'
+                }}>
+                    {documents?.map(d => (
+                        <DocumentItem key={d.id} document={d}
+                                      onDelete={onDeleteDocument}
+                                      onClick={onClickDocument}/>
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}

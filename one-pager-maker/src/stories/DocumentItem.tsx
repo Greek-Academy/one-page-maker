@@ -17,16 +17,8 @@ export const DocumentItem = ({document, onClick, onDelete}: {
     return (
         <div className={'flex flex-col gap-2'}>
             <button onClick={() => onClick(document.id)}>
-                <div className={'bg-white aspect-[3/4] p-4 rounded-md text-xs text-gray-600 ' +
-                    'transition hover:bg-gray-50 text-left'} style={{
-
-                    boxSizing: "border-box",
-                    resize: "horizontal",
-                    overflow: "auto",
-                    msOverflowStyle: "none",
-                    /* Firefox 対応 */
-                    scrollbarWidth: "none"
-                }}>
+                <div className={'bg-white aspect-[3/4] p-4 rounded-md text-[0.6rem] text-gray-600 ' +
+                    'transition hover:bg-gray-50 text-left whitespace-pre'}>
                     {document.contents}
                 </div>
             </button>

@@ -1,3 +1,3 @@
 export interface UserDomainService {
-    isDuplicatedId(id: string): Promise<boolean>;
+    exists(id: string): Promise<boolean>;
 }

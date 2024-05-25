@@ -22,7 +22,7 @@ describe("UserRepositoryImpl Test", () => {
                 id,
             }));
             const result = await repository.findUnique(id);
-            expect(result).not.toBeUndefined();
+            expect(result).toBeDefined();
             expect(result).toHaveProperty('id', id);
         })
     });
@@ -40,7 +40,8 @@ describe("UserRepositoryImpl Test", () => {
                     field: 'id',
                     direction: 'asc'
                 },
-                startAt: 'abc'
+                startAt: 'abc',
+                endAt: 'abc\uf8ff',
             });
 
             expect(result).toHaveLength(3);
@@ -59,5 +60,23 @@ describe("UserRepositoryImpl Test", () => {
                 )
             )
         });
+
+        test('should query by empty document id', async () => {
+            const id = 'ubY1R56xnNcHzptUcTUQmVpPBXz1';
+            await repository.create(userFactory.build({
+                id
+            }));
+            const result = await repository.findMany({
+                orderBy: {
+                    field: 'id',
+                    direction: 'asc'
+                },
+                startAt: '',
+                endAt: '\uf8ff',
+            });
+
+            expect(result).toHaveLength(1);
+        })
     });
 });
+

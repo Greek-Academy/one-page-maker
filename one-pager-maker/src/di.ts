@@ -7,4 +7,7 @@ export const DI = {
 
     ViewHistoryRepository: 'ViewHistoryRepository',
     ViewHistoryService: 'ViewHistoryService',
+
+    DocumentRepository: 'DocumentRepository',
+    DocumentService: 'DocumentService',
 }
