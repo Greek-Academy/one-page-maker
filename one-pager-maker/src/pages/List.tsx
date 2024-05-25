@@ -31,15 +31,11 @@ export default function List() {
         try {
             const result = await createDocument.mutateAsync({uid: uid});
             if (result !== undefined) {
-                navigate(`/edit/${result.id}`);
+                navigate(`/edit/${result.owner_id}/${result.id}`);
             }
         } catch (e) {
             alert(`エラー: ${e?.toString()}`)
         }
-    }
-
-    const handleClickDocument = (id: string) => {
-        navigate(`/edit/${id}`);
     }
 
     const handleDeleteDocument = async (id: string) => {
@@ -73,25 +69,22 @@ export default function List() {
                                  documents={editedDocuments}
                                  status={editHistories.status}
                                  error={editHistories.error}
-                                 onDeleteDocument={handleDeleteDocument}
-                                 onClickDocument={handleClickDocument}/>
+                                 onDeleteDocument={handleDeleteDocument}/>
             <DocumentListSection heading={"最近レビューしたドキュメント"}
                                  documents={reviewedDocuments}
                                  status={reviewHistories.status}
                                  error={reviewHistories.error}
-                                 onDeleteDocument={handleDeleteDocument}
-                                 onClickDocument={handleClickDocument}/>
+                                 onDeleteDocument={handleDeleteDocument}/>
         </main>
     )
 }
 
-function DocumentListSection({heading, documents, status, error, onDeleteDocument, onClickDocument}: {
+function DocumentListSection({heading, documents, status, error, onDeleteDocument}: {
     heading: string
     documents: Document[],
     status: 'success' | 'error' | 'pending',
     error: Error | null,
-    onDeleteDocument: (id: string) => void,
-    onClickDocument: (id: string) => void
+    onDeleteDocument: (id: string) => void
 }) {
     return (
         <section>
@@ -110,8 +103,7 @@ function DocumentListSection({heading, documents, status, error, onDeleteDocumen
                 <Grid>
                     {documents?.map(d => (
                         <DocumentItem key={d.id} document={d}
-                                      onDelete={onDeleteDocument}
-                                      onClick={onClickDocument}/>
+                                      onDelete={onDeleteDocument}/>
                     ))}
                 </Grid>
             )}

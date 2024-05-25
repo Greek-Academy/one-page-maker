@@ -1,7 +1,6 @@
 import './Edit.css'
 import {useEffect, useState} from 'react'
 import Markdown from 'react-markdown'
-import {useAppSelector} from '../redux/hooks.ts'
 import {Document, Status} from "../entity/documentType.ts";
 import {useParams} from "react-router-dom";
 import {UserSelectMenu} from "../stories/UserItem.tsx";
@@ -12,10 +11,14 @@ import {documentApi} from "../api/documentApi.ts";
 import {viewHistoryApi} from "@/api/viewHistoryApi.ts";
 
 function Edit() {
-  const uid = useAppSelector(state => state.user.user?.uid);
-  const params = useParams<{ id: string }>();
+  const {uid, documentId} = useParams<{ uid: string, documentId: string }>();
 
-  const document = documentApi.useGetDocumentQuery({ uid: uid ?? "", documentId: params.id ?? ''});
+  if (uid === undefined || documentId === undefined) {
+    // this is called when route setting is wrong
+    return <main>Route setting is wrong</main>
+  }
+
+  const document = documentApi.useGetDocumentQuery({ uid, documentId});
   const [documentData, setDocumentData] = useState(document.data);
   const updateDocument = documentApi.useUpdateDocumentMutation();
 

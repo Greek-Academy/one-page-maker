@@ -2,20 +2,20 @@ import {Document} from "../entity/documentType.ts";
 import {EllipsisIcon} from "lucide-react";
 import {Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger} from "@/components/ui/menubar.tsx";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
+import {Link} from "react-router-dom";
 
-export const DocumentItem = ({document, onClick, onDelete}: {
+export const DocumentItem = ({document, onDelete}: {
     document: Document,
-    onClick: (id: string) => void,
     onDelete: (id: string) => void,
 }) => {
     return (
         <div className={'flex flex-col gap-3'}>
-            <button onClick={() => onClick(document.id)}>
+            <Link to={`/edit/${document.owner_id}/${document.id}`}>
                 <div className={'bg-card drop-shadow aspect-[3/4] p-4 rounded-md text-[0.6rem] text-gray-600 ' +
                     'transition hover:bg-gray-50 text-left whitespace-pre'}>
                     {document.contents}
                 </div>
-            </button>
+            </Link>
             <div className={'flex flex-row justify-between items-center'}>
                 <div className={'flex flex-col gap-1'}>
                     <p className={'text-gray-700 text-base'}>
