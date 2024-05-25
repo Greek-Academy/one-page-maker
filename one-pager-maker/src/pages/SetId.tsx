@@ -53,8 +53,9 @@ const SetId = () => {
             photoUrl: photoUrl ? photoUrl : "https://fonts.gstatic.com/s/materialsymbolsoutlined/v183/kJEhBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oFsI.woff2",
         }
         mutation.mutate(user)
-        navigate('/', { replace: false })
-    }, [formData]);
+        navigate('/login')
+        alert('Success setting your User ID! \nPlease sign in again.')
+    }, [formData, result]);
 
     return (
         <div className={"set-id flex flex-col justify-center items-center bg-slate-100 h-screen"}>

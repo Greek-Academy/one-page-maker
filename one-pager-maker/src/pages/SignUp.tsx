@@ -72,7 +72,7 @@ const SignUp = () => {
         }).catch((err) => {
             alert(`エラー: ${err?.toString()}`);
         });
-    }, [formData]);
+    }, [formData, result]);
 
     return (
         <div className={"sign-up flex flex-col justify-center items-center bg-slate-100 h-screen"}>
