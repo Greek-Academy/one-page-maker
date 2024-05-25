@@ -13,7 +13,6 @@ export const DocumentItem = ({document, onClick, onDelete}: {
     const ref = useDetectClickOutside({
         onTriggered: () => setOpenMenu(false)
     })
-    console.log(document.contents);
 
     return (
         <div className={'flex flex-col gap-2'}>
