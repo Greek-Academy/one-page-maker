@@ -18,7 +18,7 @@ export const viewHistoryApi = {
         lastFetched?: ViewHistory,
         limit?: number,
     }) => useQuery({
-        queryKey: [queryKeys.editHistories, args.uid, args.orderBy, args.lastFetched, args.limit],
+        queryKey: [queryKeys.editHistories],
         queryFn: async () => {
             if (args.uid === "") return [];
             const result = await viewHistoryService.getEditHistory(args);
@@ -31,7 +31,7 @@ export const viewHistoryApi = {
         lastFetched?: ViewHistory,
         limit?: number,
     }) => useQuery({
-        queryKey: [queryKeys.reviewHistories, args.uid, args.orderBy, args.lastFetched, args.limit],
+        queryKey: [queryKeys.reviewHistories],
         queryFn: async () => {
             if (args.uid === "") return [];
             const result = await viewHistoryService.getReviewHistory(args);
@@ -54,7 +54,15 @@ export const viewHistoryApi = {
             },
             onSuccess: async (history) => {
                 if (history === undefined) return;
-                await queryClient.refetchQueries({queryKey: [queryKeys.editHistoryId(history.id), queryKeys.editHistories]})
+                // queryClient.setQueryData([queryKeys.editHistoryId(history.id)], history);
+                queryClient.setQueryData<ViewHistory[]>([queryKeys.editHistories], (old) => {
+                    if (old === undefined) return old;
+                    const hisIndex = old.findIndex(his => his.id === history.id);
+                    if (hisIndex === -1) return old;
+                    old[hisIndex] = history;
+                    return old;
+                });
+                // await queryClient.refetchQueries({queryKey: [, queryKeys.editHistories]})
             }
         })
     },

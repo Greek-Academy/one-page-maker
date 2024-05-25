@@ -64,7 +64,6 @@ export class DocumentServiceImpl implements DocumentService {
 
     async deleteDocument({uid, documentId}: {uid: string, documentId: string}): Promise<Document> {
         try {
-            await this.viewHistoryService.setEditHistory({uid, documentId: documentId});
             return await this.documentRepository.delete({
                 uid, documentId
             });
