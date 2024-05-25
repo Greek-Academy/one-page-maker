@@ -1,8 +1,8 @@
-import {DocumentItem} from "../stories/DocumentItem.tsx";
+import {DocumentItem, SkeletonDocumentItem} from "../stories/DocumentItem.tsx";
 import {useNavigate} from "react-router-dom";
 import {auth} from '../firebase';
 import {viewHistoryApi} from "../api/viewHistoryApi.ts";
-import {useMemo} from "react";
+import {ReactNode, useMemo} from "react";
 import {documentApi} from "../api/documentApi.ts";
 import ErrorContainer from "@/stories/ErrorContainer.tsx";
 import {Document} from "@/entity/documentType.ts";
@@ -62,26 +62,25 @@ export default function List() {
     }
 
     return (
-        <main className={"bg-background h-min-screen"}>
-            <div className={"max-w-screen-lg mx-auto px-4 py-8 flex flex-col gap-6"}>
-                <div>
-                    <Button onClick={handleCreate}>
-                        新規ドキュメントを作成
-                    </Button>
-                </div>
-                <DocumentListSection heading={"最近更新したドキュメント"}
-                                     documents={editedDocuments}
-                                     status={editHistories.status}
-                                     error={editHistories.error}
-                                     onDeleteDocument={handleDeleteDocument}
-                                     onClickDocument={handleClickDocument}/>
-                <DocumentListSection heading={"最近レビューしたドキュメント"}
-                                     documents={reviewedDocuments}
-                                     status={reviewHistories.status}
-                                     error={reviewHistories.error}
-                                     onDeleteDocument={handleDeleteDocument}
-                                     onClickDocument={handleClickDocument}/>
+        <main className={"bg-background h-min-screen " +
+            "max-w-screen-lg mx-auto px-4 py-8 flex flex-col gap-6"}>
+            <div>
+                <Button onClick={handleCreate}>
+                    新規ドキュメントを作成
+                </Button>
             </div>
+            <DocumentListSection heading={"最近更新したドキュメント"}
+                                 documents={editedDocuments}
+                                 status={editHistories.status}
+                                 error={editHistories.error}
+                                 onDeleteDocument={handleDeleteDocument}
+                                 onClickDocument={handleClickDocument}/>
+            <DocumentListSection heading={"最近レビューしたドキュメント"}
+                                 documents={reviewedDocuments}
+                                 status={reviewHistories.status}
+                                 error={reviewHistories.error}
+                                 onDeleteDocument={handleDeleteDocument}
+                                 onClickDocument={handleClickDocument}/>
         </main>
     )
 }
@@ -100,22 +99,39 @@ function DocumentListSection({heading, documents, status, error, onDeleteDocumen
             {status === 'error' && (
                 <ErrorContainer>{error?.message}</ErrorContainer>
             )}
+            {status === 'pending' && (
+                <Grid>
+                    {[0, 0, 0].map((_) => (
+                        <SkeletonDocumentItem key={_}/>
+                    ))}
+                </Grid>
+            )}
             {status === 'success' && documents.length > 0 && (
-                <div className={'grid gap-x-4 gap-y-6 flex-wrap'} style={{
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))'
-                }}>
+                <Grid>
                     {documents?.map(d => (
                         <DocumentItem key={d.id} document={d}
                                       onDelete={onDeleteDocument}
                                       onClick={onClickDocument}/>
                     ))}
-                </div>
+                </Grid>
             )}
             {status === 'success' && documents.length === 0 && (
-                <div className={"text-secondary-foreground text-sm"}>
+                <div className={"text-secondary-foreground text-base"}>
                     ドキュメントがありません
                 </div>
             )}
         </section>
+    )
+}
+
+function Grid({children}: {
+    children: ReactNode
+}) {
+    return (
+        <div className={'grid gap-x-4 gap-y-6 flex-wrap'} style={{
+            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))'
+        }}>
+            {children}
+        </div>
     )
 }

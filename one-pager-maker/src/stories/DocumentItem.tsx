@@ -1,6 +1,7 @@
 import {Document} from "../entity/documentType.ts";
 import {EllipsisIcon} from "lucide-react";
 import {Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger} from "@/components/ui/menubar.tsx";
+import {Skeleton} from "@/components/ui/skeleton.tsx";
 
 export const DocumentItem = ({document, onClick, onDelete}: {
     document: Document,
@@ -37,6 +38,23 @@ export const DocumentItem = ({document, onClick, onDelete}: {
                             </MenubarContent>
                         </MenubarMenu>
                     </Menubar>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export function SkeletonDocumentItem() {
+    return (
+        <div className={'flex flex-col gap-3'}>
+            <Skeleton className={'aspect-[3/4] p-4'}/>
+            <div className={'flex flex-row justify-between items-center'}>
+                <div className={'flex flex-col gap-1 w-full'}>
+                    <Skeleton className={'w-3/5 h-4'}/>
+                    <Skeleton className={'w-2/5 h-3'}/>
+                </div>
+                <div>
+                    <Skeleton className={'h-6 w-6'}/>
                 </div>
             </div>
         </div>
