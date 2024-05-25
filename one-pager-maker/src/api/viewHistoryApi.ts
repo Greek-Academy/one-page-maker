@@ -17,59 +17,62 @@ export const viewHistoryApi = {
         orderBy?: OrderByDirection;
         lastFetched?: ViewHistory,
         limit?: number,
-    }) => useQuery({
-        queryKey: [queryKeys.editHistories, args.uid, args.orderBy, args.lastFetched, args.limit],
-        queryFn: async () => {
-            if (args.uid === "") return [];
-            const result = await viewHistoryService.getEditHistory(args);
-            return result;
-        }
-    }),
+    }) => useGetViewHistoryQuery('edit', args),
     useGetReviewHistoryQuery: (args: {
         uid: string;
         orderBy?: OrderByDirection;
         lastFetched?: ViewHistory,
         limit?: number,
-    }) => useQuery({
-        queryKey: [queryKeys.reviewHistories, args.uid, args.orderBy, args.lastFetched, args.limit],
-        queryFn: async () => {
-            if (args.uid === "") return [];
-            const result = await viewHistoryService.getReviewHistory(args);
-            return result;
-        }
-    }),
-    useSetEditHistoryMutation: () => {
-        const queryClient = useQueryClient();
-        return useMutation({
-            mutationFn: async (args: { uid: string, documentId: string, document?: Document }) => {
-                if (args.uid === "" || args.documentId === "")
-                    return Promise.reject(new Error("Invalid args"));
-                try {
-                    const result = await viewHistoryService.setEditHistory(args);
-                    return result.value;
-                } catch (e) {
-                    console.error(e);
-                    return Promise.reject(e);
-                }
-            },
-            onSuccess: async (history) => {
-                if (history === undefined) return;
-                await queryClient.refetchQueries({queryKey: [queryKeys.editHistoryId(history.id), queryKeys.editHistories]})
-            }
-        })
-    },
-    useSetReviewHistoryMutation: () => {
-        const queryClient = useQueryClient();
-        return useMutation({
-            mutationFn: async (args: { uid: string, documentId: string, document?: Document }) => {
-                if (args.uid === "" || args.documentId === "") return;
-                const result = await viewHistoryService.setReviewHistory(args);
-                return result.value;
-            },
-            onSuccess: async (history) => {
-                if (history === undefined) return;
-                await queryClient.invalidateQueries({queryKey: [queryKeys.reviewHistoryId(history.id), queryKeys.reviewHistories]})
-            }
-        })
-    },
+    }) => useGetViewHistoryQuery('review', args),
+    useSetEditHistoryMutation: () => useSetViewHistoryMutation('edit'),
+    useSetReviewHistoryMutation: () => useSetViewHistoryMutation('review')
 };
+
+const useGetViewHistoryQuery = (type: 'edit' | 'review', args: {
+    uid: string;
+    orderBy?: OrderByDirection;
+    lastFetched?: ViewHistory,
+    limit?: number,
+}) => {
+    const queryKey = [type === 'edit' ? queryKeys.editHistories : queryKeys.reviewHistories];
+    return useQuery({
+        queryKey: queryKey,
+        queryFn: async () => {
+            return type === 'edit'
+                ? (await viewHistoryService.getEditHistory(args))
+                : (await viewHistoryService.getReviewHistory(args));
+        }
+    });
+
+}
+
+const useSetViewHistoryMutation = (type: 'edit' | 'review') => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (args: { uid: string, documentId: string, document?: Document }) => {
+            if (args.uid === "" || args.documentId === "")
+                return Promise.reject(new Error("Invalid args"));
+            try {
+                const result = type === 'edit'
+                    ? (await viewHistoryService.setEditHistory(args))
+                    : (await viewHistoryService.setReviewHistory(args));
+                return result.value;
+            } catch (e) {
+                console.error(e);
+                return Promise.reject(e);
+            }
+        },
+        onSuccess: async (history) => {
+            if (history === undefined) return;
+            const queryKey = [type === 'edit' ? queryKeys.editHistories : queryKeys.reviewHistories];
+            queryClient.setQueryData<ViewHistory[]>(queryKey, (old) => {
+                if (old === undefined) return old;
+                const hisIndex = old.findIndex(his => his.id === history.id);
+                if (hisIndex === -1) return old;
+                old[hisIndex] = history;
+                return old;
+            });
+        }
+    })
+}
