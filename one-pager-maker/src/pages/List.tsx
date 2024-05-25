@@ -39,11 +39,13 @@ export default function List() {
     }
 
     const handleDeleteDocument = async (id: string) => {
+        // edited と reviewed から id に一致するドキュメントを探す
+        const findDocumentById = (id: string) =>
+            editedDocuments.find(d => d.id === id) ??
+            reviewedDocuments.find(d => d.id === id);
+
         try {
-            // edited と reviewed から id に一致するドキュメントを探す
-            const document =
-                editedDocuments.find(d => d.id === id) ??
-                reviewedDocuments.find(d => d.id === id);
+            const document = findDocumentById(id);
 
             if (document === undefined) {
                 return;
