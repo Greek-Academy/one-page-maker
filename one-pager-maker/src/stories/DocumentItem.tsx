@@ -21,7 +21,7 @@ export const DocumentItem = ({document, onClick, onDelete}: {
                     <p className={'text-gray-700 text-base'}>
                         {document.title}
                     </p>
-                    <p className={'text-gray-600 text-xs'}>
+                    <p className={'text-gray-600 text-sm'}>
                         {document.updated_at.toDate().toLocaleString()}
                     </p>
                 </div>
