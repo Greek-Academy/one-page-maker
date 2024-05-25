@@ -64,15 +64,15 @@ export default function List() {
             "max-w-screen-lg mx-auto px-4 py-8 flex flex-col gap-6"}>
             <div>
                 <Button onClick={handleCreate}>
-                    新規ドキュメントを作成
+                    Start a new document
                 </Button>
             </div>
-            <DocumentListSection heading={"最近更新したドキュメント"}
+            <DocumentListSection heading={"Recent documents"}
                                  documents={editedDocuments}
                                  status={editHistories.status}
                                  error={editHistories.error}
                                  onDeleteDocument={handleDeleteDocument}/>
-            <DocumentListSection heading={"最近レビューしたドキュメント"}
+            <DocumentListSection heading={"Recently reviewed documents"}
                                  documents={reviewedDocuments}
                                  status={reviewHistories.status}
                                  error={reviewHistories.error}
@@ -110,8 +110,9 @@ function DocumentListSection({heading, documents, status, error, onDeleteDocumen
                 </Grid>
             )}
             {status === 'success' && documents.length === 0 && (
-                <div className={"text-secondary-foreground text-base"}>
-                    ドキュメントがありません
+                <div className={"text-secondary-foreground text-base " +
+                    "shadow w-full p-4"}>
+                    No text documents yet
                 </div>
             )}
         </section>

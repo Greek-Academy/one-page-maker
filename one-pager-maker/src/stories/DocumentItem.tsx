@@ -1,5 +1,5 @@
 import {Document} from "../entity/documentType.ts";
-import {EllipsisIcon} from "lucide-react";
+import {EllipsisIcon, Trash2Icon} from "lucide-react";
 import {Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger} from "@/components/ui/menubar.tsx";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import {Link} from "react-router-dom";
@@ -33,7 +33,7 @@ export const DocumentItem = ({document, onDelete}: {
                             </MenubarTrigger>
                             <MenubarContent>
                                 <MenubarItem onClick={() => onDelete(document.id)}>
-                                    ドキュメントを削除
+                                    <Trash2Icon className='h-4 w-4 mr-2'/>Remove
                                 </MenubarItem>
                             </MenubarContent>
                         </MenubarMenu>
