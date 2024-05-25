@@ -20,7 +20,7 @@ export const userSlice = createSlice({
             state.status = 'success'
         },
         logout: (state) => {
-            state.status = 'pending'
+            state.status = 'success'
             state.data.user = null
         },
     },
