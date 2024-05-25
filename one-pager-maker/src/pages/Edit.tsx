@@ -1,52 +1,34 @@
 import './Edit.css'
 import {useEffect, useState} from 'react'
 import Markdown from 'react-markdown'
-import {useAppSelector} from '../redux/hooks.ts'
-import {useFetchDocumentQuery, useUpdateDocumentMutation} from "../redux/document/documentsApi.ts";
 import {Document, Status} from "../entity/documentType.ts";
-import {useNavigate, useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {UserSelectMenu} from "../stories/UserItem.tsx";
 import {RiPencilFill} from "react-icons/ri";
 import {BiCommentEdit} from "react-icons/bi";
 import {GoClock} from "react-icons/go";
+import {documentApi} from "../api/documentApi.ts";
+import {viewHistoryApi} from "@/api/viewHistoryApi.ts";
 
 function Edit() {
-  const navigate = useNavigate();
-  const uid = useAppSelector(state => state.user.user?.uid);
-  const displayName = useAppSelector(state => state.user.user?.displayName ?? "");
-  const {data: document} = useFetchDocumentQuery({ uid: uid ?? "", docId: useParams<{ id: string }>().id ?? "" });
+  const {uid, documentId} = useParams<{ uid: string, documentId: string }>();
+
+  if (uid === undefined || documentId === undefined) {
+    // this is called when route setting is wrong
+    return <main>Route setting is wrong</main>
+  }
+
+  const documentResult = documentApi.useGetDocumentQuery({ uid, documentId});
+  const document = documentResult.data?.value;
   const [documentData, setDocumentData] = useState(document);
-  const [updateDocument] = useUpdateDocumentMutation();
+  const updateDocument = documentApi.useUpdateDocumentMutation();
 
-  function getDefaultContents() {
-    return `# Summary
-- Item1
-- Item2
-- Item3
-
-# Background
-
-# Design/Proposal
-
-# Open questions
-
-# Reference
-
-# Memo
-
-  `;
-  }  
+  const editHistoryMutation = viewHistoryApi.useSetEditHistoryMutation();
+  const reviewHistoryMutation = viewHistoryApi.useSetReviewHistoryMutation();
 
   useEffect(() => {
     if (document === undefined) return;
     setDocumentData(document);
-    if (documentData?.contributors === undefined || documentData?.contributors?.length === 0) {
-      updateDocumentState("contributors", [displayName]);
-    }
-    if (documentData?.contents === undefined) {
-      // TODO:migrate to template
-      updateDocumentState("contents", getDefaultContents());
-    }
   }, [document]);
 
   const updateDocumentState = <K extends keyof Document>(key: K, val: Document[K]) => {
@@ -72,11 +54,29 @@ function Edit() {
     if (documentData == undefined) return;
 
     try {
-      await updateDocument({ uid, documentData });
-      navigate(`/`);
+      const result = await updateDocument.mutateAsync({ uid, document: documentData });
+
+      // 更新したときに閲覧履歴を設定
+      if (documentData.status === 'reviewed') {
+        reviewHistoryMutation.mutate({uid, documentId: documentData.id, document: result });
+      } else {
+        editHistoryMutation.mutate({uid, documentId: documentData.id, document: result });
+      }
     } catch (e) {
       alert(`エラー: ${e?.toString()}`)
     }
+  }
+
+  if (documentResult.data?.error && documentResult.data?.error.code === 'permission-denied') {
+    return (
+        <main className={'w-screen pt-48 flex flex-col justify-center gap-12 bg-background'}>
+          <h1 className={'text-4xl text-center font-bold'}>403 Forbidden</h1>
+          <p className={'text-2xl text-center'}>
+            <span>Permission denied. </span>
+            <Link to={'/'} className={'text-link hover:underline'}>Click here to return to the home page.</Link>
+          </p>
+        </main>
+    )
   }
 
   return (

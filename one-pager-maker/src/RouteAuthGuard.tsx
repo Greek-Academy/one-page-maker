@@ -1,8 +1,8 @@
 import { Navigate, useLocation } from "react-router-dom";
 import React from "react";
+
 import { useAppSelector } from "./redux/hooks";
-import { userApi } from "./api/userApi.ts";
-import SetId from "./pages/SetId.tsx";
+import { Loader2 } from "lucide-react";
 
 type Props = {
     component: React.ReactNode
@@ -10,28 +10,28 @@ type Props = {
 }
 
 export const RouteAuthGuard = (props: Props) => {
-    const user = useAppSelector((state) => state.user.user);
-    const location = useLocation()
-    const { data: result, status } = userApi.useFindUserByUIDQuery(user?.uid ?? "");
+    const userState = useAppSelector((state) => state.user);
 
-    if (!user) {
-        return <Navigate to={props.redirect} state={{ from: location }} replace={false} />
+    if (userState.status === 'pending') {
+        return (
+            <main className={'w-screen h-screen flex flex-col justify-center items-center'}>
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </main>
+        )
     }
 
-    if (status === 'error') {
-        return <div>Error fetching user data. Please retry.</div>
+    if (userState.status === 'error') {
+        return (
+            <main>
+                {userState.error?.message}
+            </main>
+        )
     }
 
-    if (status === 'success' && !result) {
-        // Login success but not found user ID in database
-        return <SetId />
+    if (userState.status === 'success' && userState.data.user === null) {
+        return <Navigate to={props.redirect} state={{ from: useLocation() }} replace={false} />
     }
 
-    if (status === 'success' && result) {
-        // Login success
-        return <>{props.component}</>
-    }
-
-    // if status is pending
-    return <div>Loading...</div>;
+    // success and user isn't null
+    return <>{props.component}</>
 }

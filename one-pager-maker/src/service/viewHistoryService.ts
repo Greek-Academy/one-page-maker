@@ -1,5 +1,7 @@
 import {ViewHistory} from "../entity/viewHistoryType.ts";
 import {OrderByDirection} from "../repository/shared/utils.ts";
+import {Result} from "result-type-ts";
+import {Document} from "../entity/documentType.ts";
 
 export interface ViewHistoryService {
     /**
@@ -32,8 +34,9 @@ export interface ViewHistoryService {
      */
     setEditHistory(args: {
         uid: string,
-        documentId: string
-    }): Promise<ViewHistory>;
+        documentId: string,
+        document?: Document,
+    }): Promise<Result<ViewHistory, ViewHistoryServiceError>>;
 
     /**
      * レビュー履歴をセットします.
@@ -41,6 +44,16 @@ export interface ViewHistoryService {
      */
     setReviewHistory(args: {
         uid: string,
-        documentId: string
-    }): Promise<ViewHistory>;
+        documentId: string,
+        document?: Document,
+    }): Promise<Result<ViewHistory, ViewHistoryServiceError>>;
+}
+
+type ViewHistoryServiceErrorCode = 'user-not-found' | 'document-not-found' | 'unknown'
+
+export class ViewHistoryServiceError extends Error {
+    constructor(message: string, public readonly code: ViewHistoryServiceErrorCode) {
+        super(message);
+        this.name = 'ViewHistoryServiceError';
+    }
 }

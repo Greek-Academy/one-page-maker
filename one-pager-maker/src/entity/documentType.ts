@@ -7,7 +7,7 @@ const privilegeSchema = z.enum(['private', 'can_view', 'can_edit']);
 /**
  * Firestore の Document 型のスキーマ
  */
-const documentSchema = z.object({
+export const documentSchema = z.object({
     id: z.string(),
     title: z.string(),
     contents: z.string(),

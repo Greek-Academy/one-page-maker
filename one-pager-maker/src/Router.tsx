@@ -10,7 +10,7 @@ export const Router = () => {
     return (
         <Routes>
             <Route path="/" element={<RouteAuthGuard component={<List />} redirect='/login' />} />
-            <Route path="/edit/:id" element={<RouteAuthGuard component={<Edit />} redirect='/login' />} />
+            <Route path="/edit/:uid/:documentId" element={<RouteAuthGuard component={<Edit />} redirect='/login' />} />
             <Route path="/login" element={<Login />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/reset-password" element={<ResetPassword />} />

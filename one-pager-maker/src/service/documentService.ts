@@ -1,19 +1,22 @@
 import {Document} from "../entity/documentType.ts";
-import {DocumentServiceImpl} from "./documentServiceImpl.ts";
-import {documentRepository} from "../repository/documentRepository.ts";
-
-export const documentService: DocumentService = new DocumentServiceImpl(documentRepository);
+import {ForUpdate} from "../entity/utils.ts";
+import {Result} from "result-type-ts";
 
 export interface DocumentService {
-    get(uid: string, documentId: string): Promise<Document | undefined>;
+    getDocument(args: {uid: string, documentId: string}): Promise<Result<Document | undefined, DocumentServiceError>>;
 
-    getMany(uid: string): Promise<Document[]>;
+    createDocument(uid: string): Promise<Document>;
 
-    create(uid: string): Promise<Document>;
+    updateDocument(uid: string, document: ForUpdate<Document>): Promise<Document>;
 
-    update(uid: string, document: Document): Promise<Document>;
+    deleteDocument(args: {uid: string, documentId: string}): Promise<Document>;
+}
 
-    delete(uid: string, document: Document): Promise<Document>;
+type DocumentServiceErrorCode = 'permission-denied' | 'unknown';
 
-    updateTitle(uid: string, document: Document, newTitle: string): Promise<Document>;
+export class DocumentServiceError extends Error {
+    constructor(message: string, public readonly code: DocumentServiceErrorCode) {
+        super(message);
+        this.name = 'DocumentServiceError';
+    }
 }

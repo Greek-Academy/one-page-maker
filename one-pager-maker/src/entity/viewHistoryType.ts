@@ -1,15 +1,18 @@
 import {z} from "zod";
 import {FirestoreDataConverter, Timestamp} from "firebase/firestore";
 import {assertZodSchema} from "../utils/asserts.ts";
+import {documentSchema} from "./documentType.ts";
 
 const viewTypeSchema = z.enum(['edit', 'review']);
 
 const viewHistorySchema = z.object({
     id: z.string(),
+    uid: z.string(),
     documentId: z.string(),
     viewType: viewTypeSchema,
+    document: documentSchema,
     updated_at: z.instanceof(Timestamp),
-    created_at: z.instanceof(Timestamp)
+    created_at: z.instanceof(Timestamp),
 });
 
 export type ViewHistory = z.infer<typeof viewHistorySchema>;

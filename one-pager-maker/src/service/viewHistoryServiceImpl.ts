@@ -1,15 +1,21 @@
-import {ViewHistoryService} from "./viewHistoryService.ts";
+import {ViewHistoryService, ViewHistoryServiceError} from "./viewHistoryService.ts";
 import {ViewHistory} from "../entity/viewHistoryType.ts";
 import {ViewHistoryRepository} from "../repository/viewHistoryRepository.ts";
 import {OrderByDirection} from "../repository/shared/utils.ts";
 import {Timestamp} from "firebase/firestore";
 import {inject, injectable} from "tsyringe";
 import {DI} from "../di.ts";
+import {Result} from "result-type-ts";
+import {DocumentRepository} from "../repository/documentRepository.ts";
+import {UserDomainService} from "../domain_service/userDomainService.ts";
+import {Document} from "../entity/documentType.ts";
 
 @injectable()
 export class ViewHistoryServiceImpl implements ViewHistoryService {
     constructor(
         @inject(DI.ViewHistoryRepository) private viewHistoryRepository: ViewHistoryRepository,
+        @inject(DI.DocumentRepository) private documentRepository: DocumentRepository,
+        @inject(DI.UserDomainService) private userDomainService: UserDomainService,
     ) {
     }
 
@@ -30,22 +36,43 @@ export class ViewHistoryServiceImpl implements ViewHistoryService {
                 direction: orderBy
             },
             startAt: lastFetched?.updated_at,
-            where: {
-                field: 'viewType',
-                op: '==',
-                value: viewType
-            },
+            where: [
+                {
+                    field: 'viewType',
+                    op: '==',
+                    value: viewType
+                },
+                {
+                    field: 'document.deleted_at',
+                    op: '==',
+                    value: null,
+                }
+            ],
             limit,
         });
     }
 
     private async setViewHistory(viewType: 'edit' | 'review', {
         uid,
-        documentId
+        documentId,
+        document: _document
     }: {
         uid: string;
-        documentId: string
-    }): Promise<ViewHistory> {
+        documentId: string,
+        document?: Document,
+    }): Promise<Result<ViewHistory, ViewHistoryServiceError>> {
+        // check if user exists
+        const userExists = await this.userDomainService.exists(uid);
+        if (!userExists) {
+            return Result.failure(new ViewHistoryServiceError('User not found', 'user-not-found'));
+        }
+
+        // check if document exists
+        const document = _document ?? await this.documentRepository.get({uid, documentId});
+        if (document === null) {
+            return Result.failure(new ViewHistoryServiceError('Document not found', 'document-not-found'));
+        }
+
         // documentID と viewType が一致する ViewHistory を 1 件取得する
         const queryResult = await this.viewHistoryRepository.getMany({uid}, {
             where: [
@@ -58,24 +85,24 @@ export class ViewHistoryServiceImpl implements ViewHistoryService {
         // まだ ViewHistory が存在しないならば
         if (queryResult.length === 0) {
             // ViewHistory を新規作成する
-            return this.viewHistoryRepository.create({
+            const newHistory = await this.viewHistoryRepository.create({
                 uid, viewHistory: {
-                    documentId, viewType
+                    documentId, viewType, uid, document
                 }
             });
+            return Result.success(newHistory);
         }
 
         const oldHistory = queryResult[0];
+        const newHistory = {id: oldHistory.id, document};
 
         try {
             // 既に存在するなら updated_at のみ更新する
             await this.viewHistoryRepository.update({
-                uid, viewHistory: {
-                    id: oldHistory.id,
-                }
+                uid, viewHistory: newHistory
             });
 
-            return {...oldHistory, updated_at: Timestamp.now()};
+            return Result.success({...oldHistory, ...newHistory, updated_at: Timestamp.now()});
         } catch (e) {
             return Promise.reject(e);
         }
@@ -109,15 +136,17 @@ export class ViewHistoryServiceImpl implements ViewHistoryService {
 
     setEditHistory(args: {
         uid: string;
-        documentId: string
-    }): Promise<ViewHistory> {
+        documentId: string,
+        document?: Document,
+    }): Promise<Result<ViewHistory, ViewHistoryServiceError>> {
         return this.setViewHistory('edit', args);
     }
 
     setReviewHistory(args: {
         uid: string;
-        documentId: string
-    }): Promise<ViewHistory> {
+        documentId: string,
+        document?: Document,
+    }): Promise<Result<ViewHistory, ViewHistoryServiceError>> {
         return this.setViewHistory('review', args);
     }
 }

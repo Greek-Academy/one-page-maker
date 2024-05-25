@@ -1,4 +1,4 @@
-import {ForCreate} from "../entity/utils.ts";
+import {ForCreate, ForUpdate} from "../entity/utils.ts";
 import {Document} from "../entity/documentType.ts";
 import {DocumentRepositoryImpl} from "./documentRepositoryImpl.ts";
 
@@ -11,7 +11,7 @@ export interface DocumentRepository {
 
     getMany(args: {uid: string}): Promise<Document[]>;
 
-    update(args: {uid: string, document: Document}): Promise<Document>;
+    update(args: {uid: string, document: ForUpdate<Document>}): Promise<Document>;
 
-    delete(args: {uid: string, document: Document}): Promise<Document>;
+    delete(args: {uid: string, documentId: string}): Promise<Document>;
 }

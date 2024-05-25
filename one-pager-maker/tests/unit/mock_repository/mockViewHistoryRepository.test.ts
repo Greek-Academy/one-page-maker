@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, test} from "vitest";
 import {
     MockViewHistoryRepository
-} from "../../../src/repository/mockViewHistoryRepository";
+} from "../../_shared/mock/mockViewHistoryRepository";
 import {viewHistoryFactory} from "../../_shared/factory/viewHistoryFactory";
 
 describe('MockViewHistoryRepository', () => {

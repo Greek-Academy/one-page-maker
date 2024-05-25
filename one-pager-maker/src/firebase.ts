@@ -1,6 +1,7 @@
 import {initializeApp} from "firebase/app";
 import {getFirestore} from "firebase/firestore";
-import { getAuth, GithubAuthProvider, GoogleAuthProvider } from "firebase/auth";
+import {getAuth, GithubAuthProvider, GoogleAuthProvider} from "firebase/auth";
+import {useFirestoreEmulator} from "../tests/integration/firebaseEmulatorUtils.ts";
 
 const firebaseConfig = {
    apiKey: import.meta.env.VITE_API_KEY,
@@ -17,3 +18,5 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
+
+useFirestoreEmulator();
