@@ -62,7 +62,7 @@ export default function List() {
                 <div>
                     <AddDocumentButton onClick={() => handleCreate()}/>
                 </div>
-                <DocumentListSection heading={"最近使用したドキュメント"}
+                <DocumentListSection heading={"最近更新したドキュメント"}
                                      documents={editedDocuments}
                                      status={editHistories.status}
                                      error={editHistories.error}
