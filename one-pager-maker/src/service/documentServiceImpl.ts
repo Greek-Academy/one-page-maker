@@ -4,7 +4,7 @@ import {Document} from "../entity/documentType.ts";
 import {inject, injectable} from "tsyringe";
 import {DI} from "../di.ts";
 import {ForUpdate} from "../entity/utils.ts";
-import {ViewHistoryService} from "./viewHistoryService.ts";
+import {ViewHistoryService} from "@/service/viewHistoryService.ts";
 
 @injectable()
 export class DocumentServiceImpl implements DocumentService {
@@ -49,16 +49,13 @@ export class DocumentServiceImpl implements DocumentService {
                     contents: template,
                     status: 'draft',
                     owner_id: uid,
-                    contributors: [],
+                    contributors: [uid],
                     reviewers: [],
                     url_privilege: 'private',
                     deleted_at: null,
                 }
             });
-            await this.viewHistoryService.setEditHistory({
-                uid,
-                documentId: doc.id,
-            });
+            await this.viewHistoryService.setEditHistory({uid, documentId: doc.id});
             return doc;
         } catch (e) {
             return Promise.reject(e);
@@ -67,6 +64,7 @@ export class DocumentServiceImpl implements DocumentService {
 
     async deleteDocument({uid, documentId}: {uid: string, documentId: string}): Promise<Document> {
         try {
+            await this.viewHistoryService.setEditHistory({uid, documentId: documentId});
             return await this.documentRepository.delete({
                 uid, documentId
             });

@@ -1,7 +1,5 @@
 import {beforeEach, describe, expect, test} from "vitest";
-import {
-    MockDocumentRepository
-} from "../../_shared/mock/mockDocumentRepository";
+import {MockDocumentRepository} from "../../_shared/mock/mockDocumentRepository";
 import {DocumentServiceImpl} from "../../../src/service/documentServiceImpl";
 import {mockDocument} from "../../../src/entity/mock";
 import {container} from "tsyringe";
