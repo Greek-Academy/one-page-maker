@@ -1,32 +1,35 @@
 import './Edit.css'
 import {useEffect, useState} from 'react'
 import Markdown from 'react-markdown'
-import {useAppSelector} from '../redux/hooks.ts'
 import {Document, Status} from "../entity/documentType.ts";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {UserSelectMenu} from "../stories/UserItem.tsx";
 import {RiPencilFill} from "react-icons/ri";
 import {BiCommentEdit} from "react-icons/bi";
 import {GoClock} from "react-icons/go";
 import {documentApi} from "../api/documentApi.ts";
 import {viewHistoryApi} from "@/api/viewHistoryApi.ts";
-import {selectUser} from "@/redux/user/selector.ts";
 
 function Edit() {
-  const uid = useAppSelector(selectUser)?.uid;
-  const params = useParams<{ id: string }>();
+  const {uid, documentId} = useParams<{ uid: string, documentId: string }>();
 
-  const document = documentApi.useGetDocumentQuery({ uid: uid ?? "", documentId: params.id ?? ''});
-  const [documentData, setDocumentData] = useState(document.data);
+  if (uid === undefined || documentId === undefined) {
+    // this is called when route setting is wrong
+    return <main>Route setting is wrong</main>
+  }
+
+  const documentResult = documentApi.useGetDocumentQuery({ uid, documentId});
+  const document = documentResult.data?.value;
+  const [documentData, setDocumentData] = useState(document);
   const updateDocument = documentApi.useUpdateDocumentMutation();
 
   const editHistoryMutation = viewHistoryApi.useSetEditHistoryMutation();
   const reviewHistoryMutation = viewHistoryApi.useSetReviewHistoryMutation();
 
   useEffect(() => {
-    if (document.data === undefined) return;
-    setDocumentData(document.data);
-  }, [document.data]);
+    if (document === undefined) return;
+    setDocumentData(document);
+  }, [document]);
 
   const updateDocumentState = <K extends keyof Document>(key: K, val: Document[K]) => {
     setDocumentData(prev => prev === undefined ? prev : ({ ...prev, [key]: val }))
@@ -62,6 +65,18 @@ function Edit() {
     } catch (e) {
       alert(`エラー: ${e?.toString()}`)
     }
+  }
+
+  if (documentResult.data?.error && documentResult.data?.error.code === 'permission-denied') {
+    return (
+        <main className={'w-screen pt-48 flex flex-col justify-center gap-12 bg-background'}>
+          <h1 className={'text-4xl text-center font-bold'}>403 Forbidden</h1>
+          <p className={'text-2xl text-center'}>
+            <span>Permission denied. </span>
+            <Link to={'/'} className={'text-link hover:underline'}>Click here to return to the home page.</Link>
+          </p>
+        </main>
+    )
   }
 
   return (
