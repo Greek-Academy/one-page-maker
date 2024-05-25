@@ -60,6 +60,7 @@ export class UserServiceImpl implements UserService {
                 // 開始点を含む
                 startAt: query.id,
                 endAt: query.id + '\uf8ff',
+                limit: 10
             });
 
             return Result.success(users);
