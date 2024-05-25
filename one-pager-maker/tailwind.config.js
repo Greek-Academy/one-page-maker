@@ -20,6 +20,7 @@ export default {
         '3/4': '3 / 4',
       },
       colors: {
+        'link': '#1a0dab',
         'google-white': '#FFFFFF',
         'google-nature': '#F2F2F2',
         'google-black': '#1F1F1F',

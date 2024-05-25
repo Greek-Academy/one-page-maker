@@ -13,8 +13,12 @@ export const documentApi = {
         queryKey: [queryKeys.documentId(args.uid, args.documentId)],
         queryFn: async () => {
             if (args.uid === "" || args.documentId === "") return;
-            const result = await documentService.getDocument(args);
-            return result;
+            try {
+                const result = await documentService.getDocument(args);
+                return result;
+            } catch (e) {
+                return Promise.reject(e);
+            }
         }
     }),
     useCreateDocumentMutation: () => useMutation({
