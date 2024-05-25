@@ -96,7 +96,7 @@ export class ViewHistoryServiceImpl implements ViewHistoryService {
             // 既に存在するなら updated_at のみ更新する
             await this.viewHistoryRepository.update({
                 uid, viewHistory: {
-                    id: oldHistory.id,
+                    id: oldHistory.id, document
                 }
             });
 

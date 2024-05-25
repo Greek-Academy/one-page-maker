@@ -1,8 +1,8 @@
-import {useMutation, useQuery} from "@tanstack/react-query";
+import {QueryClient, useMutation, useQuery} from "@tanstack/react-query";
 import {OrderByDirection} from "../repository/shared/utils.ts";
 import {ViewHistory} from "../entity/viewHistoryType.ts";
 import {viewHistoryService} from "./services.ts";
-import {queryClient} from "../queryClient.ts";
+import {Document} from "../entity/documentType.ts";
 
 const queryKeys = {
     reviewHistoryId: (id: string) => `review-history-id-${id}`,
@@ -38,19 +38,25 @@ export const viewHistoryApi = {
             return result;
         }
     }),
-    useSetEditHistoryMutation: () => useMutation({
-        mutationFn: async (args: { uid: string, documentId: string }) => {
-            if (args.uid === "" || args.documentId === "") return;
-            const result = await viewHistoryService.setEditHistory(args);
-            return result.value;
+    useSetEditHistoryMutation: (queryClient: QueryClient) => useMutation({
+        mutationFn: async (args: { uid: string, documentId: string, document?: Document }) => {
+            if (args.uid === "" || args.documentId === "")
+                return Promise.reject(new Error("Invalid args"));
+            try {
+                const result = await viewHistoryService.setEditHistory(args);
+                return result.value;
+            } catch (e) {
+                console.error(e);
+                return Promise.reject(e);
+            }
         },
         onSuccess: async (history) => {
             if (history === undefined) return;
-            await queryClient.invalidateQueries({queryKey: [queryKeys.editHistoryId(history.id), queryKeys.editHistories]})
+            await queryClient.refetchQueries({queryKey: [queryKeys.editHistoryId(history.id), queryKeys.editHistories]})
         }
     }),
-    useSetReviewHistoryMutation: () => useMutation({
-        mutationFn: async (args: { uid: string, documentId: string }) => {
+    useSetReviewHistoryMutation: (queryClient: QueryClient) => useMutation({
+        mutationFn: async (args: { uid: string, documentId: string, document?: Document }) => {
             if (args.uid === "" || args.documentId === "") return;
             const result = await viewHistoryService.setReviewHistory(args);
             return result.value;
