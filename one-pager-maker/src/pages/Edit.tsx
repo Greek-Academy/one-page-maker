@@ -10,9 +10,10 @@ import {BiCommentEdit} from "react-icons/bi";
 import {GoClock} from "react-icons/go";
 import {documentApi} from "../api/documentApi.ts";
 import {viewHistoryApi} from "@/api/viewHistoryApi.ts";
+import {selectUser} from "@/redux/user/selector.ts";
 
 function Edit() {
-  const uid = useAppSelector(state => state.user.user?.uid);
+  const uid = useAppSelector(selectUser)?.uid;
   const params = useParams<{ id: string }>();
 
   const document = documentApi.useGetDocumentQuery({ uid: uid ?? "", documentId: params.id ?? ''});

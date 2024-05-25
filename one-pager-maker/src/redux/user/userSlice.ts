@@ -1,9 +1,14 @@
 import {createSlice} from '@reduxjs/toolkit'
 import {InitialUserState} from './userType.ts'
+import {AsyncState} from "@/redux/asyncState.ts";
 
-const initialState: InitialUserState = {
-    displayName: "",
-    user: null,
+const initialState: AsyncState<InitialUserState> = {
+    status: 'pending',
+    data: {
+        displayName: '',
+        user: null,
+    },
+    error: undefined,
 }
 
 export const userSlice = createSlice({
@@ -11,10 +16,12 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         login: (state, action) => {
-            state.user = action.payload
+            state.data.user = action.payload
+            state.status = 'success'
         },
         logout: (state) => {
-            state.user = null
+            state.status = 'pending'
+            state.data.user = null
         },
     },
 })
