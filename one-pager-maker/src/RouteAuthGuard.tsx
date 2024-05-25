@@ -13,8 +13,8 @@ export const RouteAuthGuard = (props: Props) => {
 
     if (userState.status === 'pending') {
         return (
-            <main className={''}>
-                <Loader2 className="h-4 w-4 animate-spin"/>
+            <main className={'w-screen h-screen flex flex-col justify-center items-center'}>
+                <Loader2 className="h-8 w-8 animate-spin"/>
             </main>
         )
     }
