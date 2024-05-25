@@ -16,8 +16,8 @@ const SetId = () => {
 
     const [formData, setFormData] = useState({ userId: "" });
 
-    const uid = useAppSelector(state => state.user.user?.uid);
-    const photoUrl = useAppSelector(state => state.user.user?.photoUrl);
+    const uid = useAppSelector(state => state.user.data.user?.uid);
+    const photoUrl = useAppSelector(state => state.user.data.user?.photoUrl);
     const result = userApi.useIsDuplicatedIdQuery(formData.userId);
     const mutation = userApi.useCreateUserMutation();
 
