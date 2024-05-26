@@ -8,9 +8,13 @@ import ErrorContainer from "@/stories/ErrorContainer.tsx";
 import {Document} from "@/entity/documentType.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {toUndeletedDocuments} from "@/entity/viewHistory/viewHistoryUtils.ts";
+import {userApi} from "@/api/userApi.ts";
+import {Loader2} from "lucide-react";
 
 export default function List() {
-    const uid = auth.currentUser?.uid ?? "";
+    const user = userApi.useFindUserByUIDQuery(auth.currentUser?.uid ?? "");
+    const uid = user.data?.id ?? '';
+
     const createDocument = documentApi.useCreateDocumentMutation();
     const deleteDocument = documentApi.useDeleteDocumentMutation();
     const navigate = useNavigate();
@@ -57,6 +61,15 @@ export default function List() {
             alert(`エラー: ${e?.toString()}`)
 
         }
+    }
+
+    if (user.status === 'pending') {
+        // FIXME: remove code duplication
+        return (
+            <main className={'w-screen h-screen flex flex-col justify-center items-center'}>
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </main>
+        )
     }
 
     return (
