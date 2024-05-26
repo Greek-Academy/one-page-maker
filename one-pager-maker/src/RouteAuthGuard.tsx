@@ -3,21 +3,21 @@ import React from "react";
 
 import { useAppSelector } from "./redux/hooks";
 import { Loader2 } from "lucide-react";
-import { userApi } from "./api/userApi.ts";
-import SetId from "./pages/SetId";
+import { userApi } from "@/api/userApi.ts";
 
 type Props = {
     component: React.ReactNode
     redirect: string
+    status: 'user-data-created' | 'authenticated' | 'unauthenticated'
 }
 
-export const RouteAuthGuard = (props: Props) => {
+export const RouteAuthGuard = ({ component, redirect, status = 'user-data-created' }: Props) => {
     const userState = useAppSelector((state) => state.user);
-    const location = useLocation()
-    const { data: result, status: findStatus, error } = userApi.useFindUserByUIDQuery(userState?.data.user?.uid ?? "");
+    const userQuery = userApi.useFindUserByUIDQuery(userState.data.user?.uid ?? '');
+    const shouldCreateUserData = status === 'user-data-created';
+    const location = useLocation();
 
-    console.log("Auth!")
-    if (userState.status === 'pending') {
+    if (userState.status === 'pending' || (shouldCreateUserData && userQuery.status === 'pending')) {
         return (
             <main className={'w-screen h-screen flex flex-col justify-center items-center'}>
                 <Loader2 className="h-8 w-8 animate-spin" />
@@ -25,40 +25,23 @@ export const RouteAuthGuard = (props: Props) => {
         )
     }
 
-    if (userState.status === 'error') {
+    if (userState.status === 'error' || (shouldCreateUserData && userQuery.status === 'error')) {
         return (
             <main>
                 {userState.error?.message}
+                {shouldCreateUserData && userQuery.error?.message}
             </main>
         )
     }
 
     if (userState.status === 'success' && userState.data.user === null) {
-        return <Navigate to={props.redirect} state={{ from: location }} replace={false} />
+        return <Navigate to={redirect} state={{ from: location }} replace={false} />
     }
 
-    if (findStatus === 'error') {
-        return (
-            <main>
-                {error?.message}
-            </main>
-        )
-    }
-    console.log(result)
-    if (findStatus === 'success' && !result) {
-        // Login success but not found user ID in database
-        return <SetId />
+    if (shouldCreateUserData && userQuery.status === 'success' && userQuery.data === null) {
+        return <Navigate to={'/set-id'} state={{ from: location }} replace={false} />
     }
 
-    if (findStatus === 'success' && result) {
-        // Login success
-        return <>{props.component}</>
-    }
-
-    // if status is pending
-    return (
-        <main className={'w-screen h-screen flex flex-col justify-center items-center'}>
-            <Loader2 className="h-8 w-8 animate-spin" />
-        </main>
-    )
+    // success and user isn't null
+    return <>{component}</>
 }

@@ -9,9 +9,14 @@ import {BiCommentEdit} from "react-icons/bi";
 import {GoClock} from "react-icons/go";
 import {documentApi} from "../api/documentApi.ts";
 import {viewHistoryApi} from "@/api/viewHistoryApi.ts";
+import {userApi} from "@/api/userApi.ts";
+import {selectUser} from "@/redux/user/selector.ts";
+import {useAppSelector} from "@/redux/hooks.ts";
 
 function Edit() {
   const {uid, documentId} = useParams<{ uid: string, documentId: string }>();
+  const authUserUid = useAppSelector(selectUser)?.uid;
+  const userQuery = userApi.useFindUserByUIDQuery(authUserUid ?? "");
 
   if (uid === undefined || documentId === undefined) {
     // this is called when route setting is wrong
@@ -52,15 +57,17 @@ function Edit() {
   const onClickSave = async () => {
     if (uid == undefined) return;
     if (documentData == undefined) return;
+    if (!userQuery.data) return;
 
     try {
       const result = await updateDocument.mutateAsync({ uid, document: documentData });
 
       // 更新したときに閲覧履歴を設定
+      const mutationArgs = {uid: userQuery.data.id, documentId: documentData.id, document: result };
       if (documentData.status === 'reviewed') {
-        reviewHistoryMutation.mutate({uid, documentId: documentData.id, document: result });
+        reviewHistoryMutation.mutate(mutationArgs);
       } else {
-        editHistoryMutation.mutate({uid, documentId: documentData.id, document: result });
+        editHistoryMutation.mutate(mutationArgs);
       }
     } catch (e) {
       alert(`エラー: ${e?.toString()}`)
