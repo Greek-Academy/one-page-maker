@@ -29,9 +29,9 @@ const SignUp = () => {
     const createUser = useCallback(() => {
 
         // user id validation
-        const result = idSchema.safeParse(formData.userId);
+        const idCheck = idSchema.safeParse(formData.userId);
 
-        if (!result.success) {
+        if (!idCheck.success) {
             alert(`User ID is allowed only alphanumeric characters, underscores (_), and hyphens (-).`);
             return
         }
