@@ -8,7 +8,6 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { userApi } from "../api/userApi.ts";
-import { assertZodSchema } from "../utils/asserts.ts";
 import { idSchema } from '../entity/user/userType.ts';
 
 const SignUp = () => {
@@ -30,18 +29,15 @@ const SignUp = () => {
     const createUser = useCallback(() => {
 
         // user id validation
-        try {
-            assertZodSchema(idSchema, formData.userId)
-        } catch {
+        const result = idSchema.safeParse(formData.userId);
+
+        if (!result.success) {
             alert(`User ID is allowed only alphanumeric characters, underscores (_), and hyphens (-).`);
             return
         }
 
         if (result.data) {
             alert(`User ID "${formData.userId}" is already registerd.`);
-            return
-        } else if (result.error) {
-            alert(`Server Internal Error. Please retry.`);
             return
         }
 
