@@ -12,8 +12,10 @@ export const DocumentItem = ({document, onDelete}: {
         <div className={'flex flex-col gap-3'}>
             <Link to={`/edit/${document.owner_id}/${document.id}`}>
                 <div className={'bg-card drop-shadow aspect-[3/4] p-4 rounded-md text-[0.6rem] text-gray-600 ' +
-                    'transition hover:bg-gray-50 text-left whitespace-pre'}>
-                    {document.contents}
+                    'transition hover:bg-gray-50 text-left'}>
+                    <p className={'aspect-[3/4] whitespace-pre-wrap overflow-hidden'}>
+                        {document.contents}
+                    </p>
                 </div>
             </Link>
             <div className={'flex flex-row justify-between items-center'}>
