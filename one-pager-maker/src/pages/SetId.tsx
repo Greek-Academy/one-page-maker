@@ -6,7 +6,6 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { userApi } from "../api/userApi.ts";
-import { assertZodSchema } from "../utils/asserts.ts";
 import { idSchema } from '../entity/user/userType.ts';
 import { useAppSelector } from '../redux/hooks.ts';
 
@@ -31,19 +30,15 @@ const SetId = () => {
     const updateUser = useCallback(() => {
 
         // user id validation
-        try {
-            assertZodSchema(idSchema, formData.userId)
-        } catch {
+        const result = idSchema.safeParse(formData.userId);
+
+        if (!result.success) {
             alert('User ID is allowed only alphanumeric characters, underscores (_), and hyphens (-).');
             return
         }
 
         if (result.data) {
             alert('User ID is already registerd.');
-            return
-        }
-        if (result.error) {
-            alert('Server Internal Error. Please retry.');
             return
         }
 
@@ -66,6 +61,7 @@ const SetId = () => {
                 </div>
                 <Box >
                     <div className={"flex flex-col w-96 gap-5 pb-3"}>
+                        {/* TODO: improve UX https://github.com/Greek-Academy/one-pager-maker/pull/75#discussion_r1614507584 */}
                         <TextField
                             required
                             id="userId"
@@ -75,6 +71,7 @@ const SetId = () => {
                             value={formData.userId}
                             onChange={handleFormData}
                         />
+                        {/* TODO: improve UX https://github.com/Greek-Academy/one-pager-maker/pull/75#discussion_r1614511182 */}
                         <Button
                             className={"normal-case h-12"}
                             variant="contained"

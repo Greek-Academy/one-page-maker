@@ -45,6 +45,7 @@ const SignUp = () => {
             return
         }
 
+        // TODO: similar code. refactor!
         // Regist user
         createUserWithEmailAndPassword(
             auth,

@@ -16,7 +16,6 @@ export const RouteAuthGuard = (props: Props) => {
     const location = useLocation()
     const { data: result, status: findStatus, error } = userApi.useFindUserByUIDQuery(userState?.data.user?.uid ?? "");
 
-    console.log("Auth!")
     if (userState.status === 'pending') {
         return (
             <main className={'w-screen h-screen flex flex-col justify-center items-center'}>
@@ -44,7 +43,7 @@ export const RouteAuthGuard = (props: Props) => {
             </main>
         )
     }
-    console.log(result)
+
     if (findStatus === 'success' && !result) {
         // Login success but not found user ID in database
         return <SetId />
