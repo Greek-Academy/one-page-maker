@@ -1,9 +1,9 @@
-import {Navigate, useLocation} from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import React from "react";
 
-import {useAppSelector} from "./redux/hooks";
-import {Loader2} from "lucide-react";
-import {userApi} from "@/api/userApi.ts";
+import { useAppSelector } from "./redux/hooks";
+import { Loader2 } from "lucide-react";
+import { userApi } from "@/api/userApi.ts";
 
 type Props = {
     component: React.ReactNode
@@ -11,7 +11,7 @@ type Props = {
     status: 'user-data-created' | 'authenticated' | 'unauthenticated'
 }
 
-export const RouteAuthGuard = ({component, redirect, status = 'user-data-created'}: Props) => {
+export const RouteAuthGuard = ({ component, redirect, status = 'user-data-created' }: Props) => {
     const userState = useAppSelector((state) => state.user);
     const userQuery = userApi.useFindUserByUIDQuery(userState.data.user?.uid ?? '');
     const shouldCreateUserData = status === 'user-data-created';
