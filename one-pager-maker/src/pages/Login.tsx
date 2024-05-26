@@ -28,7 +28,7 @@ const Login = () => {
             auth,
             formData.email,
             formData.password
-        ).then(()=>{
+        ).then(() => {
             navigate('/')
         }).catch((err) => {
             alert(`エラー: ${err?.toString()}`);
@@ -36,7 +36,7 @@ const Login = () => {
     }, [formData]);
 
     const signinWithProvider = useCallback((provider: AuthProvider) => {
-        signInWithPopup(auth, provider).then(()=>{
+        signInWithPopup(auth, provider).then(() => {
             navigate('/')
         }).catch((err) => {
             alert(`エラー: ${err?.toString()}`);
