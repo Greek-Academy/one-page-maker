@@ -1,3 +1,4 @@
 cd one-pager-maker
+bun run format
 bun run lint
 bun run test
