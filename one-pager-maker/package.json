@@ -15,7 +15,7 @@
     "test-integration": "firebase emulators:exec --ui 'vitest tests/integration'",
     "e2e:all": "playwright test tests/e2e",
     "e2e:chromium": "playwright test --project=chromium",
-    "prepare": "husky"
+    "prepare": "cd .. && husky"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
