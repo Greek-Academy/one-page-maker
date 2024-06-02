@@ -11,11 +11,10 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "format": "prettier --write src/**/*.{tsx,ts}",
     "test-unit": "vitest tests/unit",
     "test-integration": "firebase emulators:exec --ui 'vitest tests/integration'",
     "e2e:all": "playwright test tests/e2e",
-    "e2e:chromium": "playwright test --project=chromium",
+    "e2e:chromium": "playwright test --project=chromium"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",

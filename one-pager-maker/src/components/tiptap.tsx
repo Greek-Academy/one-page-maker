@@ -7,7 +7,7 @@ import HardBreak from '@tiptap/extension-hard-break'
 interface MyEditorProps {
     content: string;
     onChange: (content: string) => void;
-};
+}
 export const Tiptap: React.FC<MyEditorProps> = ({ content, onChange }) => {
   const editor = useEditor({
     extensions: [
@@ -24,10 +24,10 @@ export const Tiptap: React.FC<MyEditorProps> = ({ content, onChange }) => {
     },
     onUpdate: ({ editor }) => {
       if (typeof onChange !== 'function') return;
-      
+
       onChange(editor.getText());
     }    
-  });
+  })
 
   return (
     <div>

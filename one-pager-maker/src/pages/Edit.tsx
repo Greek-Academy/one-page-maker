@@ -61,7 +61,7 @@ function Edit() {
     if (!userQuery.data) return;
 
     try {
-      let result = await updateDocument.mutateAsync({ uid, document: documentData });
+      const result = await updateDocument.mutateAsync({ uid, document: documentData });
       // 更新したときに閲覧履歴を設定
       const mutationArgs = {uid: userQuery.data.id, documentId: documentData.id, document: result };
       if (documentData.status === 'reviewed') {
