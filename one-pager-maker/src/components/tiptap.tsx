@@ -23,9 +23,9 @@ export const Tiptap: React.FC<MyEditorProps> = ({ content, onChange }) => {
       },
     },
     onUpdate: ({ editor }) => {
-      if (onChange) {
-        onChange(editor.getText());
-      }
+      if (typeof onChange !== 'function') return;
+      
+      onChange(editor.getText());
     }    
   });
 
