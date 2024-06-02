@@ -1,3 +1,2 @@
-cd one-pager-maker
+cd ./one-pager-maker
 bun run lint
-bun run build
