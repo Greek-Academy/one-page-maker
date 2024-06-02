@@ -11,7 +11,7 @@ const NavLinkItem = ({ title }:{ title: string }) => {
     return (
         <Link className="text-sm text-gray-400 hover:text-gray-500" to="/">{title}</Link>        
     );
-};
+}
 
 function Header() {
     const user = useAppSelector(selectUser);
