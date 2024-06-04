@@ -3,12 +3,20 @@ import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
 import HardBreak from '@tiptap/extension-hard-break'
+import { JSONContent } from '@tiptap/core'
+
+const getContent = (node: JSONContent): string => {
+  if (node.type === 'text') return node.text ?? '';
+
+  return node.content?.map(getContent).join('\n') ?? '';
+}
 
 interface MyEditorProps {
     content: string;
-    onChange: (content: string) => void;
+    onUpdate: (content: string, markdownText: string) => void;
 }
-export const Tiptap: React.FC<MyEditorProps> = ({ content, onChange }) => {
+
+export const Tiptap: React.FC<MyEditorProps> = ({ content, onUpdate }) => {
   const editor = useEditor({
     extensions: [
       Document,
@@ -16,19 +24,18 @@ export const Tiptap: React.FC<MyEditorProps> = ({ content, onChange }) => {
       Text,
       HardBreak,
     ],
-    content: content.replace(/\n/g,"<br>"),
+    content: content,
     editorProps: {
       attributes: {
         class: "p-1",
       },
     },
     onUpdate: ({ editor }) => {
-      if (typeof onChange !== 'function') return;
-
-      onChange(editor.getText());
+      if (typeof onUpdate !== 'function') return;
+      
+      onUpdate(getContent(editor.getJSON()), editor.getText());
     }    
   })
-
   return (
     <div>
       <EditorContent editor={editor} />
