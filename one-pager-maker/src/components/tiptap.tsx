@@ -33,8 +33,9 @@ export const Tiptap: React.FC<MyEditorProps> = ({ content, onUpdate }) => {
     onUpdate: ({ editor }) => {
       if (typeof onUpdate !== 'function') return;
       
+      // TODO: The same procedure is required if you copy
       onUpdate(getContent(editor.getJSON()), editor.getText());
-    }    
+    }
   })
   return (
     <div>
