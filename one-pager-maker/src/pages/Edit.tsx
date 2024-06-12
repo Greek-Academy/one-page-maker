@@ -12,6 +12,8 @@ import {viewHistoryApi} from "@/api/viewHistoryApi.ts";
 import {userApi} from "@/api/userApi.ts";
 import {selectUser} from "@/redux/user/selector.ts";
 import {useAppSelector} from "@/redux/hooks.ts";
+import {Tiptap} from "../components/tiptap.tsx";
+import {ContentConverter} from '../model/ContentConverter.ts'
 
 function Edit() {
   const {uid, documentId} = useParams<{ uid: string, documentId: string }>();
@@ -26,8 +28,8 @@ function Edit() {
   const documentResult = documentApi.useGetDocumentQuery({ uid, documentId});
   const document = documentResult.data?.value;
   const [documentData, setDocumentData] = useState(document);
+  const [markdownText, setMarkdownText] = useState(ContentConverter.toMarkdownText(document?.contents ?? ''));
   const updateDocument = documentApi.useUpdateDocumentMutation();
-
   const editHistoryMutation = viewHistoryApi.useSetEditHistoryMutation();
   const reviewHistoryMutation = viewHistoryApi.useSetReviewHistoryMutation();
 
@@ -40,7 +42,10 @@ function Edit() {
     setDocumentData(prev => prev === undefined ? prev : ({ ...prev, [key]: val }))
   }
   const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("title", e.target.value);
-  const onChangeContents = (e: React.ChangeEvent<HTMLTextAreaElement>) => updateDocumentState("contents", e.target.value);
+  const onChangeContents = (content: string, markdownText: string) => {
+    updateDocumentState("contents", content);
+    setMarkdownText(markdownText);
+  }
   const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) => updateDocumentState("status", e.target.value as Status);
   const onChangeContributors = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("contributors", e.target.value.split(','));
   const onChangeReviewers = (e: React.ChangeEvent<HTMLInputElement>) => updateDocumentState("reviewers", e.target.value.split(','));
@@ -61,7 +66,6 @@ function Edit() {
 
     try {
       const result = await updateDocument.mutateAsync({ uid, document: documentData });
-
       // 更新したときに閲覧履歴を設定
       const mutationArgs = {uid: userQuery.data.id, documentId: documentData.id, document: result };
       if (documentData.status === 'reviewed') {
@@ -117,14 +121,11 @@ function Edit() {
           </span>
         </div>
         <div className="flex p-1 w-full h-svh">
-          <textarea
-            className="border w-1/2 p-1"
-            value={documentData?.contents}
-            onChange={onChangeContents}
-            placeholder="Enter Markdown here"
-          />
+          <div className="border w-1/2">
+            <Tiptap content={ContentConverter.toHtml(document?.contents ?? '')} onUpdate={onChangeContents} />
+          </div>
           <div className="border w-1/2 p-1 overflow-scroll overflow-visible overflow-x-hidden">
-            <Markdown className='markdown'>{documentData?.contents}</Markdown>
+            <Markdown className='markdown'>{markdownText}</Markdown>
           </div>
         </div>
       </div>
