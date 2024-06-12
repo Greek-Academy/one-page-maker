@@ -13,12 +13,7 @@ import {userApi} from "@/api/userApi.ts";
 import {selectUser} from "@/redux/user/selector.ts";
 import {useAppSelector} from "@/redux/hooks.ts";
 import {Tiptap} from "../components/tiptap.tsx";
-
-const toTiptapContent = (input: string): string => 
-  input.split(/\n/).map(line => `<p>${line}</p>`).join('');
-
-const toMarkdownText = (input: string): string =>
-  input.split(/\n/).map(line => `${line}\n\n`).join('');
+import {ContentConverter} from '../model/ContentConverter.ts'
 
 function Edit() {
   const {uid, documentId} = useParams<{ uid: string, documentId: string }>();
@@ -33,7 +28,7 @@ function Edit() {
   const documentResult = documentApi.useGetDocumentQuery({ uid, documentId});
   const document = documentResult.data?.value;
   const [documentData, setDocumentData] = useState(document);
-  const [markdownText, setMarkdownText] = useState(toMarkdownText(document?.contents ?? ''));
+  const [markdownText, setMarkdownText] = useState(ContentConverter.toMarkdownText(document?.contents ?? ''));
   const updateDocument = documentApi.useUpdateDocumentMutation();
   const editHistoryMutation = viewHistoryApi.useSetEditHistoryMutation();
   const reviewHistoryMutation = viewHistoryApi.useSetReviewHistoryMutation();
@@ -127,7 +122,7 @@ function Edit() {
         </div>
         <div className="flex p-1 w-full h-svh">
           <div className="border w-1/2">
-            <Tiptap content={toTiptapContent(document?.contents ?? '')} onUpdate={onChangeContents} />
+            <Tiptap content={ContentConverter.toHtml(document?.contents ?? '')} onUpdate={onChangeContents} />
           </div>
           <div className="border w-1/2 p-1 overflow-scroll overflow-visible overflow-x-hidden">
             <Markdown className='markdown'>{markdownText}</Markdown>
