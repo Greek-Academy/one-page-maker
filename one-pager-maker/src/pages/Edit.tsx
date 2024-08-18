@@ -2,6 +2,8 @@ import './Edit.css'
 import {useEffect, useState} from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
+import {vscDarkPlus} from 'react-syntax-highlighter/dist/esm/styles/prism'
 import {Document, Status} from "../entity/documentType.ts";
 import {Link, useParams} from "react-router-dom";
 import {UserSelectMenu} from "../stories/UserItem.tsx";
@@ -129,10 +131,25 @@ function Edit() {
               className='markdown'
               remarkPlugins={[remarkGfm]}
               components={{
-                p: ({children}) => <p style={{whiteSpace: 'pre-wrap'}}>{children}</p>
+                p: ({children}) => <p className="whitespace-pre-wrap">{children}</p>,
+                code({node, inline, className, children, ...props}) {
+                  const match = /language-(\w+)/.exec(className || '')
+                  return !inline && match ? (
+                    <SyntaxHighlighter
+                        {...props}
+                        style={vscDarkPlus}
+                        language={match[1]}
+                        PreTag="div"
+                    >{String(children).replace(/\n$/, '')}</SyntaxHighlighter>
+                  ) : (
+                    <code {...props} className={className}>
+                      {children}
+                    </code>
+                  )
+                }
               }}
             >
-              {documentData?.contents}
+              {documentData?.contents || ''}
             </Markdown>
           </div>
         </div>
