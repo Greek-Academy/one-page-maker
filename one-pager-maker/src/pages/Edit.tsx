@@ -1,6 +1,7 @@
 import './Edit.css'
 import {useEffect, useState} from 'react'
 import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import {Document, Status} from "../entity/documentType.ts";
 import {Link, useParams} from "react-router-dom";
 import {UserSelectMenu} from "../stories/UserItem.tsx";
@@ -124,7 +125,15 @@ function Edit() {
             placeholder="Enter Markdown here"
           />
           <div className="border w-1/2 p-1 overflow-scroll overflow-visible overflow-x-hidden">
-            <Markdown className='markdown'>{documentData?.contents}</Markdown>
+            <Markdown
+              className='markdown'
+              remarkPlugins={[remarkGfm]}
+              components={{
+                p: ({children}) => <p style={{whiteSpace: 'pre-wrap'}}>{children}</p>
+              }}
+            >
+              {documentData?.contents}
+            </Markdown>
           </div>
         </div>
       </div>
