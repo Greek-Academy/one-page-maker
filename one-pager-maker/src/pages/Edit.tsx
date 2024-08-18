@@ -136,13 +136,14 @@ function Edit() {
                   const match = /language-(\w+)/.exec(className || '')
                   return !inline && match ? (
                     <SyntaxHighlighter
-                        {...props}
-                        style={vscDarkPlus}
-                        language={match[1]}
-                        PreTag="div"
+                      {...props}
+                      style={vscDarkPlus}
+                      language={match[1]}
+                      PreTag="div"
+                      className="rounded-md text-sm lang"
                     >{String(children).replace(/\n$/, '')}</SyntaxHighlighter>
                   ) : (
-                    <code {...props} className={className}>
+                    <code {...props} className={`${className} px-1 py-0.5 rounded bg-gray-100 font-mono text-sm text-red-600`}>
                       {children}
                     </code>
                   )
