@@ -4,6 +4,7 @@ import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 import {vscDarkPlus} from 'react-syntax-highlighter/dist/esm/styles/prism'
+import type { SyntaxHighlighterProps } from 'react-syntax-highlighter'
 import {Document, Status} from "../entity/documentType.ts";
 import {Link, useParams} from "react-router-dom";
 import {UserSelectMenu} from "../stories/UserItem.tsx";
@@ -132,15 +133,15 @@ function Edit() {
               remarkPlugins={[remarkGfm]}
               components={{
                 p: ({children}) => <p className="whitespace-pre-wrap">{children}</p>,
-                code({inline, className, children, ...props}) {
+                code({className, children, ...props}) {
                   const match = /language-(\w+)/.exec(className || '')
-                  return !inline && match ? (
+                  return !('inline' in props) && match ? (
                     <SyntaxHighlighter
-                      {...props}
                       style={vscDarkPlus}
                       language={match[1]}
                       PreTag="div"
                       className="rounded-md text-sm lang"
+                      {...(props as SyntaxHighlighterProps)}
                     >{String(children).replace(/\n$/, '')}</SyntaxHighlighter>
                   ) : (
                     <code {...props} className={`${className} px-1 py-0.5 rounded bg-gray-100 font-mono text-sm text-red-600`}>
