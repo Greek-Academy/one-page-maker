@@ -1,13 +1,13 @@
 export const DI = {
-    AuthRepository: 'AuthRepository',
+  AuthRepository: "AuthRepository",
 
-    UserRepository: 'UserRepository',
-    UserDomainService: 'UserDomainService',
-    UserService: 'UserService',
+  UserRepository: "UserRepository",
+  UserDomainService: "UserDomainService",
+  UserService: "UserService",
 
-    ViewHistoryRepository: 'ViewHistoryRepository',
-    ViewHistoryService: 'ViewHistoryService',
+  ViewHistoryRepository: "ViewHistoryRepository",
+  ViewHistoryService: "ViewHistoryService",
 
-    DocumentRepository: 'DocumentRepository',
-    DocumentService: 'DocumentService',
-}
+  DocumentRepository: "DocumentRepository",
+  DocumentService: "DocumentService"
+};
