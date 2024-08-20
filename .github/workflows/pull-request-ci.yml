@@ -29,6 +29,8 @@ jobs:
           echo "VITE_MESSAGING_SENDER_ID=${{ secrets.VITE_MESSAGING_SENDER_ID }}" >> .env
           echo "VITE_APP_ID=${{ secrets.VITE_APP_ID }}" >> .env
           echo "VITE_MEASUREMENT_ID=${{ secrets.VITE_MEASUREMENT_ID }}" >> .env
+      - name: format
+        run: bun run format
       - name: lint
         run: bun run lint
       - name: test

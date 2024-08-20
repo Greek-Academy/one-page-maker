@@ -14,7 +14,7 @@ import { selectUser } from "@/redux/user/selector.ts";
 import { useAppSelector } from "@/redux/hooks.ts";
 
 function Edit() {
-  const { uid, documentId } = useParams<{ uid:string; documentId:string }>();
+  const { uid, documentId } = useParams<{ uid: string; documentId: string }>();
 
   const authUserUid = useAppSelector(selectUser)?.uid;
   const userQuery = userApi.useFindUserByUIDQuery(authUserUid ?? "");
