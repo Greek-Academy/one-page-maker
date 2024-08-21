@@ -1,4 +1,4 @@
-import {z, ZodType} from "zod";
+import { z, ZodType } from "zod";
 
 /**
  * Zod で作成した Schema で型アサーションをする
@@ -6,8 +6,8 @@ import {z, ZodType} from "zod";
  * @param value アサーションしたい値orオブジェクト
  */
 export function assertZodSchema<T extends ZodType>(
-    schema: T,
-    value: unknown
+  schema: T,
+  value: unknown
 ): asserts value is z.infer<T> {
-    schema.parse(value);
+  schema.parse(value);
 }

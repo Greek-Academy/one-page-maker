@@ -1,5 +1,5 @@
-import {User} from "@firebase/auth";
+import { User } from "@firebase/auth";
 
 export interface AuthRepository {
-    currentUser(): User | null
+  currentUser(): User | null;
 }
