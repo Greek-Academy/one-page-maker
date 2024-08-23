@@ -31,7 +31,7 @@ export const Router = () => {
           />
         }
       />
-      <Route path="/:uid/document/:documentId" element={<DocumentPage />} />
+      <Route path="/:uid/documents/:documentId" element={<DocumentPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/reset-password" element={<ResetPassword />} />
