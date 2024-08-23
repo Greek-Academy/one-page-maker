@@ -3,7 +3,7 @@ import Edit from "./pages/Edit";
 import List from "./pages/List";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import Entry from "./pages/Entry";
+import DocumentPage from "./pages/DocumentPage";
 import ResetPassword from "./pages/ResetPassword";
 import { RouteAuthGuard } from "./RouteAuthGuard";
 import SetId from "@/pages/SetId.tsx";
@@ -31,7 +31,7 @@ export const Router = () => {
           />
         }
       />
-      <Route path="/entry/:uid/:documentId" element={<Entry />} />
+      <Route path="/:uid/document/:documentId" element={<DocumentPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/reset-password" element={<ResetPassword />} />

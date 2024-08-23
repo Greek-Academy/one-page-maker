@@ -1,6 +1,5 @@
 import "./Edit.css";
 import { useEffect, useState } from "react";
-import Markdown from "react-markdown";
 import { Document, Status } from "../entity/documentType.ts";
 import { Link, useParams } from "react-router-dom";
 import { UserSelectMenu } from "../stories/UserItem.tsx";
@@ -12,6 +11,7 @@ import { viewHistoryApi } from "@/api/viewHistoryApi.ts";
 import { userApi } from "@/api/userApi.ts";
 import { selectUser } from "@/redux/user/selector.ts";
 import { useAppSelector } from "@/redux/hooks.ts";
+import { MarkdownRenderer } from "../components/ui/MarkdownRenderer";
 
 function Edit() {
   const { uid, documentId } = useParams<{ uid: string; documentId: string }>();
@@ -132,6 +132,13 @@ function Edit() {
           >
             Save
           </button>
+          <button
+            className="border-4 border-solid"
+            type="button"
+            onClick={() => onClickSave()}
+          >
+            Published
+          </button>
         </div>
         <div className="flex justify-between">
           <span>
@@ -183,7 +190,9 @@ function Edit() {
             placeholder="Enter Markdown here"
           />
           <div className="w-1/2 overflow-visible overflow-scroll overflow-x-hidden border p-1">
-            <Markdown className="markdown">{documentData?.contents}</Markdown>
+            <MarkdownRenderer
+              contents={documentData?.contents || ""}
+            ></MarkdownRenderer>
           </div>
         </div>
       </div>
