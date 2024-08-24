@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('has title', async ({ page }) => {
-  await page.goto('https://one-pager-maker.web.app/');
+test("has title", async ({ page }) => {
+  await page.goto("https://one-pager-maker.web.app/");
 
   // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle('One Pager Maker');
+  await expect(page).toHaveTitle("One Pager Maker");
 });
 
 // test('get started link', async ({ page }) => {

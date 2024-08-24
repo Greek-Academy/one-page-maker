@@ -1,29 +1,27 @@
-import {Fragment, ReactNode} from "react";
+import { Fragment, ReactNode } from "react";
 
-export const Menu = ({open, children, className = ''}: {
-    open: boolean,
-    children: ReactNode,
-    className?: string
+export const Menu = ({
+  open,
+  children,
+  className = ""
+}: {
+  open: boolean;
+  children: ReactNode;
+  className?: string;
 }) => {
-    if (!open) {
-        return (
-            <Fragment/>
-        );
-    }
+  if (!open) {
+    return <Fragment />;
+  }
 
-    return (
-        <menu className={`absolute bg-slate-200 rounded-md z-10 ${className}`}>
-            {children}
-        </menu>
-    )
-}
+  return (
+    <menu className={`absolute z-10 rounded-md bg-slate-200 ${className}`}>
+      {children}
+    </menu>
+  );
+};
 
-export const MenuItem = ({children}: {
-    children: ReactNode
-}) => {
-    return (
-        <li className={'hover:bg-slate-300 rounded-md px-6 py-4'}>
-            {children}
-        </li>
-    )
-}
+export const MenuItem = ({ children }: { children: ReactNode }) => {
+  return (
+    <li className={"rounded-md px-6 py-4 hover:bg-slate-300"}>{children}</li>
+  );
+};
