@@ -1,0 +1,11 @@
+pre {
+    background: #1e1e1e !important;
+}
+pre .undefined {
+    background-color: transparent !important;
+    color: #c3c3c3 !important;
+}
+
+pre .lang {
+    padding: 0 !important;
+}
