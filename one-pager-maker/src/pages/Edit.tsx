@@ -1,10 +1,5 @@
 import "./Edit.css";
 import { useEffect, useState } from "react";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import type { SyntaxHighlighterProps } from "react-syntax-highlighter";
 import { Document, Status } from "../entity/documentType.ts";
 import { Link, useParams } from "react-router-dom";
 import { UserSelectMenu } from "../stories/UserItem.tsx";
@@ -16,6 +11,7 @@ import { viewHistoryApi } from "@/api/viewHistoryApi.ts";
 import { userApi } from "@/api/userApi.ts";
 import { selectUser } from "@/redux/user/selector.ts";
 import { useAppSelector } from "@/redux/hooks.ts";
+import { MarkdownRenderer } from "../components/ui/MarkdownRenderer";
 
 function Edit() {
   const { uid, documentId } = useParams<{ uid: string; documentId: string }>();
@@ -132,9 +128,16 @@ function Edit() {
           <button
             className="border-4 border-solid"
             type="button"
-            onClick={() => onClickSave()}
+            onClick={onClickSave}
           >
             Save
+          </button>
+          <button
+            className="border-4 border-solid"
+            type="button"
+            onClick={onClickSave}
+          >
+            Published
           </button>
         </div>
         <div className="flex justify-between">
@@ -187,38 +190,7 @@ function Edit() {
             placeholder="Enter Markdown here"
           />
           <div className="w-1/2 overflow-visible overflow-scroll overflow-x-hidden border p-1">
-            <Markdown
-              className="markdown"
-              remarkPlugins={[remarkGfm]}
-              components={{
-                p: ({ children }) => (
-                  <p className="whitespace-pre-wrap">{children}</p>
-                ),
-                code({ className, children, ...props }) {
-                  const match = /language-(\w+)/.exec(className || "");
-                  return !("inline" in props) && match ? (
-                    <SyntaxHighlighter
-                      style={vscDarkPlus}
-                      language={match[1]}
-                      PreTag="div"
-                      className="lang rounded-md text-sm"
-                      {...(props as SyntaxHighlighterProps)}
-                    >
-                      {String(children).replace(/\n$/, "")}
-                    </SyntaxHighlighter>
-                  ) : (
-                    <code
-                      {...props}
-                      className={`${className} rounded bg-gray-100 px-1 py-0.5 font-mono text-sm text-red-600`}
-                    >
-                      {children}
-                    </code>
-                  );
-                }
-              }}
-            >
-              {documentData?.contents || ""}
-            </Markdown>
+            <MarkdownRenderer contents={documentData?.contents || ""} />
           </div>
         </div>
       </div>
