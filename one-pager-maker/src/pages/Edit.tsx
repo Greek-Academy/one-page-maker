@@ -33,9 +33,10 @@ function Edit() {
   const reviewHistoryMutation = viewHistoryApi.useSetReviewHistoryMutation();
 
   useEffect(() => {
-    if (document === undefined) return;
-    setDocumentData(document);
-  }, [document]);
+    if (documentResult.data?.value && !documentData) {
+      setDocumentData(documentResult.data.value);
+    }
+  }, [documentResult.data, documentData]);
 
   const updateDocumentState = <K extends keyof Document>(
     key: K,
@@ -77,6 +78,8 @@ function Edit() {
         uid,
         document: documentData
       });
+      
+      setDocumentData(result);
 
       // 更新したときに閲覧履歴を設定
       const mutationArgs = {
