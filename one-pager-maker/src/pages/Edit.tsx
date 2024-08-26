@@ -33,10 +33,10 @@ function Edit() {
   const reviewHistoryMutation = viewHistoryApi.useSetReviewHistoryMutation();
 
   useEffect(() => {
-    if (documentResult.data?.value && !documentData) {
-      setDocumentData(documentResult.data.value);
+    if (document && !documentData) {
+      setDocumentData(document);
     }
-  }, [documentResult.data, documentData]);
+  }, [document, documentData]);
 
   const updateDocumentState = <K extends keyof Document>(
     key: K,
