@@ -128,14 +128,14 @@ function Edit() {
           <button
             className="border-4 border-solid"
             type="button"
-            onClick={() => onClickSave()}
+            onClick={onClickSave}
           >
             Save
           </button>
           <button
             className="border-4 border-solid"
             type="button"
-            onClick={() => onClickSave()}
+            onClick={onClickSave}
           >
             Published
           </button>
@@ -190,9 +190,7 @@ function Edit() {
             placeholder="Enter Markdown here"
           />
           <div className="w-1/2 overflow-visible overflow-scroll overflow-x-hidden border p-1">
-            <MarkdownRenderer
-              contents={documentData?.contents || ""}
-            ></MarkdownRenderer>
+            <MarkdownRenderer contents={documentData?.contents || ""} />
           </div>
         </div>
       </div>
