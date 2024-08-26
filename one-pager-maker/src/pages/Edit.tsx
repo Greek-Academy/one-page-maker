@@ -78,7 +78,7 @@ function Edit() {
         uid,
         document: documentData
       });
-      
+
       setDocumentData(result);
 
       // 更新したときに閲覧履歴を設定
