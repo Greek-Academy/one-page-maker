@@ -117,4 +117,23 @@ export class DocumentServiceImpl implements DocumentService {
       return Promise.reject(e);
     }
   }
+
+  async setDocumentPublishStatus(
+      uid: string,
+      documentId: string,
+      isPublished: boolean
+  ): Promise<Document> {
+    try {
+      const published_at = isPublished ? Timestamp.now() : null;
+      return await this.documentRepository.update({
+        uid,
+        document: {
+          id: documentId,
+          published_at,
+        }
+      });
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
 }
