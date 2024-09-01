@@ -25,7 +25,7 @@ export const documentSchema = z.object({
 export type Document = z.infer<typeof documentSchema>;
 export type DocumentForCreate = Omit<
   Document,
-  "id" | "deleted_at" | "updated_at" | "created_at" | "published_at"
+  "id" | "deleted_at" | "updated_at" | "created_at"
 >;
 export type DocumentForUpdate = Partial<Omit<Document, "updated_at">> & {
   id: string;

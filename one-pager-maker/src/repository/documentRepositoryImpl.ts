@@ -34,7 +34,8 @@ export class DocumentRepositoryImpl implements DocumentRepository {
         id: ref.id,
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
-        deleted_at: null
+        deleted_at: null,
+        published_at: document.published_at ?? null
       };
       await this.clientManager.getClient().set(ref, data);
 
@@ -42,7 +43,8 @@ export class DocumentRepositoryImpl implements DocumentRepository {
         ...data,
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
-        deleted_at: null
+        deleted_at: null,
+        published_at: document.published_at ?? null
       };
     } catch (e) {
       return Promise.reject(e);
