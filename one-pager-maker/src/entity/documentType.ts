@@ -17,14 +17,15 @@ export const documentSchema = z.object({
   reviewers: z.array(z.string()),
   url_privilege: privilegeSchema,
   deleted_at: z.instanceof(Timestamp).nullable(),
+  published_at: z.instanceof(Timestamp).nullable(),
   updated_at: z.instanceof(Timestamp),
-  created_at: z.instanceof(Timestamp)
+  created_at: z.instanceof(Timestamp),
 });
 
 export type Document = z.infer<typeof documentSchema>;
 export type DocumentForCreate = Omit<
   Document,
-  "id" | "deleted_at" | "updated_at" | "created_at"
+  "id" | "deleted_at" | "updated_at" | "created_at" | "published_at"
 >;
 export type DocumentForUpdate = Partial<Omit<Document, "updated_at">> & {
   id: string;
