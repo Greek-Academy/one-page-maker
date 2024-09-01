@@ -119,9 +119,9 @@ export class DocumentServiceImpl implements DocumentService {
   }
 
   async setDocumentPublishStatus(
-      uid: string,
-      documentId: string,
-      isPublished: boolean
+    uid: string,
+    documentId: string,
+    isPublished: boolean
   ): Promise<Document> {
     try {
       const published_at = isPublished ? Timestamp.now() : null;
@@ -129,7 +129,7 @@ export class DocumentServiceImpl implements DocumentService {
         uid,
         document: {
           id: documentId,
-          published_at,
+          published_at
         }
       });
     } catch (e) {
