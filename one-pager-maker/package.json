@@ -30,6 +30,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "firebase": "^10.8.0",
+    "firebase-admin": "^12.4.0",
     "happy-dom": "^14.4.0",
     "lucide-react": "^0.379.0",
     "prettier": "^3.3.3",
