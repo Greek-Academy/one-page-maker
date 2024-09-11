@@ -45,7 +45,7 @@ jobs:
           echo "VITE_APP_ID=${{ secrets.STAGING_VITE_APP_ID }}" >> .env.staging
           echo "VITE_MEASUREMENT_ID=${{ secrets.STAGING_VITE_MEASUREMENT_ID }}" >> .env.staging
       - name: bun run build
-        run: bun run build
+        run: bun run build:dev
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
