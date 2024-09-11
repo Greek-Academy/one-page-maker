@@ -19,8 +19,8 @@ provider "google-beta" {
 resource "google_project" "default" {
   provider = google-beta.no_user_project_override
 
-  name            = "binnmti-test-project"
-  project_id      = "binnmti-test-project-tf"
+  name            = "one-pager-maker-staging"
+  project_id      = "one-pager-maker-staging-id"
   billing_account = "01BAC7-5F2A1E-5E4BE5"
 
   labels = {
@@ -61,7 +61,7 @@ resource "google_firebase_web_app" "default" {
   provider = google-beta
 
   project         = google_firebase_project.default.project
-  display_name    = "binnmti-test-project-webapp"
+  display_name    = "one-pager-maker-webapp"
   deletion_policy = "DELETE"
 }
 
@@ -81,7 +81,22 @@ resource "google_identity_platform_config" "auth" {
   ]
 }
 
-variable "oauth_client_secret" {
+resource "google_identity_platform_config" "default" {
+  provider = google-beta
+  project  = google_firebase_project.default.project
+  sign_in {
+    allow_duplicate_emails = true
+    email {
+      enabled           = true
+      password_required = true
+    }
+  }
+  depends_on = [
+    google_identity_platform_config.auth
+  ]
+}
+
+variable "oauth_client_secret_google" {
   type        = string
   description = "OAuth client secret. For this codelab, you can pass in this secret through the environment variable TF_VAR_oauth_client_secret. In a real app, you should use a secret manager service."
   sensitive   = true
@@ -93,7 +108,26 @@ resource "google_identity_platform_default_supported_idp_config" "google_sign_in
   enabled       = true
   idp_id        = "google.com"
   client_id     = "900573945328-luuuovajg5bk607919ocqch4gah8j8th.apps.googleusercontent.com"
-  client_secret = var.oauth_client_secret
+  client_secret = var.oauth_client_secret_google
+  depends_on = [
+    google_identity_platform_config.auth
+  ]
+}
+
+variable "oauth_client_secret_github" {
+  type        = string
+  description = "OAuth client secret. For this codelab, you can pass in this secret through the environment variable TF_VAR_oauth_client_secret_github. In a real app, you should use a secret manager service."
+  sensitive   = true
+}
+
+# githubのclient_id to client_secret
+resource "google_identity_platform_default_supported_idp_config" "github_sign_in" {
+  provider      = google-beta
+  project       = google_firebase_project.default.project
+  enabled       = true
+  idp_id        = "github.com"
+  client_id     = "Ov23lirVDPHp9Vx8xeOy"
+  client_secret = var.oauth_client_secret_github
   depends_on = [
     google_identity_platform_config.auth
   ]
@@ -124,6 +158,15 @@ resource "google_firestore_database" "default" {
   depends_on = [
     google_project_service.firestore
   ]
+}
+
+resource "google_firestore_backup_schedule" "weekly-backup" {
+  project   = google_firebase_project.default.project
+  retention = "8467200s" // 14 weeks (maximum possible retention)
+
+  weekly_recurrence {
+    day = "SUNDAY"
+  }
 }
 
 resource "google_firebaserules_ruleset" "firestore" {
@@ -160,11 +203,46 @@ resource "google_firebaserules_release" "firestore" {
   }
 }
 
+resource "google_firestore_index" "view_histories_index" {
+  project    = google_firebase_project.default.project
+  collection = "viewHistories"
+  fields {
+    field_path = "document.deleted_at"
+    order      = "ASCENDING"
+  }
+  fields {
+    field_path = "viewType"
+    order      = "ASCENDING"
+  }
+  fields {
+    field_path = "updated_at"
+    order      = "DESCENDING"
+  }
+  fields {
+    field_path = "__name__"
+    order      = "DESCENDING"
+  }
+}
+
+resource "google_project_service" "storage" {
+  provider = google-beta
+
+  project = google_firebase_project.default.project
+  for_each = toset([
+    "firebasestorage.googleapis.com",
+    "storage.googleapis.com",
+  ])
+  service = each.key
+
+  disable_on_destroy = false
+}
+
 resource "google_app_engine_application" "default" {
   provider = google-beta
 
   project     = google_firebase_project.default.project
-  location_id = "asia-northeast2" # Must be in the same location as Firestore (above)
+  location_id = "asia-northeast2"
+
   depends_on = [
     google_firestore_database.default
   ]
