@@ -49,7 +49,7 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_ONE_PAGER_MAKER }}"
+          firebaseServiceAccount: "${{ secrets.STAGING_FIREBASE_SERVICE_ACCOUNT  }}"
           channelId: live
           projectId: one-pager-maker
       - name: Install Playwright Browsers
