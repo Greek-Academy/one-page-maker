@@ -51,7 +51,7 @@ jobs:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.STAGING_FIREBASE_SERVICE_ACCOUNT  }}"
           channelId: live
-          projectId: one-pager-maker
+          projectId: one-pager-maker-staging-id
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
