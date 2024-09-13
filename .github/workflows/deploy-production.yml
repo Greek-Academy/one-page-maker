@@ -26,6 +26,7 @@ jobs:
         run: terraform plan
         working-directory: ./firebase-terraform
         env:
+          GOOGLE_CREDENTIALS: ${{ secrets.STAGING_FIREBASE_SERVICE_ACCOUNT }}
           TF_VAR_oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
           TF_VAR_oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
           TF_VAR_oauth_client_id_github: ${{ secrets.AUTH_GITHUB_ID }}
@@ -35,6 +36,7 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: ./firebase-terraform
         env:
+          GOOGLE_CREDENTIALS: ${{ secrets.STAGING_FIREBASE_SERVICE_ACCOUNT }}
           TF_VAR_oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
           TF_VAR_oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
           TF_VAR_oauth_client_id_github: ${{ secrets.AUTH_GITHUB_ID }}
