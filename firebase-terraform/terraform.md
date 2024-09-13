@@ -1,32 +1,32 @@
-# 事前準備
+# Preparation
 
-- google 認証 と github 認証の client_secret は別管理
-- 事前に terraform.tfvars を作って中身にシークレットキーを入れる
+- Manage client_secret for google authentication and github authentication separately
+- Create terraform.tfvars in advance and put secret key in it
 
 ```terraform.tfvars
 oauth_client_secret_google=""
 oauth_client_secret_github=""
 ```
 
-# コマンド
+# Commands
 
-- staging 環境は以下のコマンドを叩くと更新する
+- Run the following command to update the staging environment
 
 ```
 terraform init
 terraform apply
 ```
 
-# 料金プラン
+# Pricing plan
 
-- Blaze プランにしないと google_identity_platform_config とか google_firebase_storage_bucket が失敗する
-- 一旦 Blaze プランにして走らせた後に Spark プランに戻す。これだけなら今のところお金はかからない
+- If you don't use the Blaze plan, google_identity_platform_config and google_firebase_storage_bucket will fail
+- Run the Blaze plan once, then switch back to the Spark plan. This doesn't cost anything for now
 
 # Authentication
 
-- ユーザー アカウントのリンクがデフォルト「同じメールアドレスを使用するアカウントをリンク」だが、「ID プロバイダごとに複数のアカウントを作成」に変更されている。理由は分からない。
-- ↑ の[設定](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/identity_platform_config)を変更する方法は分からず。。。
+- The default for user account linking is "Link accounts with the same email address," but it has been changed to "Create multiple accounts for each identity provider." I don't know why.
+- I don't know how to change the [settings](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/identity_platform_config) above...
 
 # Cloud Firestore
 
-- ルールは変えたが影響は分からない。以前のルールは警告が出ていた
+- I changed the rules but I don't know the impact. The previous rules gave me a warning.
