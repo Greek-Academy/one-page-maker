@@ -96,6 +96,12 @@ resource "google_identity_platform_config" "default" {
   ]
 }
 
+variable "oauth_client_id_google" {
+  type        = string
+  description = "OAuth client id. For this codelab, you can pass in this secret through the environment variable TF_VAR_oauth_client_id. In a real app, you should use a secret manager service."
+  sensitive   = true
+}
+
 variable "oauth_client_secret_google" {
   type        = string
   description = "OAuth client secret. For this codelab, you can pass in this secret through the environment variable TF_VAR_oauth_client_secret. In a real app, you should use a secret manager service."
@@ -112,6 +118,12 @@ resource "google_identity_platform_default_supported_idp_config" "google_sign_in
   depends_on = [
     google_identity_platform_config.auth
   ]
+}
+
+variable "oauth_client_id_github" {
+  type        = string
+  description = "OAuth client id. For this codelab, you can pass in this secret through the environment variable TF_VAR_oauth_client_secret_github. In a real app, you should use a secret manager service."
+  sensitive   = true
 }
 
 variable "oauth_client_secret_github" {
