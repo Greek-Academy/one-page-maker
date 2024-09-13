@@ -22,11 +22,11 @@ jobs:
 
       - name: Initialize Terraform
         run: terraform init
-        working-directory: ./firebase-terraform
+        working-directory: ../firebase-terraform
 
       - name: Terraform Plan
         run: terraform plan
-        working-directory: ./firebase-terraform
+        working-directory: ../firebase-terraform
         env:
           oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
           oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
@@ -35,7 +35,7 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: ./firebase-terraform
+        working-directory: ../firebase-terraform
         env:
           oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
           oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
