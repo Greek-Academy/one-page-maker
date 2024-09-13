@@ -15,6 +15,7 @@ jobs:
         working-directory: one-pager-maker
     concurrency: production
     steps:
+      - uses: actions/checkout@v4
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
@@ -42,7 +43,6 @@ jobs:
           oauth_client_id_github: ${{ secrets.AUTH_GITHUB_ID }}
           oauth_client_secret_github: ${{ secrets.AUTH_GITHUB_SECRET }}
 
-      - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
       - name: cache-node-modules
         uses: actions/cache@v3
