@@ -19,8 +19,10 @@ provider "google-beta" {
 resource "google_project" "default" {
   provider = google-beta.no_user_project_override
 
-  name            = "one-pager-maker-staging"
-  project_id      = "one-pager-maker-staging-id"
+  # name            = "one-pager-maker-staging"
+  # project_id      = "one-pager-maker-staging-id"
+  name            = "one-pager-maker-production"
+  project_id      = "one-pager-maker-production"
   billing_account = "01BAC7-5F2A1E-5E4BE5"
 
   labels = {
