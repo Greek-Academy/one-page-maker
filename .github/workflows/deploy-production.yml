@@ -26,7 +26,7 @@ jobs:
         run: terraform plan
         working-directory: ./firebase-terraform
         env:
-          GOOGLE_CREDENTIALS: ${{ secrets.STAGING_FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_CREDENTIALS: ${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT }}
           TF_VAR_oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
           TF_VAR_oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
           TF_VAR_oauth_client_id_github: ${{ secrets.AUTH_GITHUB_ID }}
@@ -36,7 +36,7 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: ./firebase-terraform
         env:
-          GOOGLE_CREDENTIALS: ${{ secrets.STAGING_FIREBASE_SERVICE_ACCOUNT }}
+          GOOGLE_CREDENTIALS: ${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT }}
           TF_VAR_oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
           TF_VAR_oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
           TF_VAR_oauth_client_id_github: ${{ secrets.AUTH_GITHUB_ID }}
@@ -65,13 +65,13 @@ jobs:
         shell: bash
         run: |
           echo "$(cat <<EOF
-          VITE_API_KEY=${{ secrets.PROG_VITE_API_KEY }}
-          VITE_AUTH_DOMAIN=${{ secrets.PROG_VITE_AUTH_DOMAIN }}
-          VITE_PROJECT_ID=${{ secrets.PROG_VITE_PROJECT_ID }}
-          VITE_STORAGE_BUCKET=${{ secrets.PROG_VITE_STORAGE_BUCKET }}
-          VITE_MESSAGING_SENDER_ID=${{ secrets.PROG_VITE_MESSAGING_SENDER_ID }}
-          VITE_APP_ID=${{ secrets.PROG_VITE_APP_ID }}
-          VITE_MEASUREMENT_ID=${{ secrets.PROG_VITE_MEASUREMENT_ID }}
+          VITE_API_KEY=${{ secrets.PRODUCTION_VITE_API_KEY }}
+          VITE_AUTH_DOMAIN=${{ secrets.PRODUCTION_VITE_AUTH_DOMAIN }}
+          VITE_PROJECT_ID=${{ secrets.PRODUCTION_VITE_PROJECT_ID }}
+          VITE_STORAGE_BUCKET=${{ secrets.PRODUCTION_VITE_STORAGE_BUCKET }}
+          VITE_MESSAGING_SENDER_ID=${{ secrets.PRODUCTION_VITE_MESSAGING_SENDER_ID }}
+          VITE_APP_ID=${{ secrets.PRODUCTION_VITE_APP_ID }}
+          VITE_MEASUREMENT_ID=${{ secrets.PRODUCTION_VITE_MEASUREMENT_ID }}
           EOF
           )" >> .env.production
       - name: bun run build
