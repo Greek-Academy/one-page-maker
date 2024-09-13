@@ -20,15 +20,15 @@ export class DocumentServiceImpl implements DocumentService {
 
   async getDocument({
     uid,
-    documentId
+    filepath
   }: {
     uid: string;
-    documentId: string;
+    filepath: string;
   }): Promise<Result<Document | undefined, DocumentServiceError>> {
     try {
-      const result = await this.documentRepository.get({
+      const result = await this.documentRepository.getByPath({
         uid,
-        documentId
+        filepath
       });
 
       return Result.success(result ?? undefined);
@@ -51,7 +51,15 @@ export class DocumentServiceImpl implements DocumentService {
     }
   }
 
-  async createDocument(uid: string): Promise<Document> {
+  async createDocument({
+    uid,
+    filepath,
+    filename
+  }: {
+    uid: string;
+    filepath: string;
+    filename: string;
+  }): Promise<Document> {
     const template = `# Summary
 
 # Background
@@ -77,7 +85,9 @@ export class DocumentServiceImpl implements DocumentService {
           reviewers: [],
           url_privilege: "private",
           deleted_at: null,
-          published_at: null
+          published_at: null,
+          filename,
+          filepath
         }
       });
       await this.viewHistoryService.setEditHistory({ uid, documentId: doc.id });
@@ -89,15 +99,15 @@ export class DocumentServiceImpl implements DocumentService {
 
   async deleteDocument({
     uid,
-    documentId
+    filepath
   }: {
     uid: string;
-    documentId: string;
+    filepath: string;
   }): Promise<Document> {
     try {
-      return await this.documentRepository.delete({
+      return await this.documentRepository.deleteByPath({
         uid,
-        documentId
+        filepath
       });
     } catch (e) {
       return Promise.reject(e);
@@ -132,6 +142,20 @@ export class DocumentServiceImpl implements DocumentService {
           published_at
         }
       });
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  async getDocumentsByPath({
+    uid,
+    filepath
+  }: {
+    uid: string;
+    filepath: string;
+  }): Promise<Document[]> {
+    try {
+      return await this.documentRepository.getManyByPath({ uid, filepath });
     } catch (e) {
       return Promise.reject(e);
     }

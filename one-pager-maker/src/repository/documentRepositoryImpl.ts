@@ -4,8 +4,10 @@ import { Document, documentConverter } from "../entity/documentType.ts";
 import {
   collection,
   doc,
+  query,
   serverTimestamp,
-  Timestamp
+  Timestamp,
+  where
 } from "firebase/firestore";
 import { db } from "../firebase.ts";
 import { FirestoreClientManager } from "./shared/firestoreClientManager.ts";
@@ -51,22 +53,30 @@ export class DocumentRepositoryImpl implements DocumentRepository {
     }
   }
 
-  async delete({
+  async deleteByPath({
     uid,
-    documentId
+    filepath
   }: {
     uid: string;
-    documentId: string;
+    filepath: string;
   }): Promise<Document> {
     try {
-      const ref = this.docRef(uid, documentId);
-      await this.clientManager.getClient().update(ref, {
+      const querySnapshot = await this.clientManager
+        .getClient()
+        .getMany(query(this.colRef(uid), where("filepath", "==", filepath)));
+
+      if (querySnapshot.empty) {
+        return Promise.reject(new Error("Document not found"));
+      }
+
+      const docRef = querySnapshot.docs[0].ref;
+      await this.clientManager.getClient().update(docRef, {
         updated_at: serverTimestamp(),
         deleted_at: serverTimestamp()
       });
 
-      const snapshot = await this.clientManager.getClient().get(ref);
-      const result = snapshot.data();
+      const updatedSnapshot = await this.clientManager.getClient().get(docRef);
+      const result = updatedSnapshot.data();
 
       if (result === undefined) {
         return Promise.reject(new Error("Document not found"));
@@ -78,29 +88,37 @@ export class DocumentRepositoryImpl implements DocumentRepository {
     }
   }
 
-  async get({
+  async getByPath({
     uid,
-    documentId
+    filepath
   }: {
     uid: string;
-    documentId: string;
+    filepath: string;
   }): Promise<Document | null> {
     try {
-      const snapshot = await this.clientManager
+      const querySnapshot = await this.clientManager
         .getClient()
-        .get(this.docRef(uid, documentId));
-      return snapshot.data() ?? null;
+        .getMany(query(this.colRef(uid), where("filepath", "==", filepath)));
+
+      return querySnapshot.empty ? null : querySnapshot.docs[0].data();
     } catch (e) {
       return Promise.reject(e);
     }
   }
 
-  async getMany(args: { uid: string }): Promise<Document[]> {
+  async getManyByPath({
+    uid,
+    filepath
+  }: {
+    uid: string;
+    filepath: string;
+  }): Promise<Document[]> {
     try {
-      const snapshot = await this.clientManager
+      const querySnapshot = await this.clientManager
         .getClient()
-        .getMany(this.colRef(args.uid));
-      return snapshot.docs.map((d) => d.data());
+        .getMany(query(this.colRef(uid), where("filepath", "==", filepath)));
+
+      return querySnapshot.docs.map((doc) => doc.data());
     } catch (e) {
       return Promise.reject(e);
     }

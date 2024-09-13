@@ -11,14 +11,14 @@ export interface DocumentRepository {
     document: ForCreate<Document>;
   }): Promise<Document>;
 
-  get(args: { uid: string; documentId: string }): Promise<Document | null>;
+  getByPath(args: { uid: string; filepath: string }): Promise<Document | null>;
 
-  getMany(args: { uid: string }): Promise<Document[]>;
+  getManyByPath(args: { uid: string; filepath: string }): Promise<Document[]>;
 
   update(args: {
     uid: string;
     document: ForUpdate<Document>;
   }): Promise<Document>;
 
-  delete(args: { uid: string; documentId: string }): Promise<Document>;
+  deleteByPath(args: { uid: string; filepath: string }): Promise<Document>;
 }
