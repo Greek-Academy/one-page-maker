@@ -6,11 +6,11 @@ on:
       - main
 
 permissions:
-  contents: read # Access to repository content
-  deployments: write # Deployment write permissions
-  actions: write # Necessary for some action steps
-  checks: write # Required for GitHub Action checks
-  statuses: write # Writing deployment statuses
+  contents: read
+  deployments: write
+  actions: write
+  checks: write
+  statuses: write
 
 jobs:
   deployment:
@@ -54,7 +54,7 @@ jobs:
           EOF
           )" >> .env.staging
       - name: bun run build
-        run: bun run build:dev
+        run: bun run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
