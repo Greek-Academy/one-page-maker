@@ -10,9 +10,6 @@ on:
 jobs:
   deployment:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: one-pager-maker
     concurrency: production
     steps:
       - uses: actions/checkout@v4
@@ -23,11 +20,11 @@ jobs:
 
       - name: Initialize Terraform
         run: terraform init
-        working-directory: ../firebase-terraform
+        working-directory: ./firebase-terraform
 
       - name: Terraform Plan
         run: terraform plan
-        working-directory: ../firebase-terraform
+        working-directory: ./firebase-terraform
         env:
           oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
           oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
@@ -36,7 +33,7 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: ../firebase-terraform
+        working-directory: ./firebase-terraform
         env:
           oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
           oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
@@ -62,6 +59,7 @@ jobs:
       - name: install firebase-tools
         run: bun i -g firebase-tools
       - name: Rewrite .env.production file
+        working-directory: ./one-pager-maker
         shell: bash
         run: |
           echo "$(cat <<EOF
@@ -75,6 +73,7 @@ jobs:
           EOF
           )" >> .env.production
       - name: bun run build
+        working-directory: ./one-pager-maker
         run: bun run build:prod
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
