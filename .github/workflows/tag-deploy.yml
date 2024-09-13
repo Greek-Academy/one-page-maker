@@ -22,8 +22,8 @@ jobs:
 
       - name: Merge tag commit to production
         run: |
-          git checkout production
-          git merge ${{ github.sha }} --no-ff
+          git switch production
+          git merge origin/main --no-ff
           git push origin production
 
   deploy:
