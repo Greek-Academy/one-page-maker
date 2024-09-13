@@ -26,19 +26,19 @@ jobs:
         run: terraform plan
         working-directory: ./firebase-terraform
         env:
-          oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
-          oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
-          oauth_client_id_github: ${{ secrets.AUTH_GITHUB_ID }}
-          oauth_client_secret_github: ${{ secrets.AUTH_GITHUB_SECRET }}
+          TF_VAR_oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
+          TF_VAR_oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
+          TF_VAR_oauth_client_id_github: ${{ secrets.AUTH_GITHUB_ID }}
+          TF_VAR_oauth_client_secret_github: ${{ secrets.AUTH_GITHUB_SECRET }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: ./firebase-terraform
         env:
-          oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
-          oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
-          oauth_client_id_github: ${{ secrets.AUTH_GITHUB_ID }}
-          oauth_client_secret_github: ${{ secrets.AUTH_GITHUB_SECRET }}
+          TF_VAR_oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
+          TF_VAR_oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
+          TF_VAR_oauth_client_id_github: ${{ secrets.AUTH_GITHUB_ID }}
+          TF_VAR_oauth_client_secret_github: ${{ secrets.AUTH_GITHUB_SECRET }}
 
       - uses: oven-sh/setup-bun@v1
       - name: cache-node-modules
