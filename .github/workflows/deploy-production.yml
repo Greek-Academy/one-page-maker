@@ -20,11 +20,11 @@ jobs:
 
       - name: Initialize Terraform
         run: terraform init
-        working-directory: ./firebase-terraform
+        working-directory: ./firebase-terraform/production
 
       - name: Terraform Plan
         run: terraform plan
-        working-directory: ./firebase-terraform
+        working-directory: ./firebase-terraform/production
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT }}
           TF_VAR_oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
@@ -34,7 +34,7 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: ./firebase-terraform
+        working-directory: ./firebase-terraform/production
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT }}
           TF_VAR_oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
@@ -80,9 +80,9 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.STAGING_FIREBASE_SERVICE_ACCOUNT  }}"
+          firebaseServiceAccount: "${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT  }}"
           channelId: live
-          projectId: one-pager-maker-production
+          projectId: one-pager-maker-production3
       - name: Test Failure
         uses: rjstone/discord-webhook-notify@v1
         if: failure() || cancelled()
