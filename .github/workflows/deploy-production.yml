@@ -13,35 +13,6 @@ jobs:
     concurrency: production
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_wrapper: false
-
-      - name: Initialize Terraform
-        run: terraform init
-        working-directory: ./firebase-terraform/production
-
-      - name: Terraform Plan
-        run: terraform plan
-        working-directory: ./firebase-terraform/production
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT }}
-          TF_VAR_oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
-          TF_VAR_oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
-          TF_VAR_oauth_client_id_github: ${{ secrets.AUTH_GITHUB_ID }}
-          TF_VAR_oauth_client_secret_github: ${{ secrets.AUTH_GITHUB_SECRET }}
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: ./firebase-terraform/production
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT }}
-          TF_VAR_oauth_client_id_google: ${{ secrets.AUTH_GOOGLE_ID }}
-          TF_VAR_oauth_client_secret_google: ${{ secrets.AUTH_GOOGLE_SECRET }}
-          TF_VAR_oauth_client_id_github: ${{ secrets.AUTH_GITHUB_ID }}
-          TF_VAR_oauth_client_secret_github: ${{ secrets.AUTH_GITHUB_SECRET }}
-
       - uses: oven-sh/setup-bun@v1
       - name: cache-node-modules
         uses: actions/cache@v3
