@@ -1,12 +1,9 @@
 name: Tag-based Deployment
 
 on:
-  # push:
-  #   branches:
-  #     - production
-  pull_request:
+  push:
     branches:
-      - main
+      - production
 
 permissions:
   contents: read
@@ -43,7 +40,7 @@ jobs:
         working-directory: ./one-pager-maker
         shell: bash
         run: |
-          echo "$(cat <<EOF
+          cat <<EOF >> .env.production
           VITE_API_KEY=${{ secrets.PRODUCTION_VITE_API_KEY }}
           VITE_AUTH_DOMAIN=${{ secrets.PRODUCTION_VITE_AUTH_DOMAIN }}
           VITE_PROJECT_ID=${{ secrets.PRODUCTION_VITE_PROJECT_ID }}
@@ -52,7 +49,6 @@ jobs:
           VITE_APP_ID=${{ secrets.PRODUCTION_VITE_APP_ID }}
           VITE_MEASUREMENT_ID=${{ secrets.PRODUCTION_VITE_MEASUREMENT_ID }}
           EOF
-          )" >> .env.production
       - name: bun run build
         working-directory: ./one-pager-maker
         run: bun run build:prod
@@ -62,9 +58,9 @@ jobs:
           firebaseServiceAccount: "${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT  }}"
           channelId: live
           projectId: one-pager-maker-production2
-      # - name: Test Failure
-      #   uses: rjstone/discord-webhook-notify@v1
-      #   if: failure() || cancelled()
-      #   with:
-      #     details: Test Failed!
-      #     webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Test Failure
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure() || cancelled()
+        with:
+          details: Test Failed!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
