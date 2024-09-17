@@ -7,6 +7,14 @@ on:
   pull_request:
     branches:
       - main
+
+permissions:
+  contents: read
+  deployments: write
+  actions: write
+  checks: write
+  statuses: write
+
 jobs:
   deployment:
     runs-on: ubuntu-latest
@@ -54,9 +62,9 @@ jobs:
           firebaseServiceAccount: "${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT  }}"
           channelId: live
           projectId: one-pager-maker-production3
-      - name: Test Failure
-        uses: rjstone/discord-webhook-notify@v1
-        if: failure() || cancelled()
-        with:
-          details: Test Failed!
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      # - name: Test Failure
+      #   uses: rjstone/discord-webhook-notify@v1
+      #   if: failure() || cancelled()
+      #   with:
+      #     details: Test Failed!
+      #     webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
