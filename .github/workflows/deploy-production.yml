@@ -61,7 +61,7 @@ jobs:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT  }}"
           channelId: live
-          projectId: one-pager-maker-production3
+          projectId: one-pager-maker-production2
       # - name: Test Failure
       #   uses: rjstone/discord-webhook-notify@v1
       #   if: failure() || cancelled()
