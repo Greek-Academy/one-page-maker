@@ -6,7 +6,9 @@ import { Document } from "../entity/documentType.ts";
 
 const queryKeys = {
   documentId: (uid: string, documentId: string) =>
-    `document-${uid}-${documentId}`
+    `document-${uid}-${documentId}`,
+  documentsUnderParent: (uid: string, parentId?: string) =>
+    `documents-${uid}-${parentId || "root"}`
 };
 
 export const documentApi = {
@@ -23,17 +25,44 @@ export const documentApi = {
         }
       }
     }),
+  useGetDocumentsUnderParentQuery: (args: { uid: string; parentId?: string }) =>
+    useQuery({
+      queryKey: [queryKeys.documentsUnderParent(args.uid, args.parentId)],
+      queryFn: async () => {
+        if (args.uid === "") return;
+        try {
+          const result = await documentService.getDocumentsUnderParent(args);
+          return result;
+        } catch (e) {
+          return Promise.reject(e);
+        }
+      }
+    }),
   useCreateDocumentMutation: () =>
     useMutation({
-      mutationFn: async ({ uid }: { uid: string }) => {
+      mutationFn: async ({
+        uid,
+        parentId
+      }: {
+        uid: string;
+        parentId?: string;
+      }) => {
         if (uid === "") return;
-        const result = await documentService.createDocument(uid);
+        const result = await documentService.createDocument(uid, parentId);
         return result;
       },
       onSuccess: async (document) => {
         if (document === undefined) return;
         await queryClient.invalidateQueries({
           queryKey: [queryKeys.documentId(document.owner_id, document.id)]
+        });
+        await queryClient.invalidateQueries({
+          queryKey: [
+            queryKeys.documentsUnderParent(
+              document.owner_id,
+              document.path.split("/").slice(-2, -1)[0] || undefined
+            )
+          ]
         });
       }
     }),
@@ -48,6 +77,14 @@ export const documentApi = {
         if (document === undefined) return;
         await queryClient.invalidateQueries({
           queryKey: [queryKeys.documentId(document.owner_id, document.id)]
+        });
+        await queryClient.invalidateQueries({
+          queryKey: [
+            queryKeys.documentsUnderParent(
+              document.owner_id,
+              document.path.split("/").slice(-2, -1)[0] || undefined
+            )
+          ]
         });
       }
     }),
@@ -68,6 +105,43 @@ export const documentApi = {
         if (document === undefined) return;
         await queryClient.invalidateQueries({
           queryKey: [queryKeys.documentId(document.owner_id, document.id)]
+        });
+        await queryClient.invalidateQueries({
+          queryKey: [
+            queryKeys.documentsUnderParent(
+              document.owner_id,
+              document.path.split("/").slice(-2, -1)[0] || undefined
+            )
+          ]
+        });
+      }
+    }),
+  useMoveDocumentMutation: () =>
+    useMutation({
+      mutationFn: async ({
+        uid,
+        documentId,
+        newParentId
+      }: {
+        uid: string;
+        documentId: string;
+        newParentId: string | null;
+      }) => {
+        if (uid === "" || documentId === "") return;
+        const result = await documentService.moveDocument({
+          uid,
+          documentId,
+          newParentId: newParentId || null
+        });
+        return result;
+      },
+      onSuccess: async (document) => {
+        if (document === undefined) return;
+        await queryClient.invalidateQueries({
+          queryKey: [queryKeys.documentId(document.owner_id, document.id)]
+        });
+        await queryClient.invalidateQueries({
+          queryKey: [queryKeys.documentsUnderParent(document.owner_id)]
         });
       }
     })

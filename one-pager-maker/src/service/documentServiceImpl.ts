@@ -3,7 +3,7 @@ import { DocumentRepository } from "../repository/documentRepository.ts";
 import { Document } from "../entity/documentType.ts";
 import { inject, injectable } from "tsyringe";
 import { DI } from "../di.ts";
-import { ForUpdate } from "../entity/utils.ts";
+import { ForCreate, ForUpdate } from "../entity/utils.ts";
 import { ViewHistoryService } from "@/service/viewHistoryService.ts";
 import { Result } from "result-type-ts";
 import { FirestoreError } from "@firebase/firestore";
@@ -51,7 +51,34 @@ export class DocumentServiceImpl implements DocumentService {
     }
   }
 
-  async createDocument(uid: string): Promise<Document> {
+  async getDocumentsUnderParent({
+    uid,
+    parentId
+  }: {
+    uid: string;
+    parentId?: string;
+  }): Promise<Result<Document[], DocumentServiceError>> {
+    try {
+      const result = await this.documentRepository.getMany({ uid, parentId });
+      return Result.success(result);
+    } catch (e) {
+      if (e instanceof FirestoreError) {
+        switch (e.code) {
+          case "permission-denied":
+            return Result.failure(
+              new DocumentServiceError(e.message, "permission-denied")
+            );
+          default:
+            return Result.failure(
+              new DocumentServiceError(e.message, "unknown")
+            );
+        }
+      }
+      return Promise.reject(e);
+    }
+  }
+
+  async createDocument(uid: string, parentId?: string): Promise<Document> {
     const template = `# Summary
 
 # Background
@@ -66,19 +93,28 @@ export class DocumentServiceImpl implements DocumentService {
 
 `;
     try {
+      const title = "New document";
+      const path = parentId ? `${parentId}` : title;
+      const filename = title;
+
+      const newDocument: ForCreate<Document> = {
+        title,
+        contents: template,
+        status: "draft",
+        owner_id: uid,
+        contributors: [uid],
+        reviewers: [],
+        url_privilege: "private",
+        deleted_at: null,
+        published_at: null,
+        path,
+        filename
+      };
+
       const doc = await this.documentRepository.create({
         uid,
-        document: {
-          title: "New document",
-          contents: template,
-          status: "draft",
-          owner_id: uid,
-          contributors: [uid],
-          reviewers: [],
-          url_privilege: "private",
-          deleted_at: null,
-          published_at: null
-        }
+        document: newDocument,
+        parentId
       });
       await this.viewHistoryService.setEditHistory({ uid, documentId: doc.id });
       return doc;
@@ -112,6 +148,43 @@ export class DocumentServiceImpl implements DocumentService {
       return await this.documentRepository.update({
         uid,
         document
+      });
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  async moveDocument({
+    uid,
+    documentId,
+    newParentId
+  }: {
+    uid: string;
+    documentId: string;
+    newParentId: string | null;
+  }): Promise<Document> {
+    try {
+      return await this.documentRepository.move({
+        uid,
+        documentId,
+        newParentId
+      });
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  async getDocumentPath({
+    uid,
+    documentId
+  }: {
+    uid: string;
+    documentId: string;
+  }): Promise<string> {
+    try {
+      return await this.documentRepository.getPath({
+        uid,
+        documentId
       });
     } catch (e) {
       return Promise.reject(e);
