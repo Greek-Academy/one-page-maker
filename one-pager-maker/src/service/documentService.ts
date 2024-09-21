@@ -5,23 +5,14 @@ import { Result } from "result-type-ts";
 export interface DocumentService {
   getDocument(args: {
     uid: string;
-    filepath: string;
+    documentId: string;
   }): Promise<Result<Document | undefined, DocumentServiceError>>;
 
-  createDocument(args: {
-    uid: string;
-    filepath: string;
-    filename: string;
-  }): Promise<Document>;
+  createDocument(uid: string): Promise<Document>;
 
   updateDocument(uid: string, document: ForUpdate<Document>): Promise<Document>;
 
-  deleteDocument(args: { uid: string; filepath: string }): Promise<Document>;
-
-  getDocumentsByPath(args: {
-    uid: string;
-    filepath: string;
-  }): Promise<Document[]>;
+  deleteDocument(args: { uid: string; documentId: string }): Promise<Document>;
 }
 
 type DocumentServiceErrorCode = "permission-denied" | "unknown";

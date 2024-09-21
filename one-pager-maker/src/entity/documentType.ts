@@ -19,9 +19,7 @@ export const documentSchema = z.object({
   deleted_at: z.instanceof(Timestamp).nullable(),
   published_at: z.instanceof(Timestamp).nullable(),
   updated_at: z.instanceof(Timestamp),
-  created_at: z.instanceof(Timestamp),
-  filename: z.string(),
-  filepath: z.string()
+  created_at: z.instanceof(Timestamp)
 });
 
 export type Document = z.infer<typeof documentSchema>;

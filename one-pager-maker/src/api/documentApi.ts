@@ -5,15 +5,16 @@ import { ForUpdate } from "../entity/utils.ts";
 import { Document } from "../entity/documentType.ts";
 
 const queryKeys = {
-  documentPath: (uid: string, filepath: string) => `document-${uid}-${filepath}`
+  documentId: (uid: string, documentId: string) =>
+    `document-${uid}-${documentId}`
 };
 
 export const documentApi = {
-  useGetDocumentQuery: (args: { uid: string; filepath: string }) =>
+  useGetDocumentQuery: (args: { uid: string; documentId: string }) =>
     useQuery({
-      queryKey: [queryKeys.documentPath(args.uid, args.filepath)],
+      queryKey: [queryKeys.documentId(args.uid, args.documentId)],
       queryFn: async () => {
-        if (args.uid === "" || args.filepath === "") return;
+        if (args.uid === "" || args.documentId === "") return;
         try {
           const result = await documentService.getDocument(args);
           return result;
@@ -24,45 +25,29 @@ export const documentApi = {
     }),
   useCreateDocumentMutation: () =>
     useMutation({
-      mutationFn: async ({
-        uid,
-        filepath,
-        filename
-      }: {
-        uid: string;
-        filepath: string;
-        filename: string;
-      }) => {
-        if (uid === "" || filepath === "" || filename === "") return;
-        const result = await documentService.createDocument({
-          uid,
-          filepath,
-          filename
-        });
+      mutationFn: async ({ uid }: { uid: string }) => {
+        if (uid === "") return;
+        const result = await documentService.createDocument(uid);
         return result;
       },
       onSuccess: async (document) => {
         if (document === undefined) return;
         await queryClient.invalidateQueries({
-          queryKey: [
-            queryKeys.documentPath(document.owner_id, document.filepath)
-          ]
+          queryKey: [queryKeys.documentId(document.owner_id, document.id)]
         });
       }
     }),
   useDeleteDocumentMutation: () =>
     useMutation({
-      mutationFn: async (args: { uid: string; filepath: string }) => {
-        if (args.uid === "" || args.filepath === "") return;
+      mutationFn: async (args: { uid: string; documentId: string }) => {
+        if (args.uid === "" || args.documentId === "") return;
         const result = await documentService.deleteDocument(args);
         return result;
       },
       onSuccess: async (document) => {
         if (document === undefined) return;
         await queryClient.invalidateQueries({
-          queryKey: [
-            queryKeys.documentPath(document.owner_id, document.filepath)
-          ]
+          queryKey: [queryKeys.documentId(document.owner_id, document.id)]
         });
       }
     }),
@@ -82,23 +67,8 @@ export const documentApi = {
       onSuccess: async (document) => {
         if (document === undefined) return;
         await queryClient.invalidateQueries({
-          queryKey: [
-            queryKeys.documentPath(document.owner_id, document.filepath)
-          ]
+          queryKey: [queryKeys.documentId(document.owner_id, document.id)]
         });
-      }
-    }),
-  useGetDocumentsByPathQuery: (args: { uid: string; filepath: string }) =>
-    useQuery({
-      queryKey: [queryKeys.documentPath(args.uid, args.filepath), "list"],
-      queryFn: async () => {
-        if (args.uid === "" || args.filepath === "") return;
-        try {
-          const result = await documentService.getDocumentsByPath(args);
-          return result;
-        } catch (e) {
-          return Promise.reject(e);
-        }
       }
     })
 };
