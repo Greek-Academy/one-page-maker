@@ -11,6 +11,20 @@ const queryKeys = {
     `documents-${uid}-${parentId || "root"}`
 };
 
+const invalidateQueries = async (document: Document) => {
+  await queryClient.invalidateQueries({
+    queryKey: [queryKeys.documentId(document.owner_id, document.id)]
+  });
+  await queryClient.invalidateQueries({
+    queryKey: [
+      queryKeys.documentsUnderParent(
+        document.owner_id,
+        document.path.split("/").slice(-2, -1)[0] || undefined
+      )
+    ]
+  });
+};
+
 export const documentApi = {
   useGetDocumentQuery: (args: { uid: string; documentId: string }) =>
     useQuery({
@@ -25,6 +39,7 @@ export const documentApi = {
         }
       }
     }),
+
   useGetDocumentsUnderParentQuery: (args: { uid: string; parentId?: string }) =>
     useQuery({
       queryKey: [queryKeys.documentsUnderParent(args.uid, args.parentId)],
@@ -38,6 +53,7 @@ export const documentApi = {
         }
       }
     }),
+
   useCreateDocumentMutation: () =>
     useMutation({
       mutationFn: async ({
@@ -53,19 +69,10 @@ export const documentApi = {
       },
       onSuccess: async (document) => {
         if (document === undefined) return;
-        await queryClient.invalidateQueries({
-          queryKey: [queryKeys.documentId(document.owner_id, document.id)]
-        });
-        await queryClient.invalidateQueries({
-          queryKey: [
-            queryKeys.documentsUnderParent(
-              document.owner_id,
-              document.path.split("/").slice(-2, -1)[0] || undefined
-            )
-          ]
-        });
+        await invalidateQueries(document);
       }
     }),
+
   useDeleteDocumentMutation: () =>
     useMutation({
       mutationFn: async (args: { uid: string; documentId: string }) => {
@@ -75,19 +82,10 @@ export const documentApi = {
       },
       onSuccess: async (document) => {
         if (document === undefined) return;
-        await queryClient.invalidateQueries({
-          queryKey: [queryKeys.documentId(document.owner_id, document.id)]
-        });
-        await queryClient.invalidateQueries({
-          queryKey: [
-            queryKeys.documentsUnderParent(
-              document.owner_id,
-              document.path.split("/").slice(-2, -1)[0] || undefined
-            )
-          ]
-        });
+        await invalidateQueries(document);
       }
     }),
+
   useUpdateDocumentMutation: () =>
     useMutation({
       mutationFn: async ({
@@ -103,19 +101,10 @@ export const documentApi = {
       },
       onSuccess: async (document) => {
         if (document === undefined) return;
-        await queryClient.invalidateQueries({
-          queryKey: [queryKeys.documentId(document.owner_id, document.id)]
-        });
-        await queryClient.invalidateQueries({
-          queryKey: [
-            queryKeys.documentsUnderParent(
-              document.owner_id,
-              document.path.split("/").slice(-2, -1)[0] || undefined
-            )
-          ]
-        });
+        await invalidateQueries(document);
       }
     }),
+
   useMoveDocumentMutation: () =>
     useMutation({
       mutationFn: async ({
@@ -137,12 +126,7 @@ export const documentApi = {
       },
       onSuccess: async (document) => {
         if (document === undefined) return;
-        await queryClient.invalidateQueries({
-          queryKey: [queryKeys.documentId(document.owner_id, document.id)]
-        });
-        await queryClient.invalidateQueries({
-          queryKey: [queryKeys.documentsUnderParent(document.owner_id)]
-        });
+        await invalidateQueries(document);
       }
     })
 };

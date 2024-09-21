@@ -35,16 +35,11 @@ export class DocumentRepositoryImpl implements DocumentRepository {
   }): Promise<Document> {
     try {
       const ref = doc(this.colRef(uid));
-      let path = ref.id;
-      let filename = document.title;
-
-      if (parentId) {
-        const parentDoc = await this.get({ uid, documentId: parentId });
-        if (parentDoc) {
-          path = `${parentDoc.path}/${ref.id}`;
-          filename = `${parentDoc.filename}/${document.title}`;
-        }
-      }
+      const { path, filename } = await this.generatePathAndFilename(
+        uid,
+        document.title,
+        parentId
+      );
 
       const data: WithTimestamp<Document> = {
         ...document,
@@ -58,13 +53,7 @@ export class DocumentRepositoryImpl implements DocumentRepository {
       };
       await this.clientManager.getClient().set(ref, data);
 
-      return {
-        ...data,
-        created_at: Timestamp.now(),
-        updated_at: Timestamp.now(),
-        deleted_at: null,
-        published_at: document.published_at ?? null
-      };
+      return this.convertTimestamps(data);
     } catch (e) {
       return Promise.reject(e);
     }
@@ -133,10 +122,7 @@ export class DocumentRepositoryImpl implements DocumentRepository {
         return Promise.reject(new Error("Document not found"));
       }
 
-      return {
-        ...result,
-        updated_at: Timestamp.now()
-      };
+      return this.convertTimestamps(result);
     } catch (e) {
       return Promise.reject(e);
     }
@@ -163,7 +149,7 @@ export class DocumentRepositoryImpl implements DocumentRepository {
         return Promise.reject(new Error("Document not found"));
       }
 
-      return result;
+      return this.convertTimestamps(result);
     } catch (e) {
       return Promise.reject(e);
     }
@@ -184,35 +170,22 @@ export class DocumentRepositoryImpl implements DocumentRepository {
         throw new Error("Document not found");
       }
 
-      let newPath = documentId;
-      let newFilename = docToMove.title;
-
-      if (newParentId) {
-        const newParent = await this.get({ uid, documentId: newParentId });
-        if (newParent) {
-          newPath = `${newParent.path}/${documentId}`;
-          newFilename = `${newParent.filename}/${docToMove.title}`;
-        }
-      }
+      const { path, filename } = await this.generatePathAndFilename(
+        uid,
+        docToMove.title,
+        newParentId || undefined
+      );
 
       const updatedDoc = await this.update({
         uid,
         document: {
           id: documentId,
-          path: newPath,
-          filename: newFilename
+          path,
+          filename
         }
       });
 
-      // Update all child documents
-      const childDocs = await this.getMany({ uid, parentId: documentId });
-      for (const childDoc of childDocs) {
-        await this.move({
-          uid,
-          documentId: childDoc.id,
-          newParentId: documentId
-        });
-      }
+      await this.updateChildDocuments(uid, documentId, path);
 
       return updatedDoc;
     } catch (e) {
@@ -236,5 +209,57 @@ export class DocumentRepositoryImpl implements DocumentRepository {
     } catch (e) {
       return Promise.reject(e);
     }
+  }
+
+  private async generatePathAndFilename(
+    uid: string,
+    title: string,
+    parentId?: string
+  ): Promise<{ path: string; filename: string }> {
+    if (parentId) {
+      const parentDoc = await this.get({ uid, documentId: parentId });
+      if (parentDoc) {
+        return {
+          path: `${parentDoc.path}/${parentId}`,
+          filename: `${parentDoc.filename}/${title}`
+        };
+      }
+    }
+    return { path: title, filename: title };
+  }
+
+  private async updateChildDocuments(
+    uid: string,
+    parentId: string,
+    parentPath: string
+  ): Promise<void> {
+    const childDocs = await this.getMany({ uid, parentId });
+    for (const childDoc of childDocs) {
+      await this.update({
+        uid,
+        document: {
+          id: childDoc.id,
+          path: `${parentPath}/${childDoc.id}`,
+          filename: `${parentPath}/${childDoc.title}`
+        }
+      });
+    }
+  }
+
+  private convertTimestamps(data: WithTimestamp<Document>): Document {
+    return {
+      ...data,
+      created_at:
+        data.created_at instanceof Timestamp
+          ? data.created_at
+          : Timestamp.now(),
+      updated_at:
+        data.updated_at instanceof Timestamp
+          ? data.updated_at
+          : Timestamp.now(),
+      deleted_at: data.deleted_at instanceof Timestamp ? data.deleted_at : null,
+      published_at:
+        data.published_at instanceof Timestamp ? data.published_at : null
+    };
   }
 }
