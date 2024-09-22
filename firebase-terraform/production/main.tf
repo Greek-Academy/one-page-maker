@@ -19,10 +19,8 @@ provider "google-beta" {
 resource "google_project" "default" {
   provider = google-beta.no_user_project_override
 
-  # name            = "one-pager-maker-staging"
-  # project_id      = "one-pager-maker-staging-id"
   name            = "one-pager-maker-production"
-  project_id      = "one-pager-maker-production"
+  project_id      = "one-pager-maker-production2"
   billing_account = "01BAC7-5F2A1E-5E4BE5"
 
   labels = {
@@ -115,7 +113,7 @@ resource "google_identity_platform_default_supported_idp_config" "google_sign_in
   project       = google_firebase_project.default.project
   enabled       = true
   idp_id        = "google.com"
-  client_id     = "900573945328-luuuovajg5bk607919ocqch4gah8j8th.apps.googleusercontent.com"
+  client_id     = var.oauth_client_id_google
   client_secret = var.oauth_client_secret_google
   depends_on = [
     google_identity_platform_config.auth
@@ -140,7 +138,7 @@ resource "google_identity_platform_default_supported_idp_config" "github_sign_in
   project       = google_firebase_project.default.project
   enabled       = true
   idp_id        = "github.com"
-  client_id     = "Ov23lirVDPHp9Vx8xeOy"
+  client_id     = var.oauth_client_id_github
   client_secret = var.oauth_client_secret_github
   depends_on = [
     google_identity_platform_config.auth

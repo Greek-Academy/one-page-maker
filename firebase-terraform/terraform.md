@@ -30,3 +30,9 @@ terraform apply
 # Cloud Firestore
 
 - I changed the rules but I don't know the impact. The previous rules gave me a warning.
+
+# Terraform And Gihub
+
+When I apply Terraform using Github Actions, I get an error message saying `roles/resourcemanager.projectCreator` permission.
+
+I don't know how to resolve this using a personal account, so I run it locally.

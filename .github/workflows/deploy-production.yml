@@ -1,0 +1,66 @@
+name: Tag-based Deployment
+
+on:
+  push:
+    branches:
+      - production
+
+permissions:
+  contents: read
+  deployments: write
+  actions: write
+  checks: write
+  statuses: write
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    concurrency: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - name: cache-node-modules
+        uses: actions/cache@v3
+        id: cache-bun
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-build-cache-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-build-cache-bun-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: bun install
+        if: ${{ steps.cache-bun.outputs.cache-hit != 'true' }}
+        run: bun i
+      - name: install firebase-tools
+        run: bun i -g firebase-tools
+      - name: Rewrite .env.production file
+        working-directory: ./one-pager-maker
+        shell: bash
+        run: |
+          cat <<EOF >> .env.production
+          VITE_API_KEY=${{ secrets.PRODUCTION_VITE_API_KEY }}
+          VITE_AUTH_DOMAIN=${{ secrets.PRODUCTION_VITE_AUTH_DOMAIN }}
+          VITE_PROJECT_ID=${{ secrets.PRODUCTION_VITE_PROJECT_ID }}
+          VITE_STORAGE_BUCKET=${{ secrets.PRODUCTION_VITE_STORAGE_BUCKET }}
+          VITE_MESSAGING_SENDER_ID=${{ secrets.PRODUCTION_VITE_MESSAGING_SENDER_ID }}
+          VITE_APP_ID=${{ secrets.PRODUCTION_VITE_APP_ID }}
+          VITE_MEASUREMENT_ID=${{ secrets.PRODUCTION_VITE_MEASUREMENT_ID }}
+          EOF
+      - name: bun run build
+        working-directory: ./one-pager-maker
+        run: bun run build:prod
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.PRODUCTION_FIREBASE_SERVICE_ACCOUNT  }}"
+          channelId: live
+          projectId: one-pager-maker-production2
+      - name: Test Failure
+        uses: rjstone/discord-webhook-notify@v1
+        if: failure() || cancelled()
+        with:
+          details: Test Failed!
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
