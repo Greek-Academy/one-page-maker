@@ -14,7 +14,8 @@ export const mockDocument = {
     url_privilege: "private",
     id: "testDocument",
     created_at: Timestamp.now(),
-    updated_at: Timestamp.now()
+    updated_at: Timestamp.now(),
+    published_at: null
   } as Document,
   forCreate: {
     contents: "",
@@ -24,7 +25,8 @@ export const mockDocument = {
     reviewers: [],
     status: "draft",
     title: "",
-    url_privilege: "private"
+    url_privilege: "private",
+    published_at: null
   } as ForCreate<Document>,
 
   forUpdate: {

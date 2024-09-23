@@ -17,6 +17,7 @@ export const documentSchema = z.object({
   reviewers: z.array(z.string()),
   url_privilege: privilegeSchema,
   deleted_at: z.instanceof(Timestamp).nullable(),
+  published_at: z.instanceof(Timestamp).nullable(),
   updated_at: z.instanceof(Timestamp),
   created_at: z.instanceof(Timestamp)
 });

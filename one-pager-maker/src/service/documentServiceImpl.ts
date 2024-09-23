@@ -7,6 +7,7 @@ import { ForUpdate } from "../entity/utils.ts";
 import { ViewHistoryService } from "@/service/viewHistoryService.ts";
 import { Result } from "result-type-ts";
 import { FirestoreError } from "@firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 
 @injectable()
 export class DocumentServiceImpl implements DocumentService {
@@ -75,7 +76,8 @@ export class DocumentServiceImpl implements DocumentService {
           contributors: [uid],
           reviewers: [],
           url_privilege: "private",
-          deleted_at: null
+          deleted_at: null,
+          published_at: null
         }
       });
       await this.viewHistoryService.setEditHistory({ uid, documentId: doc.id });
@@ -110,6 +112,25 @@ export class DocumentServiceImpl implements DocumentService {
       return await this.documentRepository.update({
         uid,
         document
+      });
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  async setDocumentPublishStatus(
+    uid: string,
+    documentId: string,
+    isPublished: boolean
+  ): Promise<Document> {
+    try {
+      const published_at = isPublished ? Timestamp.now() : null;
+      return await this.documentRepository.update({
+        uid,
+        document: {
+          id: documentId,
+          published_at
+        }
       });
     } catch (e) {
       return Promise.reject(e);
