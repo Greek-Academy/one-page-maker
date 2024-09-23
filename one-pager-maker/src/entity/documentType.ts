@@ -4,6 +4,7 @@ import { assertZodSchema } from "../utils/asserts.ts";
 
 const statusSchema = z.enum(["draft", "reviewed", "final", "obsolete"]);
 const privilegeSchema = z.enum(["private", "can_view", "can_edit"]);
+
 /**
  * Firestore の Document 型のスキーマ
  */
@@ -19,7 +20,9 @@ export const documentSchema = z.object({
   deleted_at: z.instanceof(Timestamp).nullable(),
   published_at: z.instanceof(Timestamp).nullable(),
   updated_at: z.instanceof(Timestamp),
-  created_at: z.instanceof(Timestamp)
+  created_at: z.instanceof(Timestamp),
+  path: z.string(),
+  filename: z.string()
 });
 
 export type Document = z.infer<typeof documentSchema>;

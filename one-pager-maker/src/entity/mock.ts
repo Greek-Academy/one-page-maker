@@ -15,7 +15,9 @@ export const mockDocument = {
     id: "testDocument",
     created_at: Timestamp.now(),
     updated_at: Timestamp.now(),
-    published_at: null
+    published_at: null,
+    path: "",
+    filename: ""
   } as Document,
   forCreate: {
     contents: "",
@@ -26,7 +28,9 @@ export const mockDocument = {
     status: "draft",
     title: "",
     url_privilege: "private",
-    published_at: null
+    published_at: null,
+    path: "",
+    filename: ""
   } as ForCreate<Document>,
 
   forUpdate: {

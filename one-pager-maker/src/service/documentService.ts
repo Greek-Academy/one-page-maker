@@ -8,11 +8,24 @@ export interface DocumentService {
     documentId: string;
   }): Promise<Result<Document | undefined, DocumentServiceError>>;
 
-  createDocument(uid: string): Promise<Document>;
+  getDocumentsUnderParent(args: {
+    uid: string;
+    parentId?: string;
+  }): Promise<Result<Document[], DocumentServiceError>>;
+
+  createDocument(uid: string, parentId?: string): Promise<Document>;
 
   updateDocument(uid: string, document: ForUpdate<Document>): Promise<Document>;
 
   deleteDocument(args: { uid: string; documentId: string }): Promise<Document>;
+
+  moveDocument(args: {
+    uid: string;
+    documentId: string;
+    newParentId: string | null;
+  }): Promise<Document>;
+
+  getDocumentPath(args: { uid: string; documentId: string }): Promise<string>;
 }
 
 type DocumentServiceErrorCode = "permission-denied" | "unknown";
