@@ -1,7 +1,8 @@
-name: deploy
+name: Staging Deploy
 
 on:
-  push:
+  pull_request:
+    # push:
     branches:
       - main
 
@@ -43,7 +44,7 @@ jobs:
       - name: Rewrite .env.staging file
         shell: bash
         run: |
-          echo "$(cat <<EOF
+          cat <<EOF >> .env.staging
           VITE_API_KEY=${{ secrets.STAGING_VITE_API_KEY }}
           VITE_AUTH_DOMAIN=${{ secrets.STAGING_VITE_AUTH_DOMAIN }}
           VITE_PROJECT_ID=${{ secrets.STAGING_VITE_PROJECT_ID }}
@@ -52,7 +53,6 @@ jobs:
           VITE_APP_ID=${{ secrets.STAGING_VITE_APP_ID }}
           VITE_MEASUREMENT_ID=${{ secrets.STAGING_VITE_MEASUREMENT_ID }}
           EOF
-          )" >> .env.staging
       - name: bun run build
         run: bun run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
