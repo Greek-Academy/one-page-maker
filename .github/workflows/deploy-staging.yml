@@ -1,8 +1,7 @@
 name: Staging Deploy
 
 on:
-  pull_request:
-    # push:
+  push:
     branches:
       - main
 
@@ -54,8 +53,6 @@ jobs:
           VITE_APP_ID=${{ secrets.STAGING_VITE_APP_ID }}
           VITE_MEASUREMENT_ID=${{ secrets.STAGING_VITE_MEASUREMENT_ID }}
           EOF
-      - name: Check .env.staging contents
-        run: cat .env.staging
       - name: build
         run: bun run build:staging
       - uses: FirebaseExtended/action-hosting-deploy@v0
