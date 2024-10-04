@@ -55,7 +55,7 @@ jobs:
           VITE_MEASUREMENT_ID=${{ secrets.STAGING_VITE_MEASUREMENT_ID }}
           EOF
       - name: bun run build
-        run: bun run build
+        run: bun run build:staging
       # - name: Rewrite .firebaserc file
       #   run: |
       #     echo '{"projects": {"default": "one-pager-maker-staging-id"}}' > .firebaserc
