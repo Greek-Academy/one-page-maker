@@ -17,11 +17,11 @@ jobs:
   deployment:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    environment: production
+    environment: staging
     defaults:
       run:
         working-directory: one-pager-maker
-    concurrency: production
+    concurrency: staging
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
@@ -42,25 +42,29 @@ jobs:
         run: bun i
       - name: install firebase-tools
         run: bun i -g firebase-tools
-      - name: Rewrite .env.production file
+      - name: Rewrite .env.staging file
         shell: bash
         run: |
-          echo "" > .env.production
-          echo "VITE_API_KEY=${{ secrets.VITE_API_KEY }}" >> .env.production
-          echo "VITE_AUTH_DOMAIN=${{ secrets.VITE_AUTH_DOMAIN }}" >> .env.production
-          echo "VITE_PROJECT_ID=${{ secrets.VITE_PROJECT_ID }}" >> .env.production
-          echo "VITE_STORAGE_BUCKET=${{ secrets.VITE_STORAGE_BUCKET }}" >> .env.production
-          echo "VITE_MESSAGING_SENDER_ID=${{ secrets.VITE_MESSAGING_SENDER_ID }}" >> .env.production
-          echo "VITE_APP_ID=${{ secrets.VITE_APP_ID }}" >> .env.production
-          echo "VITE_MEASUREMENT_ID=${{ secrets.VITE_MEASUREMENT_ID }}" >> .env.production
+          cat <<EOF >> .env.staging
+          VITE_API_KEY=${{ secrets.STAGING_VITE_API_KEY }}
+          VITE_AUTH_DOMAIN=${{ secrets.STAGING_VITE_AUTH_DOMAIN }}
+          VITE_PROJECT_ID=${{ secrets.STAGING_VITE_PROJECT_ID }}
+          VITE_STORAGE_BUCKET=${{ secrets.STAGING_VITE_STORAGE_BUCKET }}
+          VITE_MESSAGING_SENDER_ID=${{ secrets.STAGING_VITE_MESSAGING_SENDER_ID }}
+          VITE_APP_ID=${{ secrets.STAGING_VITE_APP_ID }}
+          VITE_MEASUREMENT_ID=${{ secrets.STAGING_VITE_MEASUREMENT_ID }}
+          EOF
       - name: bun run build
         run: bun run build
+      - name: Rewrite .firebaserc file
+        run: |
+          echo '{"projects": {"default": "one-pager-maker-staging-id"}}' > .firebaserc        
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_ONE_PAGER_MAKER }}"
           channelId: live
-          projectId: one-pager-maker
+          projectId: one-pager-maker-staging-id
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
