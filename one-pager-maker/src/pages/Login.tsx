@@ -27,7 +27,7 @@ const Login = () => {
 
   useEffect(() => {
     console.log("Project ID:", import.meta.env.VITE_PROJECT_ID);
-  }, []);
+  }, [import.meta.env.VITE_PROJECT_ID]);
 
   const mailSignin = useCallback(() => {
     signInWithEmailAndPassword(auth, formData.email, formData.password)
