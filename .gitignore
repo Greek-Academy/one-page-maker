@@ -171,3 +171,7 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Ignore staging environment variables
+one-pager-maker/.env.staging
+one-pager-maker/.env.production

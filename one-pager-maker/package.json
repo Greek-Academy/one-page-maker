@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "staging": "vite --mode staging",
     "prod": "vite --mode production",
     "devEmu": "firebase emulators:exec --ui 'npm run dev'",
     "build": "tsc && vite build",
+    "build:staging": "tsc && vite build --mode staging",
     "build:prod": "tsc && vite build --mode production",
     "lint": "eslint src tests -c .eslintrc.cjs && prettier --check \"src/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\"",
     "fix": "eslint src tests --fix && prettier --write \"src/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\"",
