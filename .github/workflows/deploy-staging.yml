@@ -45,7 +45,7 @@ jobs:
       - name: Rewrite .env.staging file
         shell: bash
         run: |
-          cat <<EOF >> .env.staging
+          cat <<EOF > .env.staging
           VITE_API_KEY=${{ secrets.STAGING_VITE_API_KEY }}
           VITE_AUTH_DOMAIN=${{ secrets.STAGING_VITE_AUTH_DOMAIN }}
           VITE_PROJECT_ID=${{ secrets.STAGING_VITE_PROJECT_ID }}
