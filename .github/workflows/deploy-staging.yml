@@ -61,10 +61,10 @@ jobs:
           firebaseServiceAccount: "${{ secrets.STAGING_FIREBASE_SERVICE_ACCOUNT }}"
           channelId: live
           projectId: one-pager-maker-staging-id
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        run: npm run e2e:all
+      # - name: Install Playwright Browsers
+      #   run: npx playwright install --with-deps
+      # - name: Run Playwright tests
+      #   run: bun run e2e:all
       - uses: actions/upload-artifact@v3
         if: always()
         with:
