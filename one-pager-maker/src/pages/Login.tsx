@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import "./Login.css";
 import { Box, Button, TextField } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
@@ -25,6 +25,10 @@ const Login = () => {
     []
   );
 
+  useEffect(() => {
+    console.log("Project ID:", import.meta.env.VITE_PROJECT_ID);
+  }, []);
+
   const mailSignin = useCallback(() => {
     signInWithEmailAndPassword(auth, formData.email, formData.password)
       .then(() => {
@@ -46,6 +50,7 @@ const Login = () => {
   }, []);
 
   return (
+
     <div
       className={
         "login flex h-screen flex-col items-center justify-center bg-slate-100"
