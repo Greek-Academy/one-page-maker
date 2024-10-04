@@ -56,11 +56,8 @@ jobs:
           EOF
       - name: Check .env.staging contents
         run: cat .env.staging
-      - name: bun run build
-        run: bun run build:staging --mode staging
-      # - name: Rewrite .firebaserc file
-      #   run: |
-      #     echo '{"projects": {"default": "one-pager-maker-staging-id"}}' > .firebaserc
+      - name: build
+        run: bun run build:staging
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
