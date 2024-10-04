@@ -56,9 +56,9 @@ jobs:
           EOF
       - name: bun run build
         run: bun run build
-      - name: Rewrite .firebaserc file
-        run: |
-          echo '{"projects": {"default": "one-pager-maker-staging-id"}}' > .firebaserc        
+      # - name: Rewrite .firebaserc file
+      #   run: |
+      #     echo '{"projects": {"default": "one-pager-maker-staging-id"}}' > .firebaserc
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
