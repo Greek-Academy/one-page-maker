@@ -132,7 +132,7 @@ function DocumentListSection({
       {status === "error" && <ErrorContainer>{error?.message}</ErrorContainer>}
       {status === "pending" && (
         <Grid>
-          {[0, 0, 0].map((_) => (
+          {[0, 1, 2].map((_) => (
             <SkeletonDocumentItem key={_} />
           ))}
         </Grid>

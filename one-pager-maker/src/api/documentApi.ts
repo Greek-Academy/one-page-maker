@@ -19,7 +19,7 @@ const invalidateQueries = async (document: Document) => {
     queryKey: [
       queryKeys.documentsUnderParent(
         document.owner_id,
-        document.path.split("/").slice(-2, -1)[0] || undefined
+        document.path?.split("/").slice(-2, -1)[0] || undefined
       )
     ]
   });

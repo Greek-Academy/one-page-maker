@@ -18,11 +18,11 @@ export const documentSchema = z.object({
   reviewers: z.array(z.string()),
   url_privilege: privilegeSchema,
   deleted_at: z.instanceof(Timestamp).nullable(),
-  published_at: z.instanceof(Timestamp).nullable(),
+  published_at: z.instanceof(Timestamp).nullable().optional(),
   updated_at: z.instanceof(Timestamp),
   created_at: z.instanceof(Timestamp),
-  path: z.string(),
-  filename: z.string()
+  path: z.string().optional(),
+  filename: z.string().optional()
 });
 
 export type Document = z.infer<typeof documentSchema>;

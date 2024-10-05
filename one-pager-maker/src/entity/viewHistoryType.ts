@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { FirestoreDataConverter, Timestamp } from "firebase/firestore";
 import { assertZodSchema } from "../utils/asserts.ts";
-import { documentSchema } from "./documentType.ts";
+import { documentSchema, Document } from "./documentType.ts";
 
 const viewTypeSchema = z.enum(["edit", "review"]);
 
@@ -22,13 +22,34 @@ export type ViewType = z.infer<typeof viewTypeSchema>;
 
 export const viewHistoryConverter: FirestoreDataConverter<ViewHistory> = {
   fromFirestore(snapshot): ViewHistory {
-    const data = { ...snapshot.data(), id: snapshot.id };
-    assertZodSchema(viewHistorySchema, data);
-    return data;
+    const data = snapshot.data();
+    const id = snapshot.id;
+
+    // Document オブジェクトのデフォルト値を設定
+    const defaultDocument: Partial<Document> = {
+      path: "",
+      filename: "",
+      published_at: null
+    };
+
+    // Document オブジェクトをマージ
+    const mergedDocument = {
+      ...defaultDocument,
+      ...(data.document as Partial<Document>)
+    };
+
+    // マージした Document オブジェクトで data を更新
+    const updatedData = {
+      ...data,
+      id,
+      document: documentSchema.parse(mergedDocument)
+    };
+
+    assertZodSchema(viewHistorySchema, updatedData);
+    return updatedData;
   },
   toFirestore(modelObject) {
-    // データから id を除去
-    const weakenModel = Object.assign({}, modelObject);
+    const weakenModel = { ...modelObject };
     delete weakenModel.id;
     return weakenModel;
   }
