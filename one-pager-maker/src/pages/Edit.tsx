@@ -1,5 +1,7 @@
 import "./Edit.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { storage } from "../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Document, Status } from "../entity/documentType.ts";
 import { Link, useParams } from "react-router-dom";
 import { UserSelectMenu } from "../stories/UserItem.tsx";
@@ -12,6 +14,7 @@ import { userApi } from "@/api/userApi.ts";
 import { selectUser } from "@/redux/user/selector.ts";
 import { useAppSelector } from "@/redux/hooks.ts";
 import { MarkdownRenderer } from "../components/ui/MarkdownRenderer";
+import { v4 as uuidv4 } from "uuid";
 
 function Edit() {
   const { uid, documentId } = useParams<{ uid: string; documentId: string }>();
@@ -31,6 +34,28 @@ function Edit() {
 
   const editHistoryMutation = viewHistoryApi.useSetEditHistoryMutation();
   const reviewHistoryMutation = viewHistoryApi.useSetReviewHistoryMutation();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const insertImageMarkdownAtCursor = (imageMarkdown: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const startPos = textarea.selectionStart;
+    const endPos = textarea.selectionEnd;
+    const beforeCursor = documentData?.contents.substring(0, startPos);
+    const afterCursor = documentData?.contents.substring(
+      endPos,
+      documentData?.contents.length
+    );
+
+    const newContent = beforeCursor + imageMarkdown + afterCursor;
+    updateDocumentState("contents", newContent);
+    // Update cursor position (set to position after image URL insertion)
+    setTimeout(() => {
+      const newCursorPos = startPos + imageMarkdown.length;
+      textarea.selectionStart = newCursorPos;
+      textarea.selectionEnd = newCursorPos;
+    }, 0);
+  };
 
   useEffect(() => {
     if (document && !documentData) {
@@ -50,6 +75,24 @@ function Edit() {
     updateDocumentState("title", e.target.value);
   const onChangeContents = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
     updateDocumentState("contents", e.target.value);
+  // TODO: Need to support unreasonably large files and continuous pasting
+  const onPasteContents = async (
+    e: React.ClipboardEvent<HTMLTextAreaElement>
+  ) => {
+    const item = Array.from(e.clipboardData.items).find((item) =>
+      item.type.startsWith("image/")
+    );
+    if (!item) return;
+
+    const file = item.getAsFile();
+    if (!file) return;
+
+    const uniqueFileName = `${uuidv4()}-${file.name}`;
+    const storageRef = ref(storage, `images/${uniqueFileName}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    insertImageMarkdownAtCursor(`![Image](${url})\n`);
+  };
   const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) =>
     updateDocumentState("status", e.target.value as Status);
   const onChangeContributors = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -187,9 +230,11 @@ function Edit() {
         </div>
         <div className="flex h-svh w-full p-1">
           <textarea
+            ref={textareaRef}
             className="w-1/2 border p-1"
             value={documentData?.contents}
             onChange={onChangeContents}
+            onPaste={onPasteContents}
             placeholder="Enter Markdown here"
           />
           <div className="w-1/2 overflow-visible overflow-scroll overflow-x-hidden border p-1">
