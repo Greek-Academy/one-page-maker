@@ -1,5 +1,5 @@
 import "./Edit.css";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { storage } from "../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Document, Status } from "../entity/documentType.ts";
@@ -30,32 +30,20 @@ function Edit() {
   const documentResult = documentApi.useGetDocumentQuery({ uid, documentId });
   const document = documentResult.data?.value;
   const [documentData, setDocumentData] = useState(document);
+  const [cursorPosition, setCursorPosition] = useState(0);
   const updateDocument = documentApi.useUpdateDocumentMutation();
 
   const editHistoryMutation = viewHistoryApi.useSetEditHistoryMutation();
   const reviewHistoryMutation = viewHistoryApi.useSetReviewHistoryMutation();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const insertImageMarkdownAtCursor = (imageMarkdown: string) => {
+
+  useLayoutEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    const startPos = textarea.selectionStart;
-    const endPos = textarea.selectionEnd;
-    const beforeCursor = documentData?.contents.substring(0, startPos);
-    const afterCursor = documentData?.contents.substring(
-      endPos,
-      documentData?.contents.length
-    );
-
-    const newContent = beforeCursor + imageMarkdown + afterCursor;
-    updateDocumentState("contents", newContent);
-    // Update cursor position (set to position after image URL insertion)
-    setTimeout(() => {
-      const newCursorPos = startPos + imageMarkdown.length;
-      textarea.selectionStart = newCursorPos;
-      textarea.selectionEnd = newCursorPos;
-    }, 0);
-  };
+    textarea.selectionStart = cursorPosition;
+    textarea.selectionEnd = cursorPosition;
+  }, [cursorPosition, documentData]);
 
   useEffect(() => {
     if (document && !documentData) {
@@ -73,25 +61,55 @@ function Edit() {
   };
   const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) =>
     updateDocumentState("title", e.target.value);
-  const onChangeContents = (e: React.ChangeEvent<HTMLTextAreaElement>) =>
-    updateDocumentState("contents", e.target.value);
-  // TODO: Need to support unreasonably large files and continuous pasting
+  const onChangeContents = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const textarea = e.target;
+    updateDocumentState("contents", textarea.value);
+    setCursorPosition(textarea.selectionStart);
+  };
   const onPasteContents = async (
     e: React.ClipboardEvent<HTMLTextAreaElement>
   ) => {
-    const item = Array.from(e.clipboardData.items).find((item) =>
-      item.type.startsWith("image/")
-    );
-    if (!item) return;
+    e.preventDefault();
 
-    const file = item.getAsFile();
-    if (!file) return;
+    const newContent = documentData?.contents;
+    if (!newContent) return;
 
-    const uniqueFileName = `${uuidv4()}-${file.name}`;
-    const storageRef = ref(storage, `images/${uniqueFileName}`);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    insertImageMarkdownAtCursor(`![Image](${url})\n`);
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const startPos = textarea.selectionStart;
+    setCursorPosition(startPos);
+
+    try {
+      const item = Array.from(e.clipboardData.items).find((item) =>
+        item.type.startsWith("image/")
+      );
+      if (!item) return;
+
+      const file = item.getAsFile();
+      if (!file) return;
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert("Image is too large. Please upload images smaller than 5MB.");
+        return;
+      }
+
+      const uniqueFileName = `${uuidv4()}-${file.name}`;
+      const storageRef = ref(storage, `images/${uniqueFileName}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      const imageMarkdown = `![Image](${url})\n`;
+      const beforeText = newContent.slice(0, startPos);
+      const afterText = newContent.slice(startPos);
+      updateDocumentState(
+        "contents",
+        `${beforeText}${imageMarkdown}${afterText}`
+      );
+      setCursorPosition(startPos + imageMarkdown.length);
+    } catch (error) {
+      console.error("Error uploading image: ", error);
+      alert("Failed to upload image. Please try again.");
+    }
   };
   const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) =>
     updateDocumentState("status", e.target.value as Status);
