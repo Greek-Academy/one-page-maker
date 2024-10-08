@@ -27,6 +27,7 @@ function Edit() {
     return <main>Route setting is wrong</main>;
   }
 
+  const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
   const documentResult = documentApi.useGetDocumentQuery({ uid, documentId });
   const document = documentResult.data?.value;
   const [documentData, setDocumentData] = useState(document);
@@ -39,7 +40,7 @@ function Edit() {
 
   const insertImageMarkdown = (imageUrl: string) => {
     const imageMarkdown = `![Image](${imageUrl})\n`;
-    const { selectionStart, value } = textareaRef.current!;
+    const { selectionStart = 0, value = "" } = textareaRef.current ?? {};
     const newContent =
       value.slice(0, selectionStart) +
       imageMarkdown +
@@ -91,7 +92,7 @@ function Edit() {
     const file = imageItem.getAsFile();
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > MAX_IMAGE_SIZE) {
       alert("Image is too large. Please upload images smaller than 5MB.");
       return;
     }
@@ -99,16 +100,11 @@ function Edit() {
     try {
       const uniqueFileName = `${uuidv4()}-${file.name}`;
       const storageRef = ref(storage, `images/${uniqueFileName}`);
-      try {
-        await uploadBytes(storageRef, file);
-        const imageUrl = await getDownloadURL(storageRef);
-        insertImageMarkdown(imageUrl);
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        throw error;
-      }
-    } catch (error) {
-      alert("Failed to upload image. Please try again.");
+      await uploadBytes(storageRef, file);
+      const imageUrl = await getDownloadURL(storageRef);
+      insertImageMarkdown(imageUrl);
+    } catch (e) {
+      alert(`Failed to upload image: ${e?.toString()}. Please try again.`);
     }
   };
   const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) =>
