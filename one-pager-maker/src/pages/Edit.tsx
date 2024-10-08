@@ -43,7 +43,7 @@ function Edit() {
 
     textarea.selectionStart = cursorPosition;
     textarea.selectionEnd = cursorPosition;
-  }, [cursorPosition, documentData]);
+  }, [cursorPosition]);
 
   useEffect(() => {
     if (document && !documentData) {
@@ -69,47 +69,54 @@ function Edit() {
   const onPasteContents = async (
     e: React.ClipboardEvent<HTMLTextAreaElement>
   ) => {
-    e.preventDefault();
-
     const newContent = documentData?.contents;
-    if (!newContent) return;
+    if (newContent === undefined) return;
 
     const textarea = textareaRef.current;
     if (!textarea) return;
 
     const startPos = textarea.selectionStart;
     setCursorPosition(startPos);
+    const item = Array.from(e.clipboardData.items).find((item) =>
+      item.type.startsWith("image/")
+    );
+    if (!item) return;
+
+    e.preventDefault();
+    const file = item.getAsFile();
+    if (!file) return;
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert("Image is too large. Please upload images smaller than 5MB.");
+      return;
+    }
+    const uniqueFileName = `${uuidv4()}-${file.name}`;
+    const storageRef = ref(storage, `images/${uniqueFileName}`);
 
     try {
-      const item = Array.from(e.clipboardData.items).find((item) =>
-        item.type.startsWith("image/")
-      );
-      if (!item) return;
-
-      const file = item.getAsFile();
-      if (!file) return;
-      const maxSize = 5 * 1024 * 1024;
-      if (file.size > maxSize) {
-        alert("Image is too large. Please upload images smaller than 5MB.");
-        return;
-      }
-
-      const uniqueFileName = `${uuidv4()}-${file.name}`;
-      const storageRef = ref(storage, `images/${uniqueFileName}`);
       await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      const imageMarkdown = `![Image](${url})\n`;
-      const beforeText = newContent.slice(0, startPos);
-      const afterText = newContent.slice(startPos);
-      updateDocumentState(
-        "contents",
-        `${beforeText}${imageMarkdown}${afterText}`
-      );
-      setCursorPosition(startPos + imageMarkdown.length);
-    } catch (error) {
-      console.error("Error uploading image: ", error);
-      alert("Failed to upload image. Please try again.");
+    } catch (uploadError) {
+      console.error("Error uploading image: ", uploadError);
+      alert("Failed to upload image during upload. Please try again.");
     }
+
+    let url = "";
+    try {
+      url = await getDownloadURL(storageRef);
+    } catch (urlError) {
+      console.error("Error getting download URL: ", urlError);
+      alert("Failed to retrieve image URL. Please try again.");
+    }
+
+    const imageMarkdown = `![Image](${url})\n`;
+    const beforeText = newContent.slice(0, startPos);
+    const afterText = newContent.slice(startPos);
+    updateDocumentState(
+      "contents",
+      `${beforeText}${imageMarkdown}${afterText}`
+    );
+    setCursorPosition(startPos + imageMarkdown.length);
   };
   const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) =>
     updateDocumentState("status", e.target.value as Status);
