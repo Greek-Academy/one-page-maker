@@ -5,6 +5,11 @@ export const toUndeletedDocuments = (
   viewHistories: ViewHistory[]
 ): Document[] => {
   return viewHistories
-    .map((viewHistory) => viewHistory.document)
+    .map((viewHistory) => ({
+      ...viewHistory.document,
+      path: viewHistory.document.path ?? "",
+      filename: viewHistory.document.filename ?? "",
+      published_at: viewHistory.document.published_at ?? null
+    }))
     .filter((document) => document.deleted_at === null);
 };

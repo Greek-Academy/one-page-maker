@@ -205,7 +205,7 @@ export class DocumentRepositoryImpl implements DocumentRepository {
       if (!doc) {
         throw new Error("Document not found");
       }
-      return doc.filename;
+      return doc.filename ?? "";
     } catch (e) {
       return Promise.reject(e);
     }
