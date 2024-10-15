@@ -42,7 +42,6 @@ export const uploadFile = async (
     } else {
       alert("An unknown error occurred. Please try again.");
     }
-    alert(`Failed to upload image: ${e?.toString()}. Please try again.`);
     return { success: false, url: "" };
   }
 };
