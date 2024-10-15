@@ -90,8 +90,10 @@ function Edit() {
     const file = imageItem.getAsFile();
     if (!file) return;
 
-    const imageUrl = await uploadFile(file, "images");
-    insertImageMarkdown(imageUrl);
+    const result = await uploadFile(file, "images");
+    if (!result.success) return;
+
+    insertImageMarkdown(result.url);
   };
   const onChangeStatus = (e: React.ChangeEvent<HTMLSelectElement>) =>
     updateDocumentState("status", e.target.value as Status);
