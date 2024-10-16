@@ -28,6 +28,7 @@ function Edit() {
   const documentResult = documentApi.useGetDocumentQuery({ uid, documentId });
   const document = documentResult.data?.value;
   const [documentData, setDocumentData] = useState(document);
+  // Used to set the textArea selection range with useLayoutEffect
   const [cursorPosition, setCursorPosition] = useState(0);
   const updateDocument = documentApi.useUpdateDocumentMutation();
 
@@ -35,7 +36,7 @@ function Edit() {
   const reviewHistoryMutation = viewHistoryApi.useSetReviewHistoryMutation();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // カーソルの位置に画像の Markdown タグを挿入する
+  // Inserts an image Markdown tag at the cursor position
   const insertImageMarkdown = (imageUrl: string) => {
     const imageMarkdown = `![Image](${imageUrl})\n`;
     const { selectionStart = 0, value = "" } = textareaRef.current ?? {};
