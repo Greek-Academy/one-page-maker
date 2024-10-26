@@ -12,6 +12,7 @@ import { userApi } from "@/api/userApi.ts";
 import { selectUser } from "@/redux/user/selector.ts";
 import { useAppSelector } from "@/redux/hooks.ts";
 import { MarkdownRenderer } from "../components/ui/MarkdownRenderer";
+import { PathViewer } from "../components/ui/PathViewer";
 import { uploadFile } from "../utils/firebaseUtils.ts";
 
 function Edit() {
@@ -166,8 +167,9 @@ function Edit() {
 
   return (
     <>
-      <div>
-        <div className="flex justify-between py-1">
+      <div className="flex">
+        <div className="flex-1">
+          <div className="flex justify-between py-1">
           <input
             className="w-full border px-1 font-bold"
             type="text"
@@ -232,6 +234,13 @@ function Edit() {
           </span>
         </div>
         <div className="flex h-svh w-full p-1">
+          {documentData && (
+              <PathViewer
+                  path={documentData.path}
+                  filename={documentData.filename}
+                  uid={uid}
+              />
+          )}
           <textarea
             ref={textareaRef}
             className="w-1/2 border p-1"
@@ -242,6 +251,7 @@ function Edit() {
           />
           <div className="w-1/2 overflow-visible overflow-scroll overflow-x-hidden border p-1">
             <MarkdownRenderer contents={documentData?.contents || ""} />
+          </div>
           </div>
         </div>
       </div>
