@@ -9,5 +9,8 @@ export const DI = {
   ViewHistoryService: "ViewHistoryService",
 
   DocumentRepository: "DocumentRepository",
-  DocumentService: "DocumentService"
+  DocumentService: "DocumentService",
+
+  ImageRepository: "ImageRepository",
+  ImageService: "ImageService"
 };

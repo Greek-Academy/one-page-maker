@@ -5,6 +5,7 @@ import { UserDomainService } from "../domain_service/userDomainService.ts";
 import { setupDI } from "../di.setup.ts";
 import { ViewHistoryService } from "../service/viewHistoryService.ts";
 import { DocumentService } from "../service/documentService.ts";
+import { ImageService } from "../service/imageService.ts";
 
 setupDI();
 
@@ -17,4 +18,7 @@ export const viewHistoryService = container.resolve<ViewHistoryService>(
 );
 export const documentService = container.resolve<DocumentService>(
   DI.DocumentService
+);
+export const imageService = container.resolve<ImageService>(
+  DI.ImageService
 );
