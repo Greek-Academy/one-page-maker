@@ -1,8 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { imageService } from "./services.ts";
 import { queryClient } from "../queryClient.ts";
-import { ForUpdate } from "../entity/utils.ts";
-import { Document } from "../entity/documentType.ts";
 
 const queryKeys = {
   imageId: (id: string) =>
@@ -22,7 +20,7 @@ export const imageApi = {
       queryFn: async () => {
         if (args.id === "") return;
         try {
-          const result = await imageService.getImage(args);
+          const result = await imageService.getImage(args.id);
           return result;
         } catch (e) {
           return Promise.reject(e);
@@ -52,25 +50,6 @@ export const imageApi = {
       mutationFn: async (args: { id: string; }) => {
         if (args.id === "") return;
         const result = await imageService.deleteImage(args.id);
-        return result;
-      },
-      onSuccess: async (image) => {
-        if (image === undefined) return;
-        await invalidateQueries(image.id);
-      }
-    }),
-
-  useUpdateImageMutation: () =>
-    useMutation({
-      mutationFn: async ({
-        uid,
-        document
-      }: {
-        uid: string;
-        document: ForUpdate<Document>;
-      }) => {
-        if (uid === "") return;
-        const result = await imageService.updateImage(uid, document);
         return result;
       },
       onSuccess: async (image) => {
